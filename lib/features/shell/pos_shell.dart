@@ -4,6 +4,7 @@ import '../../core/theme/pos_theme.dart';
 import '../../shared/widgets/connection_heartbeat.dart';
 import '../auth/providers/auth_provider.dart';
 import '../menu/widgets/menu_screen.dart';
+import '../dashboard/widgets/bridge_dashboard_screen.dart';
 
 // Shell Navigation State
 final shellNavigationProvider = StateProvider<int>((ref) => 0);
@@ -220,7 +221,7 @@ class PosShell extends ConsumerWidget {
   Widget _buildScreen(int index) {
     switch (index) {
       case 0:
-        return _buildBridgeDashboardPlaceholder();
+        return const BridgeDashboardScreen();
       case 1:
         return _buildFloorPlanPlaceholder();
       case 2:
@@ -230,7 +231,7 @@ class PosShell extends ConsumerWidget {
       case 4:
         return _buildOrderHistoryPlaceholder();
       default:
-        return _buildBridgeDashboardPlaceholder();
+        return const BridgeDashboardScreen();
     }
   }
 
