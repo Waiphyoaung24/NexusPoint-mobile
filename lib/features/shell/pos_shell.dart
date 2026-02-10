@@ -23,7 +23,6 @@ class PosShell extends ConsumerWidget {
           // Navigation Rail
           NavigationRail(
             extended: MediaQuery.of(context).size.width >= 1024,
-            backgroundColor: PosTheme.elevatedSurface,
             leading: _buildLeadingSection(context, authState),
             trailing: _buildTrailingSection(context, ref),
             selectedIndex: selectedIndex,
@@ -84,10 +83,10 @@ class PosShell extends ConsumerWidget {
         authState.whenOrNull(
               authenticated: (user, _) => _buildUserAvatar(context, user),
             ) ??
-            const CircleAvatar(
+            CircleAvatar(
               radius: 24,
-              backgroundColor: PosTheme.secondarySurface,
-              child: Icon(
+              backgroundColor: PosTheme.borderLight,
+              child: const Icon(
                 Icons.person,
                 color: PosTheme.textSecondary,
               ),
