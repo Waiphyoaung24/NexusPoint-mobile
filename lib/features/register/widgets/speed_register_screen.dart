@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../../../core/models/menu_item.dart';
 import '../../../core/models/order.dart';
+import '../../../core/models/api_models.dart';
 import '../../menu/providers/menu_provider.dart';
 import '../../cart/providers/cart_provider.dart';
+import '../../orders/repositories/order_repository.dart';
 
 class SpeedRegisterScreen extends ConsumerWidget {
   const SpeedRegisterScreen({super.key});
@@ -18,7 +20,7 @@ class SpeedRegisterScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              ref.invalidate(menuItemsProvider);
+              ref.invalidate(menuProvider);
             },
             tooltip: 'Refresh Menu',
           ),
@@ -54,7 +56,7 @@ class SpeedRegisterScreen extends ConsumerWidget {
 class _MenuGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuAsync = ref.watch(menuItemsProvider);
+    final menuAsync = ref.watch(menuProvider);
 
     return menuAsync.when(
       data: (items) => items.isEmpty
@@ -184,8 +186,8 @@ class _MenuItemCard extends ConsumerWidget {
                     ),
               ),
 
-              // Stock Badge (if available)
-              if (item.stockCount != null && item.stockCount! < 10)
+              // Stock Badge (if low inventory)
+              if (item.inventoryQty < 10)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Container(
@@ -194,15 +196,15 @@ class _MenuItemCard extends ConsumerWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: item.stockCount! == 0
+                      color: item.inventoryQty == 0
                           ? PosTheme.dangerRed
                           : PosTheme.accentAmber,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      item.stockCount! == 0
+                      item.inventoryQty == 0
                           ? 'Out of Stock'
-                          : '${item.stockCount} left',
+                          : '${item.inventoryQty} left',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -302,9 +304,7 @@ class _CartPanel extends ConsumerWidget {
                       return _CartItemCard(
                         item: item,
                         onRemove: () {
-                          ref
-                              .read(cartProvider.notifier)
-                              .removeItem(item.menuItem);
+                          ref.read(cartProvider.notifier).removeItem(index);
                         },
                         onIncrease: () {
                           ref.read(cartProvider.notifier).addItem(item.menuItem);
@@ -313,11 +313,9 @@ class _CartPanel extends ConsumerWidget {
                           if (item.quantity > 1) {
                             ref
                                 .read(cartProvider.notifier)
-                                .updateQuantity(item.menuItem, item.quantity - 1);
+                                .updateQuantity(index, item.quantity - 1);
                           } else {
-                            ref
-                                .read(cartProvider.notifier)
-                                .removeItem(item.menuItem);
+                            ref.read(cartProvider.notifier).removeItem(index);
                           }
                         },
                       );
@@ -464,13 +462,13 @@ class _CartItemCard extends StatelessWidget {
 }
 
 class _CartSummary extends ConsumerWidget {
-  final cart;
+  final CartState cart;
 
   const _CartSummary({required this.cart});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final total = cart.totalAmount;
+    final total = cart.total;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -555,20 +553,50 @@ class _CartSummary extends ConsumerWidget {
       context: context,
       builder: (context) => _CheckoutDialog(
         total: total,
-        onCheckout: (paymentMethod) {
-          // Create order
-          ref.read(cartProvider.notifier).checkout(
-                source: OrderSource.dinein,
-                paymentMethod: paymentMethod,
-              );
-          Navigator.of(context).pop();
+        onCheckout: (paymentMethod) async {
+          // Get cart items and convert to OrderItemDto
+          final cartState = ref.read(cartProvider);
+          final orderItems = cartState.items.map((item) {
+            return OrderItemDto(
+              skuId: item.menuItem.id,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              notes: item.notes,
+            );
+          }).toList();
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Order created successfully!'),
-              backgroundColor: PosTheme.successGreen,
-            ),
-          );
+          // Create order using repository
+          try {
+            await ref.read(orderRepositoryProvider).createOrder(
+                  source: OrderSource.dinein,
+                  items: orderItems,
+                  totalAmount: total,
+                  paymentMethod: paymentMethod,
+                );
+
+            // Clear cart after successful order
+            ref.read(cartProvider.notifier).clear();
+
+            if (context.mounted) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Order created successfully!'),
+                  backgroundColor: PosTheme.successGreen,
+                ),
+              );
+            }
+          } catch (e) {
+            if (context.mounted) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to create order: $e'),
+                  backgroundColor: PosTheme.dangerRed,
+                ),
+              );
+            }
+          }
         },
       ),
     );
@@ -577,7 +605,7 @@ class _CartSummary extends ConsumerWidget {
 
 class _CheckoutDialog extends StatefulWidget {
   final double total;
-  final Function(PaymentMethod) onCheckout;
+  final Future<void> Function(PaymentMethod) onCheckout;
 
   const _CheckoutDialog({
     required this.total,
