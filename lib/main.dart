@@ -35,7 +35,7 @@ class NexusPointPosApp extends StatelessWidget {
     return MaterialApp(
       title: 'NexusPoint POS',
       debugShowCheckedModeBanner: false,
-      theme: PosTheme.darkTheme(),
+      theme: PosTheme.lightTheme(),
       home: const AuthGate(),
     );
   }

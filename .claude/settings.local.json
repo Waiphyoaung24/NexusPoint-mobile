@@ -1,6 +1,17 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub get:*)",
+      "Bash(flutter pub run build_runner build:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(flutter test:*)",
+      "Bash(python3:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "filesystem"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

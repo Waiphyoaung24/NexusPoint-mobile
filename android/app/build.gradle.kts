@@ -24,7 +24,7 @@ android {
         applicationId = "store.nexuspoint.nexuspoint_pos"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 21  // Changed for Bluetooth LE support
+        minSdk = flutter.minSdkVersion  // Changed for Bluetooth LE support
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

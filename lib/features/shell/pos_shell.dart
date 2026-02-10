@@ -59,10 +59,10 @@ class PosShell extends ConsumerWidget {
           ),
 
           // Vertical Divider
-          VerticalDivider(
+          const VerticalDivider(
             width: 1,
             thickness: 1,
-            color: PosTheme.textSecondary.withValues(alpha: 0.2),
+            color: PosTheme.borderLight,
           ),
 
           // Main Content Area
@@ -111,13 +111,13 @@ class PosShell extends ConsumerWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: PosTheme.primaryGreen.withValues(alpha: 0.2),
+                      color: PosTheme.primaryBlue.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       user.role!.name.toUpperCase(),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: PosTheme.primaryGreen,
+                            color: PosTheme.primaryBlue,
                             fontWeight: FontWeight.w700,
                           ),
                     ),
@@ -149,19 +149,19 @@ class PosShell extends ConsumerWidget {
       height: 48,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
-            PosTheme.primaryGreen.withValues(alpha: 0.8),
-            PosTheme.incomingBlue.withValues(alpha: 0.8),
+            PosTheme.primaryBlue,
+            PosTheme.secondaryBlue,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: PosTheme.primaryGreen.withValues(alpha: 0.3),
+            color: PosTheme.primaryBlue.withValues(alpha: 0.3),
             blurRadius: 8,
-            spreadRadius: 2,
+            spreadRadius: 1,
           ),
         ],
       ),
