@@ -5,6 +5,7 @@ import '../../shared/widgets/connection_heartbeat.dart';
 import '../auth/providers/auth_provider.dart';
 import '../menu/widgets/menu_screen.dart';
 import '../dashboard/widgets/bridge_dashboard_screen.dart';
+import '../register/widgets/speed_register_screen.dart';
 
 // Shell Navigation State
 final shellNavigationProvider = StateProvider<int>((ref) => 0);
@@ -224,7 +225,7 @@ class PosShell extends ConsumerWidget {
       case 1:
         return _buildFloorPlanPlaceholder();
       case 2:
-        return _buildSpeedRegisterPlaceholder();
+        return const SpeedRegisterScreen();
       case 3:
         return const MenuScreen(); // Existing menu screen
       case 4:
