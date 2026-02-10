@@ -10,9 +10,11 @@ final menuProvider = FutureProvider.autoDispose<List<MenuItem>>((ref) async {
 
   return authState.maybeWhen(
     authenticated: (user, _) async {
+      final tenantId = user.tenantId ?? 'default-tenant'; // Fallback for testing
+      
       try {
         // Try API first
-        final items = await repo.fetchFromApi(user.tenantId);
+        final items = await repo.fetchFromApi(tenantId);
         await repo.cacheLocally(items);
         return items;
       } catch (e) {

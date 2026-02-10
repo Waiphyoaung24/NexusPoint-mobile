@@ -5,7 +5,6 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
 import '../../../core/models/user.dart';
-import '../../../core/models/api_models.dart';
 import '../../../core/providers/dio_provider.dart';
 import '../../../core/providers/auth_token_provider.dart';
 
@@ -46,12 +45,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<void> requestOtp(String email) async {
+    final api = ref.read(posApiServiceProvider);
+    await api.requestOtp(email);
+  }
+
+  Future<bool> verifyOtp(String email, String otp) async {
     try {
       final api = ref.read(posApiServiceProvider);
-      final response = await api.login(
-        LoginRequest(email: email, password: password),
-      );
+      final response = await api.verifyOtp(email, otp);
 
       // Save token
       await ref.read(authTokenProvider.notifier).setToken(response.token);
@@ -62,7 +64,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       state = AuthState.authenticated(user: response.user);
       return true;
-    } catch (e) {
+    } catch (e, stack) {
+      print('Verify OTP Exception: $e');
+      print('Stack trace: $stack');
       return false;
     }
   }

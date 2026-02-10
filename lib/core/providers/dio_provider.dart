@@ -2,21 +2,32 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
 import '../api/api_service.dart';
 import 'auth_token_provider.dart';
 
+final cookieJarProvider = Provider<CookieJar>((ref) {
+  throw UnimplementedError('cookieJarProvider must be overridden in main.dart');
+});
+
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(
-    baseUrl: 'https://api.420man.store',
+    baseUrl: 'https://420man.store/api',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'origin': 'https://420man.store',
     },
   ));
 
-  // JWT Interceptor
+  // Cookie Manager
+  final cookieJar = ref.watch(cookieJarProvider);
+  dio.interceptors.add(CookieManager(cookieJar));
+
+  // JWT Interceptor (Optional if using cookies, but kept for compatibility)
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) {

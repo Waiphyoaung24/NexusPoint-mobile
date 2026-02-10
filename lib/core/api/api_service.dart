@@ -1,23 +1,48 @@
 import 'package:dio/dio.dart';
 import '../models/api_models.dart';
+import '../models/user.dart';
 import 'api_exception.dart';
 
 class PosApiService {
   final Dio _dio;
   final String baseUrl;
 
-  PosApiService(this._dio, {this.baseUrl = 'https://api.420man.store'}) {
+  PosApiService(this._dio, {this.baseUrl = 'https://420man.store/api'}) {
     _dio.options.baseUrl = baseUrl;
   }
 
   // Authentication
-  Future<AuthResponse> login(LoginRequest request) async {
+  Future<void> requestOtp(String email) async {
+    try {
+      await _dio.post(
+        '/auth/email-otp/send-verification-otp',
+        data: {
+          'email': email,
+          'type': 'sign-in',
+        },
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<AuthResponse> verifyOtp(String email, String otp) async {
     try {
       final response = await _dio.post(
-        '/api/v1/auth/login',
-        data: request.toJson(),
+        '/auth/sign-in/email-otp',
+        data: {
+          'email': email,
+          'otp': otp,
+        },
       );
-      return AuthResponse.fromJson(response.data);
+      
+      final data = response.data;
+      print('Raw Auth Response: $data');
+      
+      return AuthResponse(
+        token: data['token'] ?? '',
+        user: User.fromJson(data['user']),
+      );
     } on DioException catch (e) {
       throw _handleError(e);
     }

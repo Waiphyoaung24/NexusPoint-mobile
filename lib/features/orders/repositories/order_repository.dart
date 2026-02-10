@@ -25,7 +25,8 @@ final orderRepositoryProvider = Provider<OrderRepository>((ref) {
 });
 
 class OrderRepository {
-  final PosApiService _api;
+  // ignore: unused_field
+  final PosApiService _api; // TODO: Will be used in background sync service
   final OrderDao _localDb;
   final SyncQueueDao _syncQueue;
   final Ref _ref;
@@ -45,6 +46,10 @@ class OrderRepository {
     }
 
     final user = authState.user;
+    if (user.tenantId == null) {
+      throw Exception('User tenant ID is required');
+    }
+
     final orderNumber = _generateOrderNumber();
 
     // PHASE 1: Local write (always succeeds)
@@ -70,7 +75,7 @@ class OrderRepository {
       entityId: localOrder.id,
       action: 'create',
       payloadJson: jsonEncode(OrderRequest(
-        tenantId: user.tenantId,
+        tenantId: user.tenantId!,
         branchId: 'default', // TODO: Get from settings
         source: source.name,
         items: items,

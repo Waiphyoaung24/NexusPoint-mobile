@@ -21,9 +21,12 @@ User _$UserFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$User {
   String get id => throw _privateConstructorUsedError;
-  String get tenantId => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
-  UserRole get role => throw _privateConstructorUsedError;
+  String? get tenantId => throw _privateConstructorUsedError;
+  UserRole? get role => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
+  String? get image => throw _privateConstructorUsedError;
+  bool? get emailVerified => throw _privateConstructorUsedError;
   String? get managerPinHash => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
 
@@ -39,9 +42,12 @@ abstract class $UserCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String tenantId,
       String email,
-      UserRole role,
+      String? tenantId,
+      UserRole? role,
+      String? name,
+      String? image,
+      bool? emailVerified,
       String? managerPinHash,
       bool isActive});
 }
@@ -60,9 +66,12 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   @override
   $Res call({
     Object? id = null,
-    Object? tenantId = null,
     Object? email = null,
-    Object? role = null,
+    Object? tenantId = freezed,
+    Object? role = freezed,
+    Object? name = freezed,
+    Object? image = freezed,
+    Object? emailVerified = freezed,
     Object? managerPinHash = freezed,
     Object? isActive = null,
   }) {
@@ -71,18 +80,30 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      tenantId: null == tenantId
-          ? _value.tenantId
-          : tenantId // ignore: cast_nullable_to_non_nullable
-              as String,
       email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
-      role: null == role
+      tenantId: freezed == tenantId
+          ? _value.tenantId
+          : tenantId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: freezed == role
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
-              as UserRole,
+              as UserRole?,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
+      emailVerified: freezed == emailVerified
+          ? _value.emailVerified
+          : emailVerified // ignore: cast_nullable_to_non_nullable
+              as bool?,
       managerPinHash: freezed == managerPinHash
           ? _value.managerPinHash
           : managerPinHash // ignore: cast_nullable_to_non_nullable
@@ -104,9 +125,12 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String tenantId,
       String email,
-      UserRole role,
+      String? tenantId,
+      UserRole? role,
+      String? name,
+      String? image,
+      bool? emailVerified,
       String? managerPinHash,
       bool isActive});
 }
@@ -122,9 +146,12 @@ class __$$UserImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? tenantId = null,
     Object? email = null,
-    Object? role = null,
+    Object? tenantId = freezed,
+    Object? role = freezed,
+    Object? name = freezed,
+    Object? image = freezed,
+    Object? emailVerified = freezed,
     Object? managerPinHash = freezed,
     Object? isActive = null,
   }) {
@@ -133,18 +160,30 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      tenantId: null == tenantId
-          ? _value.tenantId
-          : tenantId // ignore: cast_nullable_to_non_nullable
-              as String,
       email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
-      role: null == role
+      tenantId: freezed == tenantId
+          ? _value.tenantId
+          : tenantId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: freezed == role
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
-              as UserRole,
+              as UserRole?,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
+      emailVerified: freezed == emailVerified
+          ? _value.emailVerified
+          : emailVerified // ignore: cast_nullable_to_non_nullable
+              as bool?,
       managerPinHash: freezed == managerPinHash
           ? _value.managerPinHash
           : managerPinHash // ignore: cast_nullable_to_non_nullable
@@ -162,9 +201,12 @@ class __$$UserImplCopyWithImpl<$Res>
 class _$UserImpl implements _User {
   const _$UserImpl(
       {required this.id,
-      required this.tenantId,
       required this.email,
-      required this.role,
+      this.tenantId,
+      this.role,
+      this.name,
+      this.image,
+      this.emailVerified,
       this.managerPinHash,
       this.isActive = true});
 
@@ -174,11 +216,17 @@ class _$UserImpl implements _User {
   @override
   final String id;
   @override
-  final String tenantId;
-  @override
   final String email;
   @override
-  final UserRole role;
+  final String? tenantId;
+  @override
+  final UserRole? role;
+  @override
+  final String? name;
+  @override
+  final String? image;
+  @override
+  final bool? emailVerified;
   @override
   final String? managerPinHash;
   @override
@@ -187,7 +235,7 @@ class _$UserImpl implements _User {
 
   @override
   String toString() {
-    return 'User(id: $id, tenantId: $tenantId, email: $email, role: $role, managerPinHash: $managerPinHash, isActive: $isActive)';
+    return 'User(id: $id, email: $email, tenantId: $tenantId, role: $role, name: $name, image: $image, emailVerified: $emailVerified, managerPinHash: $managerPinHash, isActive: $isActive)';
   }
 
   @override
@@ -196,10 +244,14 @@ class _$UserImpl implements _User {
         (other.runtimeType == runtimeType &&
             other is _$UserImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.email, email) || other.email == email) &&
             (identical(other.tenantId, tenantId) ||
                 other.tenantId == tenantId) &&
-            (identical(other.email, email) || other.email == email) &&
             (identical(other.role, role) || other.role == role) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.emailVerified, emailVerified) ||
+                other.emailVerified == emailVerified) &&
             (identical(other.managerPinHash, managerPinHash) ||
                 other.managerPinHash == managerPinHash) &&
             (identical(other.isActive, isActive) ||
@@ -208,8 +260,8 @@ class _$UserImpl implements _User {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, tenantId, email, role, managerPinHash, isActive);
+  int get hashCode => Object.hash(runtimeType, id, email, tenantId, role, name,
+      image, emailVerified, managerPinHash, isActive);
 
   @JsonKey(ignore: true)
   @override
@@ -228,9 +280,12 @@ class _$UserImpl implements _User {
 abstract class _User implements User {
   const factory _User(
       {required final String id,
-      required final String tenantId,
       required final String email,
-      required final UserRole role,
+      final String? tenantId,
+      final UserRole? role,
+      final String? name,
+      final String? image,
+      final bool? emailVerified,
       final String? managerPinHash,
       final bool isActive}) = _$UserImpl;
 
@@ -239,11 +294,17 @@ abstract class _User implements User {
   @override
   String get id;
   @override
-  String get tenantId;
-  @override
   String get email;
   @override
-  UserRole get role;
+  String? get tenantId;
+  @override
+  UserRole? get role;
+  @override
+  String? get name;
+  @override
+  String? get image;
+  @override
+  bool? get emailVerified;
   @override
   String? get managerPinHash;
   @override

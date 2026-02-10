@@ -16,9 +16,12 @@ enum UserRole {
 class User with _$User {
   const factory User({
     required String id,
-    required String tenantId,
     required String email,
-    required UserRole role,
+    String? tenantId,
+    UserRole? role,
+    String? name,
+    String? image,
+    bool? emailVerified,
     String? managerPinHash,
     @Default(true) bool isActive,
   }) = _User;

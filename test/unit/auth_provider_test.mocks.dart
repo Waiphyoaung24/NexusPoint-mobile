@@ -61,17 +61,36 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
       ) as String);
 
   @override
-  _i5.Future<_i2.AuthResponse> login(_i2.LoginRequest? request) =>
+  _i5.Future<void> requestOtp(String? email) => (super.noSuchMethod(
+        Invocation.method(
+          #requestOtp,
+          [email],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<_i2.AuthResponse> verifyOtp(
+    String? email,
+    String? otp,
+  ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #login,
-          [request],
+          #verifyOtp,
+          [
+            email,
+            otp,
+          ],
         ),
         returnValue: _i5.Future<_i2.AuthResponse>.value(_FakeAuthResponse_0(
           this,
           Invocation.method(
-            #login,
-            [request],
+            #verifyOtp,
+            [
+              email,
+              otp,
+            ],
           ),
         )),
       ) as _i5.Future<_i2.AuthResponse>);

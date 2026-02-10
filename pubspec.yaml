@@ -41,6 +41,9 @@ dependencies:
   crypto: ^3.0.3
   device_info_plus: ^9.1.0
   permission_handler: ^11.0.0
+  dio_cookie_manager: ^3.3.0
+  cookie_jar: ^4.0.8
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:

@@ -8,9 +8,12 @@ part of 'user.dart';
 
 _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
       id: json['id'] as String,
-      tenantId: json['tenantId'] as String,
       email: json['email'] as String,
-      role: $enumDecode(_$UserRoleEnumMap, json['role']),
+      tenantId: json['tenantId'] as String?,
+      role: $enumDecodeNullable(_$UserRoleEnumMap, json['role']),
+      name: json['name'] as String?,
+      image: json['image'] as String?,
+      emailVerified: json['emailVerified'] as bool?,
       managerPinHash: json['managerPinHash'] as String?,
       isActive: json['isActive'] as bool? ?? true,
     );
@@ -18,9 +21,12 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'tenantId': instance.tenantId,
       'email': instance.email,
-      'role': _$UserRoleEnumMap[instance.role]!,
+      'tenantId': instance.tenantId,
+      'role': _$UserRoleEnumMap[instance.role],
+      'name': instance.name,
+      'image': instance.image,
+      'emailVerified': instance.emailVerified,
       'managerPinHash': instance.managerPinHash,
       'isActive': instance.isActive,
     };
