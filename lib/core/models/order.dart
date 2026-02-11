@@ -33,6 +33,12 @@ enum PaymentMethod {
   card,
 }
 
+double _parsePrice(dynamic value) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
+}
+
 @freezed
 class Order with _$Order {
   const factory Order({
@@ -42,7 +48,7 @@ class Order with _$Order {
     required OrderSource source,
     required OrderStatus status,
     required List<CartItem> items,
-    required double totalAmount,
+    @JsonKey(fromJson: _parsePrice) required double totalAmount,
     required PaymentMethod paymentMethod,
     required DateTime createdAt,
     DateTime? syncedAt,

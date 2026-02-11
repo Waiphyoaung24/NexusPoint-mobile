@@ -15,7 +15,7 @@ _$MenuItemImpl _$$MenuItemImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       nameTh: json['nameTh'] as String?,
       description: json['description'] as String?,
-      price: (json['price'] as num).toDouble(),
+      price: _parsePrice(json['price']),
       category: json['category'] as String?,
       imageUrl: json['imageUrl'] as String?,
       isAvailable: json['isAvailable'] as bool? ?? true,

@@ -22,6 +22,7 @@ CartItem _$CartItemFromJson(Map<String, dynamic> json) {
 mixin _$CartItem {
   MenuItem get menuItem => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePrice)
   double get unitPrice => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
 
@@ -36,7 +37,11 @@ abstract class $CartItemCopyWith<$Res> {
   factory $CartItemCopyWith(CartItem value, $Res Function(CartItem) then) =
       _$CartItemCopyWithImpl<$Res, CartItem>;
   @useResult
-  $Res call({MenuItem menuItem, int quantity, double unitPrice, String? notes});
+  $Res call(
+      {MenuItem menuItem,
+      int quantity,
+      @JsonKey(fromJson: _parsePrice) double unitPrice,
+      String? notes});
 
   $MenuItemCopyWith<$Res> get menuItem;
 }
@@ -96,7 +101,11 @@ abstract class _$$CartItemImplCopyWith<$Res>
       __$$CartItemImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({MenuItem menuItem, int quantity, double unitPrice, String? notes});
+  $Res call(
+      {MenuItem menuItem,
+      int quantity,
+      @JsonKey(fromJson: _parsePrice) double unitPrice,
+      String? notes});
 
   @override
   $MenuItemCopyWith<$Res> get menuItem;
@@ -145,7 +154,7 @@ class _$CartItemImpl extends _CartItem {
   const _$CartItemImpl(
       {required this.menuItem,
       required this.quantity,
-      required this.unitPrice,
+      @JsonKey(fromJson: _parsePrice) required this.unitPrice,
       this.notes})
       : super._();
 
@@ -157,6 +166,7 @@ class _$CartItemImpl extends _CartItem {
   @override
   final int quantity;
   @override
+  @JsonKey(fromJson: _parsePrice)
   final double unitPrice;
   @override
   final String? notes;
@@ -203,7 +213,7 @@ abstract class _CartItem extends CartItem {
   const factory _CartItem(
       {required final MenuItem menuItem,
       required final int quantity,
-      required final double unitPrice,
+      @JsonKey(fromJson: _parsePrice) required final double unitPrice,
       final String? notes}) = _$CartItemImpl;
   const _CartItem._() : super._();
 
@@ -215,6 +225,7 @@ abstract class _CartItem extends CartItem {
   @override
   int get quantity;
   @override
+  @JsonKey(fromJson: _parsePrice)
   double get unitPrice;
   @override
   String? get notes;

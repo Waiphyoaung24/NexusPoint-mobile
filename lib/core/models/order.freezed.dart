@@ -26,6 +26,7 @@ mixin _$Order {
   OrderSource get source => throw _privateConstructorUsedError;
   OrderStatus get status => throw _privateConstructorUsedError;
   List<CartItem> get items => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePrice)
   double get totalAmount => throw _privateConstructorUsedError;
   PaymentMethod get paymentMethod => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -50,7 +51,7 @@ abstract class $OrderCopyWith<$Res> {
       OrderSource source,
       OrderStatus status,
       List<CartItem> items,
-      double totalAmount,
+      @JsonKey(fromJson: _parsePrice) double totalAmount,
       PaymentMethod paymentMethod,
       DateTime createdAt,
       DateTime? syncedAt,
@@ -151,7 +152,7 @@ abstract class _$$OrderImplCopyWith<$Res> implements $OrderCopyWith<$Res> {
       OrderSource source,
       OrderStatus status,
       List<CartItem> items,
-      double totalAmount,
+      @JsonKey(fromJson: _parsePrice) double totalAmount,
       PaymentMethod paymentMethod,
       DateTime createdAt,
       DateTime? syncedAt,
@@ -246,7 +247,7 @@ class _$OrderImpl implements _Order {
       required this.source,
       required this.status,
       required final List<CartItem> items,
-      required this.totalAmount,
+      @JsonKey(fromJson: _parsePrice) required this.totalAmount,
       required this.paymentMethod,
       required this.createdAt,
       this.syncedAt,
@@ -276,6 +277,7 @@ class _$OrderImpl implements _Order {
   }
 
   @override
+  @JsonKey(fromJson: _parsePrice)
   final double totalAmount;
   @override
   final PaymentMethod paymentMethod;
@@ -359,7 +361,7 @@ abstract class _Order implements Order {
       required final OrderSource source,
       required final OrderStatus status,
       required final List<CartItem> items,
-      required final double totalAmount,
+      @JsonKey(fromJson: _parsePrice) required final double totalAmount,
       required final PaymentMethod paymentMethod,
       required final DateTime createdAt,
       final DateTime? syncedAt,
@@ -381,6 +383,7 @@ abstract class _Order implements Order {
   @override
   List<CartItem> get items;
   @override
+  @JsonKey(fromJson: _parsePrice)
   double get totalAmount;
   @override
   PaymentMethod get paymentMethod;

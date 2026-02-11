@@ -27,27 +27,52 @@ class SpeedRegisterScreen extends ConsumerWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: Row(
-        children: [
-          // Left: Menu Grid (2/3)
-          Expanded(
-            flex: 2,
-            child: _MenuGrid(),
-          ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isNarrow = constraints.maxWidth < 900;
+          
+          if (isNarrow) {
+            return Column(
+              children: [
+                // Top: Menu Grid (flexible height)
+                Expanded(
+                  flex: 3,
+                  child: _MenuGrid(),
+                ),
+                // Divider
+                const Divider(height: 1, thickness: 1, color: PosTheme.borderLight),
+                // Bottom: Cart Panel (fixed-ish height)
+                Expanded(
+                  flex: 2,
+                  child: _CartPanel(),
+                ),
+              ],
+            );
+          }
 
-          // Vertical Divider
-          const VerticalDivider(
-            width: 1,
-            thickness: 1,
-            color: PosTheme.borderLight,
-          ),
+          return Row(
+            children: [
+              // Left: Menu Grid (2/3)
+              Expanded(
+                flex: 2,
+                child: _MenuGrid(),
+              ),
 
-          // Right: Cart Panel (1/3)
-          Expanded(
-            flex: 1,
-            child: _CartPanel(),
-          ),
-        ],
+              // Vertical Divider
+              const VerticalDivider(
+                width: 1,
+                thickness: 1,
+                color: PosTheme.borderLight,
+              ),
+
+              // Right: Cart Panel (1/3)
+              Expanded(
+                flex: 1,
+                child: _CartPanel(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -79,22 +104,30 @@ class _MenuGrid extends ConsumerWidget {
                 ],
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: MediaQuery.of(context).size.width > 1200
-                      ? 4
-                      : 3,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.0,
-                ),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return _MenuItemCard(item: items[index]);
-                },
-              ),
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: constraints.maxWidth > 1200
+                          ? 5
+                          : constraints.maxWidth > 900
+                              ? 4
+                              : constraints.maxWidth > 600
+                                  ? 3
+                                  : 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.85,
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return _MenuItemCard(item: items[index]);
+                    },
+                  ),
+                );
+              },
             ),
       loading: () => const Center(
         child: CircularProgressIndicator(),
@@ -213,16 +246,50 @@ class _CartPanel extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.shopping_cart_outlined,
-                  color: PosTheme.primaryBlue,
-                  size: 24,
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(
+                      Icons.shopping_cart_outlined,
+                      color: PosTheme.primaryBlue,
+                      size: 24,
+                    ),
+                    if (cart.items.isNotEmpty)
+                      Positioned(
+                        right: -4,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: PosTheme.dangerRed,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${cart.items.fold(0, (sum, item) => sum + item.quantity)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Text(
                     'Current Order',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.5,
+                        ),
                   ),
                 ),
                 if (cart.items.isNotEmpty)
@@ -346,9 +413,14 @@ class _CartItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: PosTheme.borderLight),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -359,76 +431,119 @@ class _CartItemCard extends StatelessWidget {
                     item.menuItem.name,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
+                          height: 1.2,
                         ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, size: 18),
+                  icon: const Icon(Icons.close, size: 16),
                   onPressed: onRemove,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  color: PosTheme.textSecondary,
+                  color: PosTheme.textSecondary.withValues(alpha: 0.5),
+                  visualDensity: VisualDensity.compact,
                 ),
               ],
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
 
-            Row(
-              children: [
-                // Quantity Controls
-                Container(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final useVertical = constraints.maxWidth < 160;
+                
+                final controls = Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: PosTheme.borderLight),
+                    color: PosTheme.backgroundLight,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.remove, size: 18),
+                      _CompactQtyButton(
+                        icon: Icons.remove,
                         onPressed: onDecrease,
-                        padding: const EdgeInsets.all(4),
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          '${item.quantity}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        constraints: const BoxConstraints(minWidth: 24),
+                        child: Center(
+                          child: Text(
+                            '${item.quantity}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: PosTheme.primaryBlue,
+                                ),
+                          ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.add, size: 18),
+                      _CompactQtyButton(
+                        icon: Icons.add,
                         onPressed: onIncrease,
-                        padding: const EdgeInsets.all(4),
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
                       ),
                     ],
                   ),
-                ),
+                );
 
-                const Spacer(),
-
-                // Price
-                Text(
+                final price = Text(
                   '\$${(item.unitPrice * item.quantity).toStringAsFixed(2)}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: PosTheme.primaryBlue,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                       ),
-                ),
-              ],
+                  textAlign: TextAlign.right,
+                );
+
+                if (useVertical) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      controls,
+                      const SizedBox(height: 8),
+                      price,
+                    ],
+                  );
+                }
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(child: controls),
+                    const SizedBox(width: 8),
+                    Flexible(child: price),
+                  ],
+                );
+              },
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CompactQtyButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _CompactQtyButton({
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 30,
+        height: 30,
+        alignment: Alignment.center,
+        child: Icon(icon, size: 14, color: PosTheme.textSecondary),
       ),
     );
   }

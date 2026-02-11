@@ -27,6 +27,7 @@ mixin _$MenuItem {
   String get name => throw _privateConstructorUsedError;
   String? get nameTh => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePrice)
   double get price => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
@@ -52,7 +53,7 @@ abstract class $MenuItemCopyWith<$Res> {
       String name,
       String? nameTh,
       String? description,
-      double price,
+      @JsonKey(fromJson: _parsePrice) double price,
       String? category,
       String? imageUrl,
       bool isAvailable,
@@ -154,7 +155,7 @@ abstract class _$$MenuItemImplCopyWith<$Res>
       String name,
       String? nameTh,
       String? description,
-      double price,
+      @JsonKey(fromJson: _parsePrice) double price,
       String? category,
       String? imageUrl,
       bool isAvailable,
@@ -249,7 +250,7 @@ class _$MenuItemImpl implements _MenuItem {
       required this.name,
       this.nameTh,
       this.description,
-      required this.price,
+      @JsonKey(fromJson: _parsePrice) required this.price,
       this.category,
       this.imageUrl,
       this.isAvailable = true,
@@ -273,6 +274,7 @@ class _$MenuItemImpl implements _MenuItem {
   @override
   final String? description;
   @override
+  @JsonKey(fromJson: _parsePrice)
   final double price;
   @override
   final String? category;
@@ -355,7 +357,7 @@ abstract class _MenuItem implements MenuItem {
       required final String name,
       final String? nameTh,
       final String? description,
-      required final double price,
+      @JsonKey(fromJson: _parsePrice) required final double price,
       final String? category,
       final String? imageUrl,
       final bool isAvailable,
@@ -379,6 +381,7 @@ abstract class _MenuItem implements MenuItem {
   @override
   String? get description;
   @override
+  @JsonKey(fromJson: _parsePrice)
   double get price;
   @override
   String? get category;

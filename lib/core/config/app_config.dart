@@ -6,7 +6,7 @@ class AppConfig {
 
   static const String appOrigin = String.fromEnvironment(
     'APP_ORIGIN',
-    defaultValue: 'https://nexuspoint.store',
+    defaultValue: 'https://420man.store',
   );
 
   static const String googleCloudProject = String.fromEnvironment(
@@ -21,7 +21,7 @@ class AppConfig {
 
   static const String apiOrigin = String.fromEnvironment(
     'API_ORIGIN',
-    defaultValue: 'https://api.nexuspoint.store/api/',
+    defaultValue: 'https://420man.store/api/',
   );
 
   static bool get isLocal => appName.contains('(Local)');

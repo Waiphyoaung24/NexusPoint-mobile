@@ -22,19 +22,53 @@ _$AuthResponseImpl _$$AuthResponseImplFromJson(Map<String, dynamic> json) =>
     _$AuthResponseImpl(
       token: json['token'] as String,
       user: User.fromJson(json['user'] as Map<String, dynamic>),
+      activeOrganizationId: json['activeOrganizationId'] as String?,
+      organizations: (json['organizations'] as List<dynamic>?)
+          ?.map((e) => Organization.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$AuthResponseImplToJson(_$AuthResponseImpl instance) =>
     <String, dynamic>{
       'token': instance.token,
       'user': instance.user,
+      'activeOrganizationId': instance.activeOrganizationId,
+      'organizations': instance.organizations,
+    };
+
+_$SessionResponseImpl _$$SessionResponseImplFromJson(
+        Map<String, dynamic> json) =>
+    _$SessionResponseImpl(
+      session: json['session'] as Map<String, dynamic>,
+      user: User.fromJson(json['user'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$SessionResponseImplToJson(
+        _$SessionResponseImpl instance) =>
+    <String, dynamic>{
+      'session': instance.session,
+      'user': instance.user,
+    };
+
+_$OrganizationImpl _$$OrganizationImplFromJson(Map<String, dynamic> json) =>
+    _$OrganizationImpl(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      role: json['role'] as String?,
+    );
+
+Map<String, dynamic> _$$OrganizationImplToJson(_$OrganizationImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'role': instance.role,
     };
 
 _$OrderItemDtoImpl _$$OrderItemDtoImplFromJson(Map<String, dynamic> json) =>
     _$OrderItemDtoImpl(
       skuId: json['skuId'] as String,
       quantity: (json['quantity'] as num).toInt(),
-      unitPrice: (json['unitPrice'] as num).toDouble(),
+      unitPrice: _parsePrice(json['unitPrice']),
       notes: json['notes'] as String?,
     );
 
@@ -54,7 +88,7 @@ _$OrderRequestImpl _$$OrderRequestImplFromJson(Map<String, dynamic> json) =>
       items: (json['items'] as List<dynamic>)
           .map((e) => OrderItemDto.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalAmount: (json['totalAmount'] as num).toDouble(),
+      totalAmount: _parsePrice(json['totalAmount']),
       paymentMethod: json['paymentMethod'] as String,
       tableNumber: json['tableNumber'] as String?,
     );
@@ -95,11 +129,11 @@ _$MenuItemDtoImpl _$$MenuItemDtoImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       nameTh: json['nameTh'] as String?,
       description: json['description'] as String?,
-      price: (json['price'] as num).toDouble(),
+      price: _parsePrice(json['price']),
       category: json['category'] as String?,
       imageUrl: json['imageUrl'] as String?,
-      isAvailable: json['is_available'] as bool,
-      sortOrder: (json['sort_order'] as num?)?.toInt(),
+      isAvailable: json['isAvailable'] as bool,
+      sortOrder: (json['sortOrder'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$MenuItemDtoImplToJson(_$MenuItemDtoImpl instance) =>
@@ -114,6 +148,6 @@ Map<String, dynamic> _$$MenuItemDtoImplToJson(_$MenuItemDtoImpl instance) =>
       'price': instance.price,
       'category': instance.category,
       'imageUrl': instance.imageUrl,
-      'is_available': instance.isAvailable,
-      'sort_order': instance.sortOrder,
+      'isAvailable': instance.isAvailable,
+      'sortOrder': instance.sortOrder,
     };

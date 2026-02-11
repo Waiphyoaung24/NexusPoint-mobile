@@ -177,6 +177,8 @@ AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) {
 mixin _$AuthResponse {
   String get token => throw _privateConstructorUsedError;
   User get user => throw _privateConstructorUsedError;
+  String? get activeOrganizationId => throw _privateConstructorUsedError;
+  List<Organization>? get organizations => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -190,7 +192,11 @@ abstract class $AuthResponseCopyWith<$Res> {
           AuthResponse value, $Res Function(AuthResponse) then) =
       _$AuthResponseCopyWithImpl<$Res, AuthResponse>;
   @useResult
-  $Res call({String token, User user});
+  $Res call(
+      {String token,
+      User user,
+      String? activeOrganizationId,
+      List<Organization>? organizations});
 
   $UserCopyWith<$Res> get user;
 }
@@ -210,6 +216,8 @@ class _$AuthResponseCopyWithImpl<$Res, $Val extends AuthResponse>
   $Res call({
     Object? token = null,
     Object? user = null,
+    Object? activeOrganizationId = freezed,
+    Object? organizations = freezed,
   }) {
     return _then(_value.copyWith(
       token: null == token
@@ -220,6 +228,14 @@ class _$AuthResponseCopyWithImpl<$Res, $Val extends AuthResponse>
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as User,
+      activeOrganizationId: freezed == activeOrganizationId
+          ? _value.activeOrganizationId
+          : activeOrganizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      organizations: freezed == organizations
+          ? _value.organizations
+          : organizations // ignore: cast_nullable_to_non_nullable
+              as List<Organization>?,
     ) as $Val);
   }
 
@@ -240,7 +256,11 @@ abstract class _$$AuthResponseImplCopyWith<$Res>
       __$$AuthResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String token, User user});
+  $Res call(
+      {String token,
+      User user,
+      String? activeOrganizationId,
+      List<Organization>? organizations});
 
   @override
   $UserCopyWith<$Res> get user;
@@ -259,6 +279,8 @@ class __$$AuthResponseImplCopyWithImpl<$Res>
   $Res call({
     Object? token = null,
     Object? user = null,
+    Object? activeOrganizationId = freezed,
+    Object? organizations = freezed,
   }) {
     return _then(_$AuthResponseImpl(
       token: null == token
@@ -269,6 +291,14 @@ class __$$AuthResponseImplCopyWithImpl<$Res>
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as User,
+      activeOrganizationId: freezed == activeOrganizationId
+          ? _value.activeOrganizationId
+          : activeOrganizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      organizations: freezed == organizations
+          ? _value._organizations
+          : organizations // ignore: cast_nullable_to_non_nullable
+              as List<Organization>?,
     ));
   }
 }
@@ -276,7 +306,12 @@ class __$$AuthResponseImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$AuthResponseImpl implements _AuthResponse {
-  const _$AuthResponseImpl({required this.token, required this.user});
+  const _$AuthResponseImpl(
+      {required this.token,
+      required this.user,
+      this.activeOrganizationId,
+      final List<Organization>? organizations})
+      : _organizations = organizations;
 
   factory _$AuthResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$AuthResponseImplFromJson(json);
@@ -285,10 +320,21 @@ class _$AuthResponseImpl implements _AuthResponse {
   final String token;
   @override
   final User user;
+  @override
+  final String? activeOrganizationId;
+  final List<Organization>? _organizations;
+  @override
+  List<Organization>? get organizations {
+    final value = _organizations;
+    if (value == null) return null;
+    if (_organizations is EqualUnmodifiableListView) return _organizations;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'AuthResponse(token: $token, user: $user)';
+    return 'AuthResponse(token: $token, user: $user, activeOrganizationId: $activeOrganizationId, organizations: $organizations)';
   }
 
   @override
@@ -297,12 +343,21 @@ class _$AuthResponseImpl implements _AuthResponse {
         (other.runtimeType == runtimeType &&
             other is _$AuthResponseImpl &&
             (identical(other.token, token) || other.token == token) &&
-            (identical(other.user, user) || other.user == user));
+            (identical(other.user, user) || other.user == user) &&
+            (identical(other.activeOrganizationId, activeOrganizationId) ||
+                other.activeOrganizationId == activeOrganizationId) &&
+            const DeepCollectionEquality()
+                .equals(other._organizations, _organizations));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, token, user);
+  int get hashCode => Object.hash(
+      runtimeType,
+      token,
+      user,
+      activeOrganizationId,
+      const DeepCollectionEquality().hash(_organizations));
 
   @JsonKey(ignore: true)
   @override
@@ -321,7 +376,9 @@ class _$AuthResponseImpl implements _AuthResponse {
 abstract class _AuthResponse implements AuthResponse {
   const factory _AuthResponse(
       {required final String token,
-      required final User user}) = _$AuthResponseImpl;
+      required final User user,
+      final String? activeOrganizationId,
+      final List<Organization>? organizations}) = _$AuthResponseImpl;
 
   factory _AuthResponse.fromJson(Map<String, dynamic> json) =
       _$AuthResponseImpl.fromJson;
@@ -331,8 +388,360 @@ abstract class _AuthResponse implements AuthResponse {
   @override
   User get user;
   @override
+  String? get activeOrganizationId;
+  @override
+  List<Organization>? get organizations;
+  @override
   @JsonKey(ignore: true)
   _$$AuthResponseImplCopyWith<_$AuthResponseImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SessionResponse _$SessionResponseFromJson(Map<String, dynamic> json) {
+  return _SessionResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SessionResponse {
+  Map<String, dynamic> get session => throw _privateConstructorUsedError;
+  User get user => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $SessionResponseCopyWith<SessionResponse> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SessionResponseCopyWith<$Res> {
+  factory $SessionResponseCopyWith(
+          SessionResponse value, $Res Function(SessionResponse) then) =
+      _$SessionResponseCopyWithImpl<$Res, SessionResponse>;
+  @useResult
+  $Res call({Map<String, dynamic> session, User user});
+
+  $UserCopyWith<$Res> get user;
+}
+
+/// @nodoc
+class _$SessionResponseCopyWithImpl<$Res, $Val extends SessionResponse>
+    implements $SessionResponseCopyWith<$Res> {
+  _$SessionResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? session = null,
+    Object? user = null,
+  }) {
+    return _then(_value.copyWith(
+      session: null == session
+          ? _value.session
+          : session // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      user: null == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $UserCopyWith<$Res> get user {
+    return $UserCopyWith<$Res>(_value.user, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$SessionResponseImplCopyWith<$Res>
+    implements $SessionResponseCopyWith<$Res> {
+  factory _$$SessionResponseImplCopyWith(_$SessionResponseImpl value,
+          $Res Function(_$SessionResponseImpl) then) =
+      __$$SessionResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({Map<String, dynamic> session, User user});
+
+  @override
+  $UserCopyWith<$Res> get user;
+}
+
+/// @nodoc
+class __$$SessionResponseImplCopyWithImpl<$Res>
+    extends _$SessionResponseCopyWithImpl<$Res, _$SessionResponseImpl>
+    implements _$$SessionResponseImplCopyWith<$Res> {
+  __$$SessionResponseImplCopyWithImpl(
+      _$SessionResponseImpl _value, $Res Function(_$SessionResponseImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? session = null,
+    Object? user = null,
+  }) {
+    return _then(_$SessionResponseImpl(
+      session: null == session
+          ? _value._session
+          : session // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      user: null == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SessionResponseImpl implements _SessionResponse {
+  const _$SessionResponseImpl(
+      {required final Map<String, dynamic> session, required this.user})
+      : _session = session;
+
+  factory _$SessionResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionResponseImplFromJson(json);
+
+  final Map<String, dynamic> _session;
+  @override
+  Map<String, dynamic> get session {
+    if (_session is EqualUnmodifiableMapView) return _session;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_session);
+  }
+
+  @override
+  final User user;
+
+  @override
+  String toString() {
+    return 'SessionResponse(session: $session, user: $user)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SessionResponseImpl &&
+            const DeepCollectionEquality().equals(other._session, _session) &&
+            (identical(other.user, user) || other.user == user));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_session), user);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SessionResponseImplCopyWith<_$SessionResponseImpl> get copyWith =>
+      __$$SessionResponseImplCopyWithImpl<_$SessionResponseImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SessionResponseImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SessionResponse implements SessionResponse {
+  const factory _SessionResponse(
+      {required final Map<String, dynamic> session,
+      required final User user}) = _$SessionResponseImpl;
+
+  factory _SessionResponse.fromJson(Map<String, dynamic> json) =
+      _$SessionResponseImpl.fromJson;
+
+  @override
+  Map<String, dynamic> get session;
+  @override
+  User get user;
+  @override
+  @JsonKey(ignore: true)
+  _$$SessionResponseImplCopyWith<_$SessionResponseImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+Organization _$OrganizationFromJson(Map<String, dynamic> json) {
+  return _Organization.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Organization {
+  String get id => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String? get role => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $OrganizationCopyWith<Organization> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $OrganizationCopyWith<$Res> {
+  factory $OrganizationCopyWith(
+          Organization value, $Res Function(Organization) then) =
+      _$OrganizationCopyWithImpl<$Res, Organization>;
+  @useResult
+  $Res call({String id, String name, String? role});
+}
+
+/// @nodoc
+class _$OrganizationCopyWithImpl<$Res, $Val extends Organization>
+    implements $OrganizationCopyWith<$Res> {
+  _$OrganizationCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? role = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      role: freezed == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$OrganizationImplCopyWith<$Res>
+    implements $OrganizationCopyWith<$Res> {
+  factory _$$OrganizationImplCopyWith(
+          _$OrganizationImpl value, $Res Function(_$OrganizationImpl) then) =
+      __$$OrganizationImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String id, String name, String? role});
+}
+
+/// @nodoc
+class __$$OrganizationImplCopyWithImpl<$Res>
+    extends _$OrganizationCopyWithImpl<$Res, _$OrganizationImpl>
+    implements _$$OrganizationImplCopyWith<$Res> {
+  __$$OrganizationImplCopyWithImpl(
+      _$OrganizationImpl _value, $Res Function(_$OrganizationImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? role = freezed,
+  }) {
+    return _then(_$OrganizationImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      role: freezed == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$OrganizationImpl implements _Organization {
+  const _$OrganizationImpl({required this.id, required this.name, this.role});
+
+  factory _$OrganizationImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OrganizationImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final String? role;
+
+  @override
+  String toString() {
+    return 'Organization(id: $id, name: $name, role: $role)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OrganizationImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.role, role) || other.role == role));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, name, role);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$OrganizationImplCopyWith<_$OrganizationImpl> get copyWith =>
+      __$$OrganizationImplCopyWithImpl<_$OrganizationImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$OrganizationImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _Organization implements Organization {
+  const factory _Organization(
+      {required final String id,
+      required final String name,
+      final String? role}) = _$OrganizationImpl;
+
+  factory _Organization.fromJson(Map<String, dynamic> json) =
+      _$OrganizationImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get name;
+  @override
+  String? get role;
+  @override
+  @JsonKey(ignore: true)
+  _$$OrganizationImplCopyWith<_$OrganizationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -344,6 +753,7 @@ OrderItemDto _$OrderItemDtoFromJson(Map<String, dynamic> json) {
 mixin _$OrderItemDto {
   String get skuId => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePrice)
   double get unitPrice => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
 
@@ -359,7 +769,11 @@ abstract class $OrderItemDtoCopyWith<$Res> {
           OrderItemDto value, $Res Function(OrderItemDto) then) =
       _$OrderItemDtoCopyWithImpl<$Res, OrderItemDto>;
   @useResult
-  $Res call({String skuId, int quantity, double unitPrice, String? notes});
+  $Res call(
+      {String skuId,
+      int quantity,
+      @JsonKey(fromJson: _parsePrice) double unitPrice,
+      String? notes});
 }
 
 /// @nodoc
@@ -409,7 +823,11 @@ abstract class _$$OrderItemDtoImplCopyWith<$Res>
       __$$OrderItemDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String skuId, int quantity, double unitPrice, String? notes});
+  $Res call(
+      {String skuId,
+      int quantity,
+      @JsonKey(fromJson: _parsePrice) double unitPrice,
+      String? notes});
 }
 
 /// @nodoc
@@ -455,7 +873,7 @@ class _$OrderItemDtoImpl implements _OrderItemDto {
   const _$OrderItemDtoImpl(
       {required this.skuId,
       required this.quantity,
-      required this.unitPrice,
+      @JsonKey(fromJson: _parsePrice) required this.unitPrice,
       this.notes});
 
   factory _$OrderItemDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -466,6 +884,7 @@ class _$OrderItemDtoImpl implements _OrderItemDto {
   @override
   final int quantity;
   @override
+  @JsonKey(fromJson: _parsePrice)
   final double unitPrice;
   @override
   final String? notes;
@@ -511,7 +930,7 @@ abstract class _OrderItemDto implements OrderItemDto {
   const factory _OrderItemDto(
       {required final String skuId,
       required final int quantity,
-      required final double unitPrice,
+      @JsonKey(fromJson: _parsePrice) required final double unitPrice,
       final String? notes}) = _$OrderItemDtoImpl;
 
   factory _OrderItemDto.fromJson(Map<String, dynamic> json) =
@@ -522,6 +941,7 @@ abstract class _OrderItemDto implements OrderItemDto {
   @override
   int get quantity;
   @override
+  @JsonKey(fromJson: _parsePrice)
   double get unitPrice;
   @override
   String? get notes;
@@ -541,6 +961,7 @@ mixin _$OrderRequest {
   String get branchId => throw _privateConstructorUsedError;
   String get source => throw _privateConstructorUsedError;
   List<OrderItemDto> get items => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePrice)
   double get totalAmount => throw _privateConstructorUsedError;
   String get paymentMethod => throw _privateConstructorUsedError;
   String? get tableNumber => throw _privateConstructorUsedError;
@@ -562,7 +983,7 @@ abstract class $OrderRequestCopyWith<$Res> {
       String branchId,
       String source,
       List<OrderItemDto> items,
-      double totalAmount,
+      @JsonKey(fromJson: _parsePrice) double totalAmount,
       String paymentMethod,
       String? tableNumber});
 }
@@ -634,7 +1055,7 @@ abstract class _$$OrderRequestImplCopyWith<$Res>
       String branchId,
       String source,
       List<OrderItemDto> items,
-      double totalAmount,
+      @JsonKey(fromJson: _parsePrice) double totalAmount,
       String paymentMethod,
       String? tableNumber});
 }
@@ -699,7 +1120,7 @@ class _$OrderRequestImpl implements _OrderRequest {
       required this.branchId,
       required this.source,
       required final List<OrderItemDto> items,
-      required this.totalAmount,
+      @JsonKey(fromJson: _parsePrice) required this.totalAmount,
       required this.paymentMethod,
       this.tableNumber})
       : _items = items;
@@ -722,6 +1143,7 @@ class _$OrderRequestImpl implements _OrderRequest {
   }
 
   @override
+  @JsonKey(fromJson: _parsePrice)
   final double totalAmount;
   @override
   final String paymentMethod;
@@ -784,7 +1206,7 @@ abstract class _OrderRequest implements OrderRequest {
       required final String branchId,
       required final String source,
       required final List<OrderItemDto> items,
-      required final double totalAmount,
+      @JsonKey(fromJson: _parsePrice) required final double totalAmount,
       required final String paymentMethod,
       final String? tableNumber}) = _$OrderRequestImpl;
 
@@ -800,6 +1222,7 @@ abstract class _OrderRequest implements OrderRequest {
   @override
   List<OrderItemDto> get items;
   @override
+  @JsonKey(fromJson: _parsePrice)
   double get totalAmount;
   @override
   String get paymentMethod;
@@ -1021,12 +1444,13 @@ mixin _$MenuItemDto {
   String get name => throw _privateConstructorUsedError;
   String? get nameTh => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePrice)
   double get price => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
-  @JsonKey(name: 'is_available')
+  @JsonKey(name: 'isAvailable')
   bool get isAvailable => throw _privateConstructorUsedError;
-  @JsonKey(name: 'sort_order')
+  @JsonKey(name: 'sortOrder')
   int? get sortOrder => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1049,11 +1473,11 @@ abstract class $MenuItemDtoCopyWith<$Res> {
       String name,
       String? nameTh,
       String? description,
-      double price,
+      @JsonKey(fromJson: _parsePrice) double price,
       String? category,
       String? imageUrl,
-      @JsonKey(name: 'is_available') bool isAvailable,
-      @JsonKey(name: 'sort_order') int? sortOrder});
+      @JsonKey(name: 'isAvailable') bool isAvailable,
+      @JsonKey(name: 'sortOrder') int? sortOrder});
 }
 
 /// @nodoc
@@ -1151,11 +1575,11 @@ abstract class _$$MenuItemDtoImplCopyWith<$Res>
       String name,
       String? nameTh,
       String? description,
-      double price,
+      @JsonKey(fromJson: _parsePrice) double price,
       String? category,
       String? imageUrl,
-      @JsonKey(name: 'is_available') bool isAvailable,
-      @JsonKey(name: 'sort_order') int? sortOrder});
+      @JsonKey(name: 'isAvailable') bool isAvailable,
+      @JsonKey(name: 'sortOrder') int? sortOrder});
 }
 
 /// @nodoc
@@ -1246,11 +1670,11 @@ class _$MenuItemDtoImpl implements _MenuItemDto {
       required this.name,
       this.nameTh,
       this.description,
-      required this.price,
+      @JsonKey(fromJson: _parsePrice) required this.price,
       this.category,
       this.imageUrl,
-      @JsonKey(name: 'is_available') required this.isAvailable,
-      @JsonKey(name: 'sort_order') this.sortOrder});
+      @JsonKey(name: 'isAvailable') required this.isAvailable,
+      @JsonKey(name: 'sortOrder') this.sortOrder});
 
   factory _$MenuItemDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$MenuItemDtoImplFromJson(json);
@@ -1270,16 +1694,17 @@ class _$MenuItemDtoImpl implements _MenuItemDto {
   @override
   final String? description;
   @override
+  @JsonKey(fromJson: _parsePrice)
   final double price;
   @override
   final String? category;
   @override
   final String? imageUrl;
   @override
-  @JsonKey(name: 'is_available')
+  @JsonKey(name: 'isAvailable')
   final bool isAvailable;
   @override
-  @JsonKey(name: 'sort_order')
+  @JsonKey(name: 'sortOrder')
   final int? sortOrder;
 
   @override
@@ -1353,11 +1778,11 @@ abstract class _MenuItemDto implements MenuItemDto {
       required final String name,
       final String? nameTh,
       final String? description,
-      required final double price,
+      @JsonKey(fromJson: _parsePrice) required final double price,
       final String? category,
       final String? imageUrl,
-      @JsonKey(name: 'is_available') required final bool isAvailable,
-      @JsonKey(name: 'sort_order') final int? sortOrder}) = _$MenuItemDtoImpl;
+      @JsonKey(name: 'isAvailable') required final bool isAvailable,
+      @JsonKey(name: 'sortOrder') final int? sortOrder}) = _$MenuItemDtoImpl;
 
   factory _MenuItemDto.fromJson(Map<String, dynamic> json) =
       _$MenuItemDtoImpl.fromJson;
@@ -1377,16 +1802,17 @@ abstract class _MenuItemDto implements MenuItemDto {
   @override
   String? get description;
   @override
+  @JsonKey(fromJson: _parsePrice)
   double get price;
   @override
   String? get category;
   @override
   String? get imageUrl;
   @override
-  @JsonKey(name: 'is_available')
+  @JsonKey(name: 'isAvailable')
   bool get isAvailable;
   @override
-  @JsonKey(name: 'sort_order')
+  @JsonKey(name: 'sortOrder')
   int? get sortOrder;
   @override
   @JsonKey(ignore: true)

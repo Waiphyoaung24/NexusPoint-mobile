@@ -10,14 +10,24 @@ final menuProvider = FutureProvider.autoDispose<List<MenuItem>>((ref) async {
 
   return authState.maybeWhen(
     authenticated: (user, _) async {
-      final orgId = user.tenantId ?? 'default-org'; // Using tenantId from User model as orgId
-      
+      // Validate that user has organization/tenant ID
+      if (user.tenantId == null || user.tenantId!.isEmpty) {
+        print('ERROR: User tenantId is null or empty!');
+        print('User details: id=${user.id}, email=${user.email}, tenantId=${user.tenantId}');
+        throw Exception('User organization ID is missing. Please contact support.');
+      }
+
+      final orgId = user.tenantId!;
+      print('Fetching menu items for organization: $orgId');
+
       try {
         // Try API first
+        
         final items = await repo.fetchFromApi(orgId);
         await repo.cacheLocally(items);
         return items;
       } catch (e) {
+        print('API fetch failed: $e');
         // Fallback to cache
         final cached = await repo.getFromCache();
         if (cached.isEmpty) {

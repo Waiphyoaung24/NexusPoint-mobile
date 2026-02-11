@@ -4,6 +4,12 @@ import 'user.dart';
 part 'api_models.freezed.dart';
 part 'api_models.g.dart';
 
+double _parsePrice(dynamic value) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
+}
+
 // Auth
 @freezed
 class LoginRequest with _$LoginRequest {
@@ -21,10 +27,35 @@ class AuthResponse with _$AuthResponse {
   const factory AuthResponse({
     required String token,
     required User user,
+    String? activeOrganizationId,
+    List<Organization>? organizations,
   }) = _AuthResponse;
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) =>
       _$AuthResponseFromJson(json);
+}
+
+@freezed
+class SessionResponse with _$SessionResponse {
+  const factory SessionResponse({
+    required Map<String, dynamic> session,
+    required User user,
+  }) = _SessionResponse;
+
+  factory SessionResponse.fromJson(Map<String, dynamic> json) =>
+      _$SessionResponseFromJson(json);
+}
+
+@freezed
+class Organization with _$Organization {
+  const factory Organization({
+    required String id,
+    required String name,
+    String? role,
+  }) = _Organization;
+
+  factory Organization.fromJson(Map<String, dynamic> json) =>
+      _$OrganizationFromJson(json);
 }
 
 // Orders
@@ -33,7 +64,7 @@ class OrderItemDto with _$OrderItemDto {
   const factory OrderItemDto({
     required String skuId,
     required int quantity,
-    required double unitPrice,
+    @JsonKey(fromJson: _parsePrice) required double unitPrice,
     String? notes,
   }) = _OrderItemDto;
 
@@ -48,7 +79,7 @@ class OrderRequest with _$OrderRequest {
     required String branchId,
     required String source,
     required List<OrderItemDto> items,
-    required double totalAmount,
+    @JsonKey(fromJson: _parsePrice) required double totalAmount,
     required String paymentMethod,
     String? tableNumber,
   }) = _OrderRequest;
@@ -81,11 +112,11 @@ class MenuItemDto with _$MenuItemDto {
     required String name,
     String? nameTh,
     String? description,
-    required double price,
+    @JsonKey(fromJson: _parsePrice) required double price,
     String? category,
     String? imageUrl,
-    @JsonKey(name: 'is_available') required bool isAvailable,
-    @JsonKey(name: 'sort_order') int? sortOrder,
+    @JsonKey(name: 'isAvailable') required bool isAvailable,
+    @JsonKey(name: 'sortOrder') int? sortOrder,
   }) = _MenuItemDto;
 
   factory MenuItemDto.fromJson(Map<String, dynamic> json) =>

@@ -10,7 +10,7 @@ _$CartItemImpl _$$CartItemImplFromJson(Map<String, dynamic> json) =>
     _$CartItemImpl(
       menuItem: MenuItem.fromJson(json['menuItem'] as Map<String, dynamic>),
       quantity: (json['quantity'] as num).toInt(),
-      unitPrice: (json['unitPrice'] as num).toDouble(),
+      unitPrice: _parsePrice(json['unitPrice']),
       notes: json['notes'] as String?,
     );
 

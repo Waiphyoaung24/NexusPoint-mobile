@@ -42,6 +42,16 @@ class _FakeOrderResponse_1 extends _i1.SmartFake implements _i2.OrderResponse {
         );
 }
 
+class _FakeOrganization_2 extends _i1.SmartFake implements _i2.Organization {
+  _FakeOrganization_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [PosApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -120,6 +130,68 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
         returnValue:
             _i4.Future<List<_i2.OrderResponse>>.value(<_i2.OrderResponse>[]),
       ) as _i4.Future<List<_i2.OrderResponse>>);
+
+  @override
+  _i4.Future<Map<String, dynamic>> getSession() => (super.noSuchMethod(
+        Invocation.method(
+          #getSession,
+          [],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<List<_i2.Organization>> getUserOrganizations() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getUserOrganizations,
+          [],
+        ),
+        returnValue:
+            _i4.Future<List<_i2.Organization>>.value(<_i2.Organization>[]),
+      ) as _i4.Future<List<_i2.Organization>>);
+
+  @override
+  _i4.Future<void> setActiveOrganization(String? organizationId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setActiveOrganization,
+          [organizationId],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i2.Organization> createOrganization({
+    required String? name,
+    required String? slug,
+    String? description,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createOrganization,
+          [],
+          {
+            #name: name,
+            #slug: slug,
+            #description: description,
+          },
+        ),
+        returnValue: _i4.Future<_i2.Organization>.value(_FakeOrganization_2(
+          this,
+          Invocation.method(
+            #createOrganization,
+            [],
+            {
+              #name: name,
+              #slug: slug,
+              #description: description,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.Organization>);
 
   @override
   _i4.Future<List<_i2.MenuItemDto>> getMenuItems(String? tenantId) =>

@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
 import '../../../core/models/user.dart';
+import '../../../core/models/api_models.dart';
 import '../../../core/providers/dio_provider.dart';
 import '../../../core/providers/auth_token_provider.dart';
 
@@ -22,6 +23,16 @@ class AuthState with _$AuthState {
 class PinLockoutException implements Exception {
   final String message;
   PinLockoutException(this.message);
+}
+
+class MultipleOrganizationsException implements Exception {
+  final String message;
+  final List<Organization> organizations;
+
+  MultipleOrganizationsException(this.message, {required this.organizations});
+
+  @override
+  String toString() => message;
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
@@ -55,17 +66,127 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final api = ref.read(posApiServiceProvider);
       final response = await api.verifyOtp(email, otp);
 
-      // Save token
+      // Save token first
       await ref.read(authTokenProvider.notifier).setToken(response.token);
 
-      // Save user
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('current_user', jsonEncode(response.user.toJson()));
+      print('📧 Email: ${response.user.email}');
+      print('🏢 Active Organization ID: ${response.activeOrganizationId}');
 
-      state = AuthState.authenticated(user: response.user);
-      return true;
+      // Check if user has active organization
+      if (response.activeOrganizationId == null ||
+          response.activeOrganizationId!.isEmpty) {
+        print('⚠️  No active organization - checking initial response, session and organizations...');
+
+        // 1. Check if organizations were already in the auth response
+        List<Organization> organizations = response.organizations ?? [];
+        
+        if (organizations.isEmpty) {
+          // 2. Try to get session data
+          try {
+            final sessionData = await api.getSession();
+            print('📦 Session data: $sessionData');
+
+            final session = sessionData['session'] as Map<String, dynamic>?;
+            final activeOrgId = session?['activeOrganizationId'] as String?;
+
+            if (activeOrgId != null && activeOrgId.isNotEmpty) {
+              print('✅ Found activeOrganizationId in session: $activeOrgId');
+              final userWithOrg = response.user.copyWith(tenantId: activeOrgId);
+
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setString('current_user', jsonEncode(userWithOrg.toJson()));
+
+              state = AuthState.authenticated(user: userWithOrg);
+              return true;
+            }
+          } catch (e) {
+            print('⚠️  Session check failed: $e');
+          }
+
+          // 3. Fetch user's organizations from multiple possible endpoints
+          try {
+            organizations = await api.getUserOrganizations();
+          } catch (e) {
+            print('❌ Failed to fetch organizations: $e');
+          }
+        }
+
+        print('🏢 Found ${organizations.length} organizations');
+
+        if (organizations.isEmpty) {
+          // ❌ User has no organizations
+          print('❌ User has no organizations');
+          print('');
+          print('═══════════════════════════════════════════════════════════════');
+          print('  🏢 NO ORGANIZATIONS FOUND');
+          print('═══════════════════════════════════════════════════════════════');
+          print('');
+          print('This user account is not associated with any organization.');
+          print('');
+          print('To fix this:');
+          print('1. Create an organization in your backend database');
+          print('2. Assign this user (${response.user.id}) to the organization');
+          print('3. Set the organization as active for the user');
+          print('');
+          print('See: scripts/seed_organization.sql for SQL commands');
+          print('Or:  scripts/create_test_organization.sh for API method');
+          print('');
+          print('User ID: ${response.user.id}');
+          print('Email:   ${response.user.email}');
+          print('═══════════════════════════════════════════════════════════════');
+          throw Exception(
+            'No organizations found.\n\n'
+            'Your account needs to be added to an organization.\n'
+            'Please contact your system administrator or see the console for setup instructions.'
+          );
+        } else if (organizations.length == 1) {
+          // ✅ Auto-select single organization
+          print('✅ Auto-selecting single organization: ${organizations.first.name}');
+          await api.setActiveOrganization(organizations.first.id);
+
+          // Refresh session to get updated activeOrganizationId
+          final sessionData = await api.getSession();
+          final session = sessionData['session'] as Map<String, dynamic>;
+          final activeOrgId = session['activeOrganizationId'] as String?;
+
+          if (activeOrgId != null && activeOrgId.isNotEmpty) {
+            print('✅ Active Organization ID set: $activeOrgId');
+            final userWithOrg = response.user.copyWith(tenantId: activeOrgId);
+
+            // Save user with organization
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('current_user', jsonEncode(userWithOrg.toJson()));
+
+            state = AuthState.authenticated(user: userWithOrg);
+            return true;
+          } else {
+            throw Exception('Failed to set active organization');
+          }
+        } else {
+          // 🎯 Multiple organizations - need user to choose
+          print('🎯 Multiple organizations found: ${organizations.length}');
+          // TODO: Show organization picker UI
+          throw MultipleOrganizationsException(
+            'Please select an organization',
+            organizations: organizations,
+          );
+        }
+      } else {
+        // ✅ User already has active organization
+        print('✅ Active Organization ID: ${response.activeOrganizationId}');
+        final userWithOrg = response.user.copyWith(
+          tenantId: response.activeOrganizationId,
+        );
+
+        // Save user with organization
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('current_user', jsonEncode(userWithOrg.toJson()));
+
+        state = AuthState.authenticated(user: userWithOrg);
+        return true;
+      }
     } catch (e, stack) {
-      print('Verify OTP Exception: $e');
+      print('❌ Verify OTP Exception: $e');
       print('Stack trace: $stack');
       return false;
     }

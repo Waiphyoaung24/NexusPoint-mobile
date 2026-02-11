@@ -18,6 +18,7 @@ class User with _$User {
     required String id,
     required String email,
     String? tenantId,
+    @JsonKey(name: 'organizationId') String? organizationId,
     UserRole? role,
     String? name,
     String? image,
