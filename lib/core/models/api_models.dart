@@ -75,13 +75,17 @@ class OrderResponse with _$OrderResponse {
 class MenuItemDto with _$MenuItemDto {
   const factory MenuItemDto({
     required String id,
-    required String tenantId,
+    String? organizationId,
+    String? branchId,
+    required String sku,
     required String name,
+    String? nameTh,
+    String? description,
     required double price,
     String? category,
     String? imageUrl,
-    required bool isAvailable,
-    required int inventoryQty,
+    @JsonKey(name: 'is_available') required bool isAvailable,
+    @JsonKey(name: 'sort_order') int? sortOrder,
   }) = _MenuItemDto;
 
   factory MenuItemDto.fromJson(Map<String, dynamic> json) =>

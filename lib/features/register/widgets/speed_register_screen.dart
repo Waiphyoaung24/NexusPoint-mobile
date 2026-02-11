@@ -185,33 +185,6 @@ class _MenuItemCard extends ConsumerWidget {
                       fontWeight: FontWeight.w700,
                     ),
               ),
-
-              // Stock Badge (if low inventory)
-              if (item.inventoryQty < 10)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: item.inventoryQty == 0
-                          ? PosTheme.dangerRed
-                          : PosTheme.accentAmber,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      item.inventoryQty == 0
-                          ? 'Out of Stock'
-                          : '${item.inventoryQty} left',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

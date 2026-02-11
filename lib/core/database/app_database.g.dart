@@ -588,17 +588,39 @@ class $MenuItemsTable extends MenuItems
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _tenantIdMeta =
-      const VerificationMeta('tenantId');
+  static const VerificationMeta _organizationIdMeta =
+      const VerificationMeta('organizationId');
   @override
-  late final GeneratedColumn<String> tenantId = GeneratedColumn<String>(
-      'tenant_id', aliasedName, false,
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+      'organization_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _branchIdMeta =
+      const VerificationMeta('branchId');
+  @override
+  late final GeneratedColumn<String> branchId = GeneratedColumn<String>(
+      'branch_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _skuMeta = const VerificationMeta('sku');
+  @override
+  late final GeneratedColumn<String> sku = GeneratedColumn<String>(
+      'sku', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameThMeta = const VerificationMeta('nameTh');
+  @override
+  late final GeneratedColumn<String> nameTh = GeneratedColumn<String>(
+      'name_th', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _priceMeta = const VerificationMeta('price');
   @override
   late final GeneratedColumn<double> price = GeneratedColumn<double>(
@@ -626,14 +648,12 @@ class $MenuItemsTable extends MenuItems
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("is_available" IN (0, 1))'),
       defaultValue: const Constant(true));
-  static const VerificationMeta _inventoryQtyMeta =
-      const VerificationMeta('inventoryQty');
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
   @override
-  late final GeneratedColumn<int> inventoryQty = GeneratedColumn<int>(
-      'inventory_qty', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _cachedAtMeta =
       const VerificationMeta('cachedAt');
   @override
@@ -643,13 +663,17 @@ class $MenuItemsTable extends MenuItems
   @override
   List<GeneratedColumn> get $columns => [
         id,
-        tenantId,
+        organizationId,
+        branchId,
+        sku,
         name,
+        nameTh,
+        description,
         price,
         category,
         imageUrl,
         isAvailable,
-        inventoryQty,
+        sortOrder,
         cachedAt
       ];
   @override
@@ -667,17 +691,37 @@ class $MenuItemsTable extends MenuItems
     } else if (isInserting) {
       context.missing(_idMeta);
     }
-    if (data.containsKey('tenant_id')) {
-      context.handle(_tenantIdMeta,
-          tenantId.isAcceptableOrUnknown(data['tenant_id']!, _tenantIdMeta));
+    if (data.containsKey('organization_id')) {
+      context.handle(
+          _organizationIdMeta,
+          organizationId.isAcceptableOrUnknown(
+              data['organization_id']!, _organizationIdMeta));
+    }
+    if (data.containsKey('branch_id')) {
+      context.handle(_branchIdMeta,
+          branchId.isAcceptableOrUnknown(data['branch_id']!, _branchIdMeta));
+    }
+    if (data.containsKey('sku')) {
+      context.handle(
+          _skuMeta, sku.isAcceptableOrUnknown(data['sku']!, _skuMeta));
     } else if (isInserting) {
-      context.missing(_tenantIdMeta);
+      context.missing(_skuMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_th')) {
+      context.handle(_nameThMeta,
+          nameTh.isAcceptableOrUnknown(data['name_th']!, _nameThMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
     }
     if (data.containsKey('price')) {
       context.handle(
@@ -699,11 +743,9 @@ class $MenuItemsTable extends MenuItems
           isAvailable.isAcceptableOrUnknown(
               data['is_available']!, _isAvailableMeta));
     }
-    if (data.containsKey('inventory_qty')) {
-      context.handle(
-          _inventoryQtyMeta,
-          inventoryQty.isAcceptableOrUnknown(
-              data['inventory_qty']!, _inventoryQtyMeta));
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
     }
     if (data.containsKey('cached_at')) {
       context.handle(_cachedAtMeta,
@@ -722,10 +764,18 @@ class $MenuItemsTable extends MenuItems
     return LocalMenuItem(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      tenantId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}tenant_id'])!,
+      organizationId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}organization_id']),
+      branchId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}branch_id']),
+      sku: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}sku'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      nameTh: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name_th']),
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
       price: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}price'])!,
       category: attachedDatabase.typeMapping
@@ -734,8 +784,8 @@ class $MenuItemsTable extends MenuItems
           .read(DriftSqlType.string, data['${effectivePrefix}image_url']),
       isAvailable: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_available'])!,
-      inventoryQty: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}inventory_qty'])!,
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order']),
       cachedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}cached_at'])!,
     );
@@ -749,30 +799,50 @@ class $MenuItemsTable extends MenuItems
 
 class LocalMenuItem extends DataClass implements Insertable<LocalMenuItem> {
   final String id;
-  final String tenantId;
+  final String? organizationId;
+  final String? branchId;
+  final String sku;
   final String name;
+  final String? nameTh;
+  final String? description;
   final double price;
   final String? category;
   final String? imageUrl;
   final bool isAvailable;
-  final int inventoryQty;
+  final int? sortOrder;
   final DateTime cachedAt;
   const LocalMenuItem(
       {required this.id,
-      required this.tenantId,
+      this.organizationId,
+      this.branchId,
+      required this.sku,
       required this.name,
+      this.nameTh,
+      this.description,
       required this.price,
       this.category,
       this.imageUrl,
       required this.isAvailable,
-      required this.inventoryQty,
+      this.sortOrder,
       required this.cachedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['tenant_id'] = Variable<String>(tenantId);
+    if (!nullToAbsent || organizationId != null) {
+      map['organization_id'] = Variable<String>(organizationId);
+    }
+    if (!nullToAbsent || branchId != null) {
+      map['branch_id'] = Variable<String>(branchId);
+    }
+    map['sku'] = Variable<String>(sku);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || nameTh != null) {
+      map['name_th'] = Variable<String>(nameTh);
+    }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
     map['price'] = Variable<double>(price);
     if (!nullToAbsent || category != null) {
       map['category'] = Variable<String>(category);
@@ -781,7 +851,9 @@ class LocalMenuItem extends DataClass implements Insertable<LocalMenuItem> {
       map['image_url'] = Variable<String>(imageUrl);
     }
     map['is_available'] = Variable<bool>(isAvailable);
-    map['inventory_qty'] = Variable<int>(inventoryQty);
+    if (!nullToAbsent || sortOrder != null) {
+      map['sort_order'] = Variable<int>(sortOrder);
+    }
     map['cached_at'] = Variable<DateTime>(cachedAt);
     return map;
   }
@@ -789,8 +861,19 @@ class LocalMenuItem extends DataClass implements Insertable<LocalMenuItem> {
   MenuItemsCompanion toCompanion(bool nullToAbsent) {
     return MenuItemsCompanion(
       id: Value(id),
-      tenantId: Value(tenantId),
+      organizationId: organizationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(organizationId),
+      branchId: branchId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(branchId),
+      sku: Value(sku),
       name: Value(name),
+      nameTh:
+          nameTh == null && nullToAbsent ? const Value.absent() : Value(nameTh),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
       price: Value(price),
       category: category == null && nullToAbsent
           ? const Value.absent()
@@ -799,7 +882,9 @@ class LocalMenuItem extends DataClass implements Insertable<LocalMenuItem> {
           ? const Value.absent()
           : Value(imageUrl),
       isAvailable: Value(isAvailable),
-      inventoryQty: Value(inventoryQty),
+      sortOrder: sortOrder == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sortOrder),
       cachedAt: Value(cachedAt),
     );
   }
@@ -809,13 +894,17 @@ class LocalMenuItem extends DataClass implements Insertable<LocalMenuItem> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalMenuItem(
       id: serializer.fromJson<String>(json['id']),
-      tenantId: serializer.fromJson<String>(json['tenantId']),
+      organizationId: serializer.fromJson<String?>(json['organizationId']),
+      branchId: serializer.fromJson<String?>(json['branchId']),
+      sku: serializer.fromJson<String>(json['sku']),
       name: serializer.fromJson<String>(json['name']),
+      nameTh: serializer.fromJson<String?>(json['nameTh']),
+      description: serializer.fromJson<String?>(json['description']),
       price: serializer.fromJson<double>(json['price']),
       category: serializer.fromJson<String?>(json['category']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       isAvailable: serializer.fromJson<bool>(json['isAvailable']),
-      inventoryQty: serializer.fromJson<int>(json['inventoryQty']),
+      sortOrder: serializer.fromJson<int?>(json['sortOrder']),
       cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
     );
   }
@@ -824,132 +913,185 @@ class LocalMenuItem extends DataClass implements Insertable<LocalMenuItem> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'tenantId': serializer.toJson<String>(tenantId),
+      'organizationId': serializer.toJson<String?>(organizationId),
+      'branchId': serializer.toJson<String?>(branchId),
+      'sku': serializer.toJson<String>(sku),
       'name': serializer.toJson<String>(name),
+      'nameTh': serializer.toJson<String?>(nameTh),
+      'description': serializer.toJson<String?>(description),
       'price': serializer.toJson<double>(price),
       'category': serializer.toJson<String?>(category),
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'isAvailable': serializer.toJson<bool>(isAvailable),
-      'inventoryQty': serializer.toJson<int>(inventoryQty),
+      'sortOrder': serializer.toJson<int?>(sortOrder),
       'cachedAt': serializer.toJson<DateTime>(cachedAt),
     };
   }
 
   LocalMenuItem copyWith(
           {String? id,
-          String? tenantId,
+          Value<String?> organizationId = const Value.absent(),
+          Value<String?> branchId = const Value.absent(),
+          String? sku,
           String? name,
+          Value<String?> nameTh = const Value.absent(),
+          Value<String?> description = const Value.absent(),
           double? price,
           Value<String?> category = const Value.absent(),
           Value<String?> imageUrl = const Value.absent(),
           bool? isAvailable,
-          int? inventoryQty,
+          Value<int?> sortOrder = const Value.absent(),
           DateTime? cachedAt}) =>
       LocalMenuItem(
         id: id ?? this.id,
-        tenantId: tenantId ?? this.tenantId,
+        organizationId:
+            organizationId.present ? organizationId.value : this.organizationId,
+        branchId: branchId.present ? branchId.value : this.branchId,
+        sku: sku ?? this.sku,
         name: name ?? this.name,
+        nameTh: nameTh.present ? nameTh.value : this.nameTh,
+        description: description.present ? description.value : this.description,
         price: price ?? this.price,
         category: category.present ? category.value : this.category,
         imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
         isAvailable: isAvailable ?? this.isAvailable,
-        inventoryQty: inventoryQty ?? this.inventoryQty,
+        sortOrder: sortOrder.present ? sortOrder.value : this.sortOrder,
         cachedAt: cachedAt ?? this.cachedAt,
       );
   @override
   String toString() {
     return (StringBuffer('LocalMenuItem(')
           ..write('id: $id, ')
-          ..write('tenantId: $tenantId, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('branchId: $branchId, ')
+          ..write('sku: $sku, ')
           ..write('name: $name, ')
+          ..write('nameTh: $nameTh, ')
+          ..write('description: $description, ')
           ..write('price: $price, ')
           ..write('category: $category, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('isAvailable: $isAvailable, ')
-          ..write('inventoryQty: $inventoryQty, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('cachedAt: $cachedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, tenantId, name, price, category, imageUrl,
-      isAvailable, inventoryQty, cachedAt);
+  int get hashCode => Object.hash(
+      id,
+      organizationId,
+      branchId,
+      sku,
+      name,
+      nameTh,
+      description,
+      price,
+      category,
+      imageUrl,
+      isAvailable,
+      sortOrder,
+      cachedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is LocalMenuItem &&
           other.id == this.id &&
-          other.tenantId == this.tenantId &&
+          other.organizationId == this.organizationId &&
+          other.branchId == this.branchId &&
+          other.sku == this.sku &&
           other.name == this.name &&
+          other.nameTh == this.nameTh &&
+          other.description == this.description &&
           other.price == this.price &&
           other.category == this.category &&
           other.imageUrl == this.imageUrl &&
           other.isAvailable == this.isAvailable &&
-          other.inventoryQty == this.inventoryQty &&
+          other.sortOrder == this.sortOrder &&
           other.cachedAt == this.cachedAt);
 }
 
 class MenuItemsCompanion extends UpdateCompanion<LocalMenuItem> {
   final Value<String> id;
-  final Value<String> tenantId;
+  final Value<String?> organizationId;
+  final Value<String?> branchId;
+  final Value<String> sku;
   final Value<String> name;
+  final Value<String?> nameTh;
+  final Value<String?> description;
   final Value<double> price;
   final Value<String?> category;
   final Value<String?> imageUrl;
   final Value<bool> isAvailable;
-  final Value<int> inventoryQty;
+  final Value<int?> sortOrder;
   final Value<DateTime> cachedAt;
   final Value<int> rowid;
   const MenuItemsCompanion({
     this.id = const Value.absent(),
-    this.tenantId = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.branchId = const Value.absent(),
+    this.sku = const Value.absent(),
     this.name = const Value.absent(),
+    this.nameTh = const Value.absent(),
+    this.description = const Value.absent(),
     this.price = const Value.absent(),
     this.category = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.isAvailable = const Value.absent(),
-    this.inventoryQty = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.cachedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MenuItemsCompanion.insert({
     required String id,
-    required String tenantId,
+    this.organizationId = const Value.absent(),
+    this.branchId = const Value.absent(),
+    required String sku,
     required String name,
+    this.nameTh = const Value.absent(),
+    this.description = const Value.absent(),
     required double price,
     this.category = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.isAvailable = const Value.absent(),
-    this.inventoryQty = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     required DateTime cachedAt,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
-        tenantId = Value(tenantId),
+        sku = Value(sku),
         name = Value(name),
         price = Value(price),
         cachedAt = Value(cachedAt);
   static Insertable<LocalMenuItem> custom({
     Expression<String>? id,
-    Expression<String>? tenantId,
+    Expression<String>? organizationId,
+    Expression<String>? branchId,
+    Expression<String>? sku,
     Expression<String>? name,
+    Expression<String>? nameTh,
+    Expression<String>? description,
     Expression<double>? price,
     Expression<String>? category,
     Expression<String>? imageUrl,
     Expression<bool>? isAvailable,
-    Expression<int>? inventoryQty,
+    Expression<int>? sortOrder,
     Expression<DateTime>? cachedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (tenantId != null) 'tenant_id': tenantId,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (branchId != null) 'branch_id': branchId,
+      if (sku != null) 'sku': sku,
       if (name != null) 'name': name,
+      if (nameTh != null) 'name_th': nameTh,
+      if (description != null) 'description': description,
       if (price != null) 'price': price,
       if (category != null) 'category': category,
       if (imageUrl != null) 'image_url': imageUrl,
       if (isAvailable != null) 'is_available': isAvailable,
-      if (inventoryQty != null) 'inventory_qty': inventoryQty,
+      if (sortOrder != null) 'sort_order': sortOrder,
       if (cachedAt != null) 'cached_at': cachedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -957,24 +1099,32 @@ class MenuItemsCompanion extends UpdateCompanion<LocalMenuItem> {
 
   MenuItemsCompanion copyWith(
       {Value<String>? id,
-      Value<String>? tenantId,
+      Value<String?>? organizationId,
+      Value<String?>? branchId,
+      Value<String>? sku,
       Value<String>? name,
+      Value<String?>? nameTh,
+      Value<String?>? description,
       Value<double>? price,
       Value<String?>? category,
       Value<String?>? imageUrl,
       Value<bool>? isAvailable,
-      Value<int>? inventoryQty,
+      Value<int?>? sortOrder,
       Value<DateTime>? cachedAt,
       Value<int>? rowid}) {
     return MenuItemsCompanion(
       id: id ?? this.id,
-      tenantId: tenantId ?? this.tenantId,
+      organizationId: organizationId ?? this.organizationId,
+      branchId: branchId ?? this.branchId,
+      sku: sku ?? this.sku,
       name: name ?? this.name,
+      nameTh: nameTh ?? this.nameTh,
+      description: description ?? this.description,
       price: price ?? this.price,
       category: category ?? this.category,
       imageUrl: imageUrl ?? this.imageUrl,
       isAvailable: isAvailable ?? this.isAvailable,
-      inventoryQty: inventoryQty ?? this.inventoryQty,
+      sortOrder: sortOrder ?? this.sortOrder,
       cachedAt: cachedAt ?? this.cachedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -986,11 +1136,23 @@ class MenuItemsCompanion extends UpdateCompanion<LocalMenuItem> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (tenantId.present) {
-      map['tenant_id'] = Variable<String>(tenantId.value);
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (branchId.present) {
+      map['branch_id'] = Variable<String>(branchId.value);
+    }
+    if (sku.present) {
+      map['sku'] = Variable<String>(sku.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (nameTh.present) {
+      map['name_th'] = Variable<String>(nameTh.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
     if (price.present) {
       map['price'] = Variable<double>(price.value);
@@ -1004,8 +1166,8 @@ class MenuItemsCompanion extends UpdateCompanion<LocalMenuItem> {
     if (isAvailable.present) {
       map['is_available'] = Variable<bool>(isAvailable.value);
     }
-    if (inventoryQty.present) {
-      map['inventory_qty'] = Variable<int>(inventoryQty.value);
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
     }
     if (cachedAt.present) {
       map['cached_at'] = Variable<DateTime>(cachedAt.value);
@@ -1020,13 +1182,17 @@ class MenuItemsCompanion extends UpdateCompanion<LocalMenuItem> {
   String toString() {
     return (StringBuffer('MenuItemsCompanion(')
           ..write('id: $id, ')
-          ..write('tenantId: $tenantId, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('branchId: $branchId, ')
+          ..write('sku: $sku, ')
           ..write('name: $name, ')
+          ..write('nameTh: $nameTh, ')
+          ..write('description: $description, ')
           ..write('price: $price, ')
           ..write('category: $category, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('isAvailable: $isAvailable, ')
-          ..write('inventoryQty: $inventoryQty, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('cachedAt: $cachedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))

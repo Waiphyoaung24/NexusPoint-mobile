@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'core/config/app_config.dart';
 import 'core/providers/dio_provider.dart';
 
 import 'core/theme/pos_theme.dart';
@@ -12,6 +13,11 @@ import 'features/shell/pos_shell.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  if (AppConfig.isLocal) {
+    debugPrint('Running in LOCAL environment');
+    debugPrint('API Origin: ${AppConfig.apiOrigin}');
+  }
+
   final appDocDir = await getApplicationDocumentsDirectory();
   final cookieJar = PersistCookieJar(
     storage: FileStorage("${appDocDir.path}/.cookies/"),
@@ -33,7 +39,7 @@ class NexusPointPosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NexusPoint POS',
+      title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: PosTheme.lightTheme(),
       home: const AuthGate(),

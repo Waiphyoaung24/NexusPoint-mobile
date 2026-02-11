@@ -3,10 +3,9 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i4;
 import 'package:nexuspoint_pos/core/api/api_service.dart' as _i3;
 import 'package:nexuspoint_pos/core/models/api_models.dart' as _i2;
 
@@ -52,26 +51,17 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
   }
 
   @override
-  String get baseUrl => (super.noSuchMethod(
-        Invocation.getter(#baseUrl),
-        returnValue: _i4.dummyValue<String>(
-          this,
-          Invocation.getter(#baseUrl),
-        ),
-      ) as String);
-
-  @override
-  _i5.Future<void> requestOtp(String? email) => (super.noSuchMethod(
+  _i4.Future<void> requestOtp(String? email) => (super.noSuchMethod(
         Invocation.method(
           #requestOtp,
           [email],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i5.Future<_i2.AuthResponse> verifyOtp(
+  _i4.Future<_i2.AuthResponse> verifyOtp(
     String? email,
     String? otp,
   ) =>
@@ -83,7 +73,7 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
             otp,
           ],
         ),
-        returnValue: _i5.Future<_i2.AuthResponse>.value(_FakeAuthResponse_0(
+        returnValue: _i4.Future<_i2.AuthResponse>.value(_FakeAuthResponse_0(
           this,
           Invocation.method(
             #verifyOtp,
@@ -93,26 +83,26 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
             ],
           ),
         )),
-      ) as _i5.Future<_i2.AuthResponse>);
+      ) as _i4.Future<_i2.AuthResponse>);
 
   @override
-  _i5.Future<_i2.OrderResponse> createOrder(_i2.OrderRequest? request) =>
+  _i4.Future<_i2.OrderResponse> createOrder(_i2.OrderRequest? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #createOrder,
           [request],
         ),
-        returnValue: _i5.Future<_i2.OrderResponse>.value(_FakeOrderResponse_1(
+        returnValue: _i4.Future<_i2.OrderResponse>.value(_FakeOrderResponse_1(
           this,
           Invocation.method(
             #createOrder,
             [request],
           ),
         )),
-      ) as _i5.Future<_i2.OrderResponse>);
+      ) as _i4.Future<_i2.OrderResponse>);
 
   @override
-  _i5.Future<List<_i2.OrderResponse>> getOrders({
+  _i4.Future<List<_i2.OrderResponse>> getOrders({
     required String? tenantId,
     required String? branchId,
     String? fromDate,
@@ -128,22 +118,22 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
           },
         ),
         returnValue:
-            _i5.Future<List<_i2.OrderResponse>>.value(<_i2.OrderResponse>[]),
-      ) as _i5.Future<List<_i2.OrderResponse>>);
+            _i4.Future<List<_i2.OrderResponse>>.value(<_i2.OrderResponse>[]),
+      ) as _i4.Future<List<_i2.OrderResponse>>);
 
   @override
-  _i5.Future<List<_i2.MenuItemDto>> getMenuItems(String? tenantId) =>
+  _i4.Future<List<_i2.MenuItemDto>> getMenuItems(String? tenantId) =>
       (super.noSuchMethod(
         Invocation.method(
           #getMenuItems,
           [tenantId],
         ),
         returnValue:
-            _i5.Future<List<_i2.MenuItemDto>>.value(<_i2.MenuItemDto>[]),
-      ) as _i5.Future<List<_i2.MenuItemDto>>);
+            _i4.Future<List<_i2.MenuItemDto>>.value(<_i2.MenuItemDto>[]),
+      ) as _i4.Future<List<_i2.MenuItemDto>>);
 
   @override
-  _i5.Future<void> updateMenuItem(
+  _i4.Future<void> updateMenuItem(
     String? id,
     Map<String, dynamic>? updates,
   ) =>
@@ -155,7 +145,7 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
             updates,
           ],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

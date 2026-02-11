@@ -21,13 +21,17 @@ MenuItem _$MenuItemFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$MenuItem {
   String get id => throw _privateConstructorUsedError;
-  String get tenantId => throw _privateConstructorUsedError;
+  String? get organizationId => throw _privateConstructorUsedError;
+  String? get branchId => throw _privateConstructorUsedError;
+  String get sku => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String? get nameTh => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   bool get isAvailable => throw _privateConstructorUsedError;
-  int get inventoryQty => throw _privateConstructorUsedError;
+  int? get sortOrder => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,13 +46,17 @@ abstract class $MenuItemCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String tenantId,
+      String? organizationId,
+      String? branchId,
+      String sku,
       String name,
+      String? nameTh,
+      String? description,
       double price,
       String? category,
       String? imageUrl,
       bool isAvailable,
-      int inventoryQty});
+      int? sortOrder});
 }
 
 /// @nodoc
@@ -65,27 +73,47 @@ class _$MenuItemCopyWithImpl<$Res, $Val extends MenuItem>
   @override
   $Res call({
     Object? id = null,
-    Object? tenantId = null,
+    Object? organizationId = freezed,
+    Object? branchId = freezed,
+    Object? sku = null,
     Object? name = null,
+    Object? nameTh = freezed,
+    Object? description = freezed,
     Object? price = null,
     Object? category = freezed,
     Object? imageUrl = freezed,
     Object? isAvailable = null,
-    Object? inventoryQty = null,
+    Object? sortOrder = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      tenantId: null == tenantId
-          ? _value.tenantId
-          : tenantId // ignore: cast_nullable_to_non_nullable
+      organizationId: freezed == organizationId
+          ? _value.organizationId
+          : organizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      branchId: freezed == branchId
+          ? _value.branchId
+          : branchId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      sku: null == sku
+          ? _value.sku
+          : sku // ignore: cast_nullable_to_non_nullable
               as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      nameTh: freezed == nameTh
+          ? _value.nameTh
+          : nameTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
@@ -102,10 +130,10 @@ class _$MenuItemCopyWithImpl<$Res, $Val extends MenuItem>
           ? _value.isAvailable
           : isAvailable // ignore: cast_nullable_to_non_nullable
               as bool,
-      inventoryQty: null == inventoryQty
-          ? _value.inventoryQty
-          : inventoryQty // ignore: cast_nullable_to_non_nullable
-              as int,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 }
@@ -120,13 +148,17 @@ abstract class _$$MenuItemImplCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
-      String tenantId,
+      String? organizationId,
+      String? branchId,
+      String sku,
       String name,
+      String? nameTh,
+      String? description,
       double price,
       String? category,
       String? imageUrl,
       bool isAvailable,
-      int inventoryQty});
+      int? sortOrder});
 }
 
 /// @nodoc
@@ -141,27 +173,47 @@ class __$$MenuItemImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? tenantId = null,
+    Object? organizationId = freezed,
+    Object? branchId = freezed,
+    Object? sku = null,
     Object? name = null,
+    Object? nameTh = freezed,
+    Object? description = freezed,
     Object? price = null,
     Object? category = freezed,
     Object? imageUrl = freezed,
     Object? isAvailable = null,
-    Object? inventoryQty = null,
+    Object? sortOrder = freezed,
   }) {
     return _then(_$MenuItemImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      tenantId: null == tenantId
-          ? _value.tenantId
-          : tenantId // ignore: cast_nullable_to_non_nullable
+      organizationId: freezed == organizationId
+          ? _value.organizationId
+          : organizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      branchId: freezed == branchId
+          ? _value.branchId
+          : branchId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      sku: null == sku
+          ? _value.sku
+          : sku // ignore: cast_nullable_to_non_nullable
               as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      nameTh: freezed == nameTh
+          ? _value.nameTh
+          : nameTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
@@ -178,10 +230,10 @@ class __$$MenuItemImplCopyWithImpl<$Res>
           ? _value.isAvailable
           : isAvailable // ignore: cast_nullable_to_non_nullable
               as bool,
-      inventoryQty: null == inventoryQty
-          ? _value.inventoryQty
-          : inventoryQty // ignore: cast_nullable_to_non_nullable
-              as int,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -191,13 +243,17 @@ class __$$MenuItemImplCopyWithImpl<$Res>
 class _$MenuItemImpl implements _MenuItem {
   const _$MenuItemImpl(
       {required this.id,
-      required this.tenantId,
+      this.organizationId,
+      this.branchId,
+      required this.sku,
       required this.name,
+      this.nameTh,
+      this.description,
       required this.price,
       this.category,
       this.imageUrl,
       this.isAvailable = true,
-      this.inventoryQty = 0});
+      this.sortOrder});
 
   factory _$MenuItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$MenuItemImplFromJson(json);
@@ -205,9 +261,17 @@ class _$MenuItemImpl implements _MenuItem {
   @override
   final String id;
   @override
-  final String tenantId;
+  final String? organizationId;
+  @override
+  final String? branchId;
+  @override
+  final String sku;
   @override
   final String name;
+  @override
+  final String? nameTh;
+  @override
+  final String? description;
   @override
   final double price;
   @override
@@ -218,12 +282,11 @@ class _$MenuItemImpl implements _MenuItem {
   @JsonKey()
   final bool isAvailable;
   @override
-  @JsonKey()
-  final int inventoryQty;
+  final int? sortOrder;
 
   @override
   String toString() {
-    return 'MenuItem(id: $id, tenantId: $tenantId, name: $name, price: $price, category: $category, imageUrl: $imageUrl, isAvailable: $isAvailable, inventoryQty: $inventoryQty)';
+    return 'MenuItem(id: $id, organizationId: $organizationId, branchId: $branchId, sku: $sku, name: $name, nameTh: $nameTh, description: $description, price: $price, category: $category, imageUrl: $imageUrl, isAvailable: $isAvailable, sortOrder: $sortOrder)';
   }
 
   @override
@@ -232,9 +295,15 @@ class _$MenuItemImpl implements _MenuItem {
         (other.runtimeType == runtimeType &&
             other is _$MenuItemImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.tenantId, tenantId) ||
-                other.tenantId == tenantId) &&
+            (identical(other.organizationId, organizationId) ||
+                other.organizationId == organizationId) &&
+            (identical(other.branchId, branchId) ||
+                other.branchId == branchId) &&
+            (identical(other.sku, sku) || other.sku == sku) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.nameTh, nameTh) || other.nameTh == nameTh) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.category, category) ||
                 other.category == category) &&
@@ -242,14 +311,26 @@ class _$MenuItemImpl implements _MenuItem {
                 other.imageUrl == imageUrl) &&
             (identical(other.isAvailable, isAvailable) ||
                 other.isAvailable == isAvailable) &&
-            (identical(other.inventoryQty, inventoryQty) ||
-                other.inventoryQty == inventoryQty));
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, tenantId, name, price,
-      category, imageUrl, isAvailable, inventoryQty);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      organizationId,
+      branchId,
+      sku,
+      name,
+      nameTh,
+      description,
+      price,
+      category,
+      imageUrl,
+      isAvailable,
+      sortOrder);
 
   @JsonKey(ignore: true)
   @override
@@ -268,13 +349,17 @@ class _$MenuItemImpl implements _MenuItem {
 abstract class _MenuItem implements MenuItem {
   const factory _MenuItem(
       {required final String id,
-      required final String tenantId,
+      final String? organizationId,
+      final String? branchId,
+      required final String sku,
       required final String name,
+      final String? nameTh,
+      final String? description,
       required final double price,
       final String? category,
       final String? imageUrl,
       final bool isAvailable,
-      final int inventoryQty}) = _$MenuItemImpl;
+      final int? sortOrder}) = _$MenuItemImpl;
 
   factory _MenuItem.fromJson(Map<String, dynamic> json) =
       _$MenuItemImpl.fromJson;
@@ -282,9 +367,17 @@ abstract class _MenuItem implements MenuItem {
   @override
   String get id;
   @override
-  String get tenantId;
+  String? get organizationId;
+  @override
+  String? get branchId;
+  @override
+  String get sku;
   @override
   String get name;
+  @override
+  String? get nameTh;
+  @override
+  String? get description;
   @override
   double get price;
   @override
@@ -294,7 +387,7 @@ abstract class _MenuItem implements MenuItem {
   @override
   bool get isAvailable;
   @override
-  int get inventoryQty;
+  int? get sortOrder;
   @override
   @JsonKey(ignore: true)
   _$$MenuItemImplCopyWith<_$MenuItemImpl> get copyWith =>

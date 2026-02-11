@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../models/api_models.dart';
 import '../models/user.dart';
@@ -5,17 +6,45 @@ import 'api_exception.dart';
 
 class PosApiService {
   final Dio _dio;
-  final String baseUrl;
 
-  PosApiService(this._dio, {this.baseUrl = 'https://420man.store/api'}) {
-    _dio.options.baseUrl = baseUrl;
+  PosApiService(this._dio);
+
+  // tRPC Helpers
+  Future<dynamic> _trpcGet(String procedure, {Map<String, dynamic>? input}) async {
+    final inputJson = jsonEncode({
+      "0": {"json": input}
+    });
+
+    try {
+      final response = await _dio.get(
+        'trpc/$procedure',
+        queryParameters: {
+          'batch': 1,
+          'input': inputJson,
+        },
+      );
+
+      final data = response.data;
+      if (data is List && data.isNotEmpty) {
+        final result = data[0]['result'];
+        if (result != null && result['data'] != null) {
+          return result['data']['json'];
+        }
+        if (result != null && result['error'] != null) {
+          throw ApiException(result['error']['message'] ?? 'tRPC Error');
+        }
+      }
+      throw ApiException('Invalid tRPC response format');
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
   }
 
   // Authentication
   Future<void> requestOtp(String email) async {
     try {
       await _dio.post(
-        '/auth/email-otp/send-verification-otp',
+        'auth/email-otp/send-verification-otp',
         data: {
           'email': email,
           'type': 'sign-in',
@@ -29,7 +58,7 @@ class PosApiService {
   Future<AuthResponse> verifyOtp(String email, String otp) async {
     try {
       final response = await _dio.post(
-        '/auth/sign-in/email-otp',
+        'auth/sign-in/email-otp',
         data: {
           'email': email,
           'otp': otp,
@@ -52,7 +81,7 @@ class PosApiService {
   Future<OrderResponse> createOrder(OrderRequest request) async {
     try {
       final response = await _dio.post(
-        '/api/v1/orders',
+        'v1/orders',
         data: request.toJson(),
       );
       return OrderResponse.fromJson(response.data);
@@ -68,7 +97,7 @@ class PosApiService {
   }) async {
     try {
       final response = await _dio.get(
-        '/api/v1/orders',
+        'v1/orders',
         queryParameters: {
           'tenant_id': tenantId,
           'branch_id': branchId,
@@ -87,12 +116,17 @@ class PosApiService {
   Future<List<MenuItemDto>> getMenuItems(String tenantId) async {
     try {
       final response = await _dio.get(
-        '/api/v1/menu-items',
-        queryParameters: {'tenant_id': tenantId},
+        'v1/menu-items',
+        queryParameters: {
+          'tenant_id': tenantId,
+        },
       );
-      return (response.data as List)
-          .map((json) => MenuItemDto.fromJson(json))
-          .toList();
+      
+      final data = response.data;
+      if (data is List) {
+        return data.map((json) => MenuItemDto.fromJson(json)).toList();
+      }
+      return [];
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -101,7 +135,7 @@ class PosApiService {
   Future<void> updateMenuItem(String id, Map<String, dynamic> updates) async {
     try {
       await _dio.patch(
-        '/api/v1/menu-items/$id',
+        'v1/menu-items/$id',
         data: updates,
       );
     } on DioException catch (e) {

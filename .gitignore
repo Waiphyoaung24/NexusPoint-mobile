@@ -1,1 +1,52 @@
 .worktrees/
+
+# Build and generated files
+build/
+.dart_tool/
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+ios/.generated/
+
+# Android
+android/local.properties
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/key.properties
+*.jks
+*.keystore
+
+# Environment
+env/
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store

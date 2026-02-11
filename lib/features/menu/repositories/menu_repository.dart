@@ -33,13 +33,17 @@ class MenuRepository {
   Future<void> cacheLocally(List<MenuItem> items) async {
     final companions = items.map((item) => MenuItemsCompanion(
           id: drift.Value(item.id),
-          tenantId: drift.Value(item.tenantId),
+          organizationId: drift.Value(item.organizationId),
+          branchId: drift.Value(item.branchId),
+          sku: drift.Value(item.sku),
           name: drift.Value(item.name),
+          nameTh: drift.Value(item.nameTh),
+          description: drift.Value(item.description),
           price: drift.Value(item.price),
           category: drift.Value(item.category),
           imageUrl: drift.Value(item.imageUrl),
           isAvailable: drift.Value(item.isAvailable),
-          inventoryQty: drift.Value(item.inventoryQty),
+          sortOrder: drift.Value(item.sortOrder),
           cachedAt: drift.Value(DateTime.now()),
         ));
 
@@ -61,26 +65,34 @@ class MenuRepository {
   MenuItem _dtoToModel(MenuItemDto dto) {
     return MenuItem(
       id: dto.id,
-      tenantId: dto.tenantId,
+      organizationId: dto.organizationId,
+      branchId: dto.branchId,
+      sku: dto.sku,
       name: dto.name,
+      nameTh: dto.nameTh,
+      description: dto.description,
       price: dto.price,
       category: dto.category,
       imageUrl: dto.imageUrl,
       isAvailable: dto.isAvailable,
-      inventoryQty: dto.inventoryQty,
+      sortOrder: dto.sortOrder,
     );
   }
 
   MenuItem _localToModel(LocalMenuItem local) {
     return MenuItem(
       id: local.id,
-      tenantId: local.tenantId,
+      organizationId: local.organizationId,
+      branchId: local.branchId,
+      sku: local.sku,
       name: local.name,
+      nameTh: local.nameTh,
+      description: local.description,
       price: local.price,
       category: local.category,
       imageUrl: local.imageUrl,
       isAvailable: local.isAvailable,
-      inventoryQty: local.inventoryQty,
+      sortOrder: local.sortOrder,
     );
   }
 }

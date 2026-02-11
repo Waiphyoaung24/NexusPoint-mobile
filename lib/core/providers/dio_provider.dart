@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import '../config/app_config.dart';
 import '../api/api_service.dart';
 import 'auth_token_provider.dart';
 
@@ -13,13 +14,13 @@ final cookieJarProvider = Provider<CookieJar>((ref) {
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(
-    baseUrl: 'https://420man.store/api',
+    baseUrl: AppConfig.apiOrigin,
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'origin': 'https://420man.store',
+      'origin': AppConfig.appOrigin,
     },
   ));
 

@@ -125,7 +125,8 @@ class OrderRepository {
       return CartItem(
         menuItem: MenuItem(
           id: dto.skuId,
-          tenantId: 'tenant-1',
+          sku: dto.skuId,
+          organizationId: 'tenant-1',
           name: 'Item ${dto.skuId}',
           price: dto.unitPrice,
         ),

@@ -89,23 +89,31 @@ Map<String, dynamic> _$$OrderResponseImplToJson(_$OrderResponseImpl instance) =>
 _$MenuItemDtoImpl _$$MenuItemDtoImplFromJson(Map<String, dynamic> json) =>
     _$MenuItemDtoImpl(
       id: json['id'] as String,
-      tenantId: json['tenantId'] as String,
+      organizationId: json['organizationId'] as String?,
+      branchId: json['branchId'] as String?,
+      sku: json['sku'] as String,
       name: json['name'] as String,
+      nameTh: json['nameTh'] as String?,
+      description: json['description'] as String?,
       price: (json['price'] as num).toDouble(),
       category: json['category'] as String?,
       imageUrl: json['imageUrl'] as String?,
-      isAvailable: json['isAvailable'] as bool,
-      inventoryQty: (json['inventoryQty'] as num).toInt(),
+      isAvailable: json['is_available'] as bool,
+      sortOrder: (json['sort_order'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$MenuItemDtoImplToJson(_$MenuItemDtoImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'tenantId': instance.tenantId,
+      'organizationId': instance.organizationId,
+      'branchId': instance.branchId,
+      'sku': instance.sku,
       'name': instance.name,
+      'nameTh': instance.nameTh,
+      'description': instance.description,
       'price': instance.price,
       'category': instance.category,
       'imageUrl': instance.imageUrl,
-      'isAvailable': instance.isAvailable,
-      'inventoryQty': instance.inventoryQty,
+      'is_available': instance.isAvailable,
+      'sort_order': instance.sortOrder,
     };

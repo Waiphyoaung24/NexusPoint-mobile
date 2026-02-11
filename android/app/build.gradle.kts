@@ -30,6 +30,20 @@ android {
         versionName = flutter.versionName
     }
 
+    flavorDimensions += "default"
+    productFlavors {
+        create("local") {
+            dimension = "default"
+            applicationIdSuffix = ".local"
+            versionNameSuffix = "-local"
+            resValue("string", "app_name", "NexusPoint POS (Local)")
+        }
+        create("prod") {
+            dimension = "default"
+            resValue("string", "app_name", "NexusPoint POS")
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

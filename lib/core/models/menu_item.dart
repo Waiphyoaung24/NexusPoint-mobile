@@ -7,13 +7,17 @@ part 'menu_item.g.dart';
 class MenuItem with _$MenuItem {
   const factory MenuItem({
     required String id,
-    required String tenantId,
+    String? organizationId,
+    String? branchId,
+    required String sku,
     required String name,
+    String? nameTh,
+    String? description,
     required double price,
     String? category,
     String? imageUrl,
     @Default(true) bool isAvailable,
-    @Default(0) int inventoryQty,
+    int? sortOrder,
   }) = _MenuItem;
 
   factory MenuItem.fromJson(Map<String, dynamic> json) =>
