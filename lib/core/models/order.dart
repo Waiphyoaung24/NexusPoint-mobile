@@ -20,6 +20,8 @@ enum OrderStatus {
   confirmed,
   @JsonValue('completed')
   completed,
+  @JsonValue('delivered')
+  delivered,
   @JsonValue('cancelled')
   cancelled,
 }

@@ -399,6 +399,25 @@ class PosApiService {
 
   
 
+    /// Updates the status of an existing order on the server.
+    /// Only call this when the order has already been synced (has a server orderId).
+    Future<void> updateOrderStatus({
+      required String orderId,
+      required String status,
+    }) async {
+      try {
+        print('🔄 Updating order status via tRPC: order.updateStatus');
+        await _trpcMutation('order.updateStatus', input: {
+          'orderId': orderId,
+          'status': status,
+        });
+        print('✅ Order $orderId status updated to $status');
+      } catch (e) {
+        print('❌ order.updateStatus failed: $e');
+        rethrow;
+      }
+    }
+
     Future<List<OrderResponse>> getOrders({
 
       required String tenantId,
