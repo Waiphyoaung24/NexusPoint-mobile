@@ -24,7 +24,8 @@ void main() {
     test('addItem adds item to cart', () {
       const item = MenuItem(
         id: '1',
-        tenantId: 'tenant-1',
+        sku: 'sku-pad-thai',
+        organizationId: 'org-1',
         name: 'Pad Thai',
         price: 120.0,
       );
@@ -40,7 +41,8 @@ void main() {
     test('addItem with same item increases quantity', () {
       const item = MenuItem(
         id: '1',
-        tenantId: 'tenant-1',
+        sku: 'sku-pad-thai',
+        organizationId: 'org-1',
         name: 'Pad Thai',
         price: 120.0,
       );
@@ -56,7 +58,8 @@ void main() {
     test('total calculates correctly with tax', () {
       const item = MenuItem(
         id: '1',
-        tenantId: 'tenant-1',
+        sku: 'sku-pad-thai',
+        organizationId: 'org-1',
         name: 'Pad Thai',
         price: 100.0,
       );
