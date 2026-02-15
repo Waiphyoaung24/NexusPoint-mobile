@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../../../core/models/order.dart';
 import '../../orders/providers/order_provider.dart';
+import '../../orders/repositories/order_repository.dart';
 
 class BridgeDashboardScreen extends ConsumerWidget {
   const BridgeDashboardScreen({super.key});
@@ -67,6 +68,7 @@ class BridgeDashboardScreen extends ConsumerWidget {
         orders.where((o) => o.status == OrderStatus.confirmed).toList();
     final readyOrders =
         orders.where((o) => o.status == OrderStatus.completed).toList();
+    // delivered orders are intentionally excluded — they leave the board
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -260,25 +262,28 @@ class KanbanOrderCard extends StatelessWidget {
                 // Order Number & Time
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        order.orderNumber,
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: accentColor,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          order.orderNumber,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    color: accentColor,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                        ),
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: 8),
                     Icon(
                       Icons.access_time,
                       size: 14,
@@ -409,7 +414,7 @@ class KanbanOrderCard extends StatelessWidget {
   }
 }
 
-class OrderDetailsModal extends StatelessWidget {
+class OrderDetailsModal extends ConsumerStatefulWidget {
   final Order order;
 
   const OrderDetailsModal({
@@ -418,7 +423,75 @@ class OrderDetailsModal extends StatelessWidget {
   });
 
   @override
+  ConsumerState<OrderDetailsModal> createState() => _OrderDetailsModalState();
+}
+
+class _OrderDetailsModalState extends ConsumerState<OrderDetailsModal> {
+  bool _isUpdating = false;
+
+  // Determine the next logical status and button label
+  ({OrderStatus? next, String label, Color color, IconData icon, bool isDelivery})?
+      get _nextAction {
+    return switch (widget.order.status) {
+      OrderStatus.pending => (
+          next: OrderStatus.confirmed,
+          label: 'Start Cooking',
+          color: PosTheme.accentAmber,
+          icon: Icons.outdoor_grill_outlined,
+          isDelivery: false,
+        ),
+      OrderStatus.confirmed => (
+          next: OrderStatus.completed,
+          label: 'Mark Ready',
+          color: PosTheme.successGreen,
+          icon: Icons.check_circle_outline,
+          isDelivery: false,
+        ),
+      OrderStatus.completed => (
+          next: OrderStatus.delivered,
+          label: 'Mark Delivered',
+          color: PosTheme.primaryBlue,
+          icon: Icons.local_shipping_outlined,
+          isDelivery: true,
+        ),
+      _ => null, // delivered / cancelled — final states
+    };
+  }
+
+  Future<void> _advanceStatus() async {
+    final action = _nextAction;
+    final localId = widget.order.localId;
+    if (action == null || action.next == null || localId == null) return;
+
+    setState(() => _isUpdating = true);
+    try {
+      if (action.isDelivery) {
+        // Mark delivered locally + push to cloud if already synced
+        await ref.read(orderRepositoryProvider).markDelivered(
+              localId,
+              serverId: widget.order.isSynced ? widget.order.orderId : null,
+            );
+      } else {
+        await ref
+            .read(orderRepositoryProvider)
+            .updateStatus(localId, action.next!);
+      }
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update order: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final action = _nextAction;
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: const BoxDecoration(
@@ -451,7 +524,7 @@ class OrderDetailsModal extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        order.orderNumber,
+                        widget.order.orderNumber,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 4),
@@ -488,7 +561,7 @@ class OrderDetailsModal extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 12),
-                  ...order.items.map((item) => Padding(
+                  ...widget.order.items.map((item) => Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
                           children: [
@@ -562,7 +635,7 @@ class OrderDetailsModal extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        '\$${order.totalAmount.toStringAsFixed(2)}',
+                        '\$${widget.order.totalAmount.toStringAsFixed(2)}',
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   color: PosTheme.primaryBlue,
@@ -574,6 +647,44 @@ class OrderDetailsModal extends StatelessWidget {
               ),
             ),
           ),
+
+          // Action Button
+          if (action != null)
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: FilledButton.icon(
+                    onPressed: _isUpdating ? null : _advanceStatus,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: action.color,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: _isUpdating
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Icon(action.icon),
+                    label: Text(
+                      _isUpdating ? 'Updating…' : action.label,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
