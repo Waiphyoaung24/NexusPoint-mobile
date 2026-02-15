@@ -42,16 +42,23 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 class AuthNotifier extends StateNotifier<AuthState> {
   final Ref ref;
 
+  /// Completes once the initial session-restore check has finished.
+  /// Useful in tests to `await container.read(authProvider.notifier).initialized`.
+  late final Future<void> initialized;
+
   AuthNotifier(this.ref) : super(const AuthState.unauthenticated()) {
-    _loadCachedAuth();
+    initialized = _loadCachedAuth();
   }
 
   Future<void> _loadCachedAuth() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString('current_user');
+    // Read token directly from prefs — authTokenProvider may not have
+    // finished its own async load yet, so we can't rely on its state here.
+    final token = prefs.getString('auth_token');
 
-    if (userJson != null && ref.read(authTokenProvider) != null) {
-      final user = User.fromJson(jsonDecode(userJson));
+    if (userJson != null && token != null) {
+      final user = User.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
       state = AuthState.authenticated(user: user);
     }
   }

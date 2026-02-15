@@ -75,7 +75,7 @@ void main() {
         email: email,
         role: UserRole.cashier,
       );
-      const response = AuthResponse(token: 'test-token', user: user);
+      const response = AuthResponse(token: 'test-token', user: user, activeOrganizationId: 'org-1');
 
       when(mockApi.verifyOtp(email, otp)).thenAnswer((_) async => response);
 
@@ -127,7 +127,7 @@ void main() {
         email: email,
         role: UserRole.cashier,
       );
-      const response = AuthResponse(token: 'test-token-123', user: user);
+      const response = AuthResponse(token: 'test-token-123', user: user, activeOrganizationId: 'org-1');
 
       when(mockApi.verifyOtp(email, otp)).thenAnswer((_) async => response);
 
@@ -154,7 +154,7 @@ void main() {
         email: email,
         role: UserRole.cashier,
       );
-      const response = AuthResponse(token: 'test-token', user: user);
+      const response = AuthResponse(token: 'test-token', user: user, activeOrganizationId: 'org-1');
 
       when(mockApi.verifyOtp(email, otp)).thenAnswer((_) async => response);
       await container.read(authProvider.notifier).verifyOtp(email, otp);
@@ -200,7 +200,7 @@ void main() {
         managerPinHash:
             '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4',
       );
-      const response = AuthResponse(token: 'test-token', user: user);
+      const response = AuthResponse(token: 'test-token', user: user, activeOrganizationId: 'org-1');
 
       when(mockApi.verifyOtp(any, any)).thenAnswer((_) async => response);
       await container
@@ -332,7 +332,7 @@ void main() {
         email: email,
         role: UserRole.cashier,
       );
-      const response = AuthResponse(token: 'test-token-persist', user: user);
+      const response = AuthResponse(token: 'test-token-persist', user: user, activeOrganizationId: 'org-1');
 
       when(mockApi.verifyOtp(email, otp)).thenAnswer((_) async => response);
 
@@ -345,6 +345,57 @@ void main() {
       expect(prefs.getString('current_user'), contains('user-1'));
 
       container1.dispose();
+    });
+
+    test('restores authenticated state from SharedPreferences on init', () async {
+      // Arrange — simulate a device that was previously logged in
+      SharedPreferences.setMockInitialValues({
+        'auth_token': 'persisted-token',
+        'current_user': '{"id":"user-42","email":"returning@example.com",'
+            '"tenantId":"org-1","role":"cashier","isActive":true}',
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          posApiServiceProvider.overrideWithValue(mockApi),
+        ],
+      );
+
+      // Wait for _loadCachedAuth() to complete
+      await container.read(authProvider.notifier).initialized;
+
+      // Assert — should be authenticated without any network call
+      final authState = container.read(authProvider);
+      expect(authState, isA<Authenticated>());
+      authState.whenOrNull(
+        authenticated: (user, _) {
+          expect(user.id, 'user-42');
+          expect(user.email, 'returning@example.com');
+        },
+      );
+      verifyNever(mockApi.verifyOtp(any, any));
+
+      container.dispose();
+    });
+
+    test('stays unauthenticated when only user json is cached (no token)', () async {
+      // Token missing — should NOT restore session
+      SharedPreferences.setMockInitialValues({
+        'current_user': '{"id":"user-1","email":"test@example.com",'
+            '"tenantId":"org-1","role":"cashier","isActive":true}',
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          posApiServiceProvider.overrideWithValue(mockApi),
+        ],
+      );
+
+      await container.read(authProvider.notifier).initialized;
+
+      expect(container.read(authProvider), isA<Unauthenticated>());
+
+      container.dispose();
     });
 
     test('logout clears persisted auth', () async {
@@ -368,7 +419,7 @@ void main() {
         email: 'test@example.com',
         role: UserRole.cashier,
       );
-      const response = AuthResponse(token: 'test-token', user: user);
+      const response = AuthResponse(token: 'test-token', user: user, activeOrganizationId: 'org-1');
 
       when(mockApi.verifyOtp(any, any)).thenAnswer((_) async => response);
       await container.read(authProvider.notifier).verifyOtp('test@example.com', '123456');
