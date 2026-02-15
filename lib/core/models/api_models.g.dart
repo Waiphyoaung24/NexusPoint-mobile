@@ -109,16 +109,18 @@ Map<String, dynamic> _$$OrderRequestImplToJson(_$OrderRequestImpl instance) =>
 _$OrderResponseImpl _$$OrderResponseImplFromJson(Map<String, dynamic> json) =>
     _$OrderResponseImpl(
       orderId: json['orderId'] as String,
-      orderNumber: json['orderNumber'] as String,
+      orderNumber: json['order_number'] as String?,
       status: json['status'] as String,
+      totalAmount: _parsePrice(json['totalAmount']),
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
 Map<String, dynamic> _$$OrderResponseImplToJson(_$OrderResponseImpl instance) =>
     <String, dynamic>{
       'orderId': instance.orderId,
-      'orderNumber': instance.orderNumber,
+      'order_number': instance.orderNumber,
       'status': instance.status,
+      'totalAmount': instance.totalAmount,
       'createdAt': instance.createdAt.toIso8601String(),
     };
 

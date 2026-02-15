@@ -35,6 +35,45 @@ enum PaymentMethod {
   card,
 }
 
+/// Maps the Flutter-side OrderSource enum to the backend's DB enum value.
+/// DB enum: pos, grab, wongnai, lineman
+extension OrderSourceBackend on OrderSource {
+  String get backendValue => switch (this) {
+        OrderSource.dinein => 'pos',
+        OrderSource.grab => 'grab',
+        OrderSource.wongnai => 'wongnai',
+      };
+
+  static OrderSource fromBackend(String value) => switch (value) {
+        'pos' => OrderSource.dinein,
+        'grab' => OrderSource.grab,
+        'wongnai' => OrderSource.wongnai,
+        _ => OrderSource.dinein,
+      };
+}
+
+/// Maps the Flutter-side OrderStatus enum to the backend's DB enum value.
+/// DB enum: pending, accepted, preparing, ready, completed, cancelled
+extension OrderStatusBackend on OrderStatus {
+  String get backendValue => switch (this) {
+        OrderStatus.pending => 'pending',
+        OrderStatus.confirmed => 'accepted',
+        OrderStatus.completed => 'ready',
+        OrderStatus.delivered => 'completed',
+        OrderStatus.cancelled => 'cancelled',
+      };
+
+  static OrderStatus fromBackend(String value) => switch (value) {
+        'pending' => OrderStatus.pending,
+        'accepted' => OrderStatus.confirmed,
+        'preparing' => OrderStatus.confirmed,
+        'ready' => OrderStatus.completed,
+        'completed' => OrderStatus.delivered,
+        'cancelled' => OrderStatus.cancelled,
+        _ => OrderStatus.pending,
+      };
+}
+
 double _parsePrice(dynamic value) {
   if (value is num) return value.toDouble();
   if (value is String) return double.tryParse(value) ?? 0.0;

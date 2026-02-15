@@ -93,13 +93,31 @@ class OrderRequest with _$OrderRequest {
 class OrderResponse with _$OrderResponse {
   const factory OrderResponse({
     required String orderId,
-    required String orderNumber,
+    @JsonKey(name: 'order_number', defaultValue: '') String? orderNumber,
     required String status,
+    @JsonKey(fromJson: _parsePrice, defaultValue: 0.0) double totalAmount,
     required DateTime createdAt,
   }) = _OrderResponse;
 
   factory OrderResponse.fromJson(Map<String, dynamic> json) =>
-      _$OrderResponseFromJson(json);
+      _$OrderResponseFromJson(_normalizeOrderResponse(json));
+}
+
+/// Normalizes API/DB response field names to Flutter model field names.
+/// Handles snake_case DB fields and camelCase tRPC fields.
+Map<String, dynamic> _normalizeOrderResponse(Map<String, dynamic> json) {
+  return {
+    // id or orderId
+    'orderId': json['orderId'] ?? json['id'] ?? '',
+    // order_number or orderNumber (null when absent — field is nullable)
+    'order_number': json['order_number'] ?? json['orderNumber'],
+    'status': json['status'] ?? 'pending',
+    // total, subtotal, or totalAmount
+    'totalAmount':
+        json['totalAmount'] ?? json['total'] ?? json['subtotal'] ?? 0.0,
+    // created_at or createdAt
+    'createdAt': json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String(),
+  };
 }
 
 // Menu

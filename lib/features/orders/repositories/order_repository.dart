@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:intl/intl.dart';
 
+import '../../../core/api/api_exception.dart';
 import '../../../core/models/order.dart';
 import '../../../core/models/cart_item.dart';
 import '../../../core/models/menu_item.dart';
@@ -78,7 +79,8 @@ class OrderRepository {
       payloadJson: jsonEncode(OrderRequest(
         tenantId: user.tenantId!,
         branchId: 'default', // TODO: Get from settings
-        source: source.name,
+        // Map Flutter enum to backend DB enum value (dinein → pos)
+        source: source.backendValue,
         items: items,
         totalAmount: totalAmount,
         paymentMethod: paymentMethod.name,
@@ -130,6 +132,63 @@ class OrderRepository {
         debugPrint('⚠️ Could not sync delivered status to cloud: $e');
       }
     }
+  }
+
+  /// Fetches orders from the cloud API and merges them into local DB.
+  /// Returns the merged list. Silently returns local orders if cloud is
+  /// unavailable (network error) or the procedure isn't implemented yet (404).
+  Future<List<Order>> fetchAndMergeFromCloud({
+    required String tenantId,
+    required String branchId,
+  }) async {
+    try {
+      final remote = await _api.getOrders(
+        tenantId: tenantId,
+        branchId: branchId,
+      );
+
+      for (final r in remote) {
+        // Try to find an existing local order by server ID
+        final localOrders = await _localDb.getAllOrders();
+        final existing = localOrders
+            .where((o) => o.orderId == r.orderId)
+            .toList();
+
+        if (existing.isEmpty) {
+          // Insert cloud order as a synced local record
+          await _localDb.insertOrder(
+            OrdersCompanion(
+              orderNumber: drift.Value(r.orderNumber ?? r.orderId),
+              orderId: drift.Value(r.orderId),
+              source: drift.Value(OrderSource.dinein.name), // default
+              status: drift.Value(
+                OrderStatusBackend.fromBackend(r.status).name,
+              ),
+              totalAmount: drift.Value(r.totalAmount),
+              paymentMethod: const drift.Value('cash'),
+              itemsJson: const drift.Value('[]'),
+              createdAt: drift.Value(r.createdAt),
+              isSynced: const drift.Value(true),
+              syncedAt: drift.Value(DateTime.now()),
+            ),
+          );
+        }
+      }
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) {
+        // Backend order.list procedure not implemented yet — skip silently
+        debugPrint(
+          '⚠️ order.list not found on backend (404). '
+          'Using local orders only.',
+        );
+      } else {
+        debugPrint('⚠️ Cloud fetch failed: $e');
+      }
+    } catch (e) {
+      debugPrint('⚠️ Cloud fetch failed: $e');
+    }
+
+    return getAllOrders();
   }
 
   Stream<List<Order>> watchAllOrders() {

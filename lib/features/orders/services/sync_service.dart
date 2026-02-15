@@ -144,6 +144,16 @@ class SyncServiceNotifier extends StateNotifier<SyncState> {
         await _syncQueueDao.markCompleted(item.id);
         successCount++;
       } catch (e) {
+        // 404 = backend procedure not implemented yet.
+        // Don't consume retry slots — leave the item in the queue
+        // so it will be retried when the backend is ready.
+        if (e is ApiException && e.statusCode == 404) {
+          debugPrint(
+            '⚠️  Backend procedure not found (404) for item ${item.id}. '
+            'Keeping in queue for when backend is ready.',
+          );
+          continue;
+        }
         await _syncQueueDao.incrementRetry(item.id);
         lastError = e.toString();
         debugPrint('Sync failed for item ${item.id}: $e');

@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexuspoint_pos/core/api/api_exception.dart';
 import 'package:nexuspoint_pos/features/orders/services/sync_service.dart';
 
 // ---------------------------------------------------------------------------
@@ -90,6 +91,43 @@ void main() {
       // This test verifies the provider compiles and the initial state type.
       const state = SyncState();
       expect(state, isA<SyncState>());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // 404 handling — non-retryable error detection
+  // ---------------------------------------------------------------------------
+  group('SyncState — 404 not-retryable error semantics', () {
+    // Mirrors the logic in syncPending():
+    //   if (e is ApiException && e.statusCode == 404) { continue; }
+    //   else { await _syncQueueDao.incrementRetry(item.id); }
+    bool shouldSkipRetry(Object error) {
+      return error is ApiException && error.statusCode == 404;
+    }
+
+    test('ApiException with 404 should skip retry', () {
+      final e = ApiException('Not found', statusCode: 404);
+      expect(shouldSkipRetry(e), isTrue);
+    });
+
+    test('NetworkException should NOT skip retry', () {
+      final e = NetworkException('Connection failed');
+      expect(shouldSkipRetry(e), isFalse);
+    });
+
+    test('ServerException (5xx) should NOT skip retry', () {
+      final e = ServerException('Internal server error');
+      expect(shouldSkipRetry(e), isFalse);
+    });
+
+    test('ApiException with 401 should NOT skip retry', () {
+      final e = ApiException('Unauthorized', statusCode: 401);
+      expect(shouldSkipRetry(e), isFalse);
+    });
+
+    test('generic Exception should NOT skip retry', () {
+      final e = Exception('Something went wrong');
+      expect(shouldSkipRetry(e), isFalse);
     });
   });
 

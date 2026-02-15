@@ -1261,8 +1261,9 @@ OrderResponse _$OrderResponseFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$OrderResponse {
   String get orderId => throw _privateConstructorUsedError;
-  String get orderNumber => throw _privateConstructorUsedError;
+  String? get orderNumber => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
+  double get totalAmount => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1278,7 +1279,7 @@ abstract class $OrderResponseCopyWith<$Res> {
       _$OrderResponseCopyWithImpl<$Res, OrderResponse>;
   @useResult
   $Res call(
-      {String orderId, String orderNumber, String status, DateTime createdAt});
+      {String orderId, String? orderNumber, String status, double totalAmount, DateTime createdAt});
 }
 
 /// @nodoc
@@ -1295,8 +1296,9 @@ class _$OrderResponseCopyWithImpl<$Res, $Val extends OrderResponse>
   @override
   $Res call({
     Object? orderId = null,
-    Object? orderNumber = null,
+    Object? orderNumber = freezed,
     Object? status = null,
+    Object? totalAmount = null,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
@@ -1304,14 +1306,18 @@ class _$OrderResponseCopyWithImpl<$Res, $Val extends OrderResponse>
           ? _value.orderId
           : orderId // ignore: cast_nullable_to_non_nullable
               as String,
-      orderNumber: null == orderNumber
+      orderNumber: freezed == orderNumber
           ? _value.orderNumber
           : orderNumber // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
+      totalAmount: null == totalAmount
+          ? _value.totalAmount
+          : totalAmount // ignore: cast_nullable_to_non_nullable
+              as double,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -1329,7 +1335,7 @@ abstract class _$$OrderResponseImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String orderId, String orderNumber, String status, DateTime createdAt});
+      {String orderId, String? orderNumber, String status, double totalAmount, DateTime createdAt});
 }
 
 /// @nodoc
@@ -1344,8 +1350,9 @@ class __$$OrderResponseImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? orderId = null,
-    Object? orderNumber = null,
+    Object? orderNumber = freezed,
     Object? status = null,
+    Object? totalAmount = null,
     Object? createdAt = null,
   }) {
     return _then(_$OrderResponseImpl(
@@ -1353,14 +1360,18 @@ class __$$OrderResponseImplCopyWithImpl<$Res>
           ? _value.orderId
           : orderId // ignore: cast_nullable_to_non_nullable
               as String,
-      orderNumber: null == orderNumber
+      orderNumber: freezed == orderNumber
           ? _value.orderNumber
           : orderNumber // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
+      totalAmount: null == totalAmount
+          ? _value.totalAmount
+          : totalAmount // ignore: cast_nullable_to_non_nullable
+              as double,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -1374,8 +1385,9 @@ class __$$OrderResponseImplCopyWithImpl<$Res>
 class _$OrderResponseImpl implements _OrderResponse {
   const _$OrderResponseImpl(
       {required this.orderId,
-      required this.orderNumber,
+      this.orderNumber,
       required this.status,
+      this.totalAmount = 0.0,
       required this.createdAt});
 
   factory _$OrderResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -1384,15 +1396,17 @@ class _$OrderResponseImpl implements _OrderResponse {
   @override
   final String orderId;
   @override
-  final String orderNumber;
+  final String? orderNumber;
   @override
   final String status;
+  @override
+  final double totalAmount;
   @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'OrderResponse(orderId: $orderId, orderNumber: $orderNumber, status: $status, createdAt: $createdAt)';
+    return 'OrderResponse(orderId: $orderId, orderNumber: $orderNumber, status: $status, totalAmount: $totalAmount, createdAt: $createdAt)';
   }
 
   @override
@@ -1404,6 +1418,8 @@ class _$OrderResponseImpl implements _OrderResponse {
             (identical(other.orderNumber, orderNumber) ||
                 other.orderNumber == orderNumber) &&
             (identical(other.status, status) || other.status == status) &&
+            (identical(other.totalAmount, totalAmount) ||
+                other.totalAmount == totalAmount) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -1411,7 +1427,7 @@ class _$OrderResponseImpl implements _OrderResponse {
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, orderId, orderNumber, status, createdAt);
+      Object.hash(runtimeType, orderId, orderNumber, status, totalAmount, createdAt);
 
   @JsonKey(ignore: true)
   @override
@@ -1430,8 +1446,9 @@ class _$OrderResponseImpl implements _OrderResponse {
 abstract class _OrderResponse implements OrderResponse {
   const factory _OrderResponse(
       {required final String orderId,
-      required final String orderNumber,
+      final String? orderNumber,
       required final String status,
+      final double totalAmount,
       required final DateTime createdAt}) = _$OrderResponseImpl;
 
   factory _OrderResponse.fromJson(Map<String, dynamic> json) =
@@ -1440,9 +1457,11 @@ abstract class _OrderResponse implements OrderResponse {
   @override
   String get orderId;
   @override
-  String get orderNumber;
+  String? get orderNumber;
   @override
   String get status;
+  @override
+  double get totalAmount;
   @override
   DateTime get createdAt;
   @override
