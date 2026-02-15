@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:intl/intl.dart';
@@ -99,6 +100,38 @@ class OrderRepository {
     }).toList();
   }
 
+  Future<void> updateStatus(int localId, OrderStatus newStatus) async {
+    await _localDb.updateOrder(
+      localId,
+      OrdersCompanion(status: drift.Value(newStatus.name)),
+    );
+  }
+
+  /// Marks an order as delivered locally and syncs to cloud only if the
+  /// order was previously synced (has a server orderId). Never creates a
+  /// new remote record.
+  Future<void> markDelivered(int localId, {String? serverId}) async {
+    // 1. Update local DB first (offline-safe)
+    await _localDb.updateOrder(
+      localId,
+      OrdersCompanion(status: drift.Value(OrderStatus.delivered.name)),
+    );
+
+    // 2. Push status to cloud only if already synced
+    if (serverId != null && serverId.isNotEmpty) {
+      try {
+        await _api.updateOrderStatus(
+          orderId: serverId,
+          status: OrderStatus.delivered.name,
+        );
+        debugPrint('✅ Order $serverId marked delivered on cloud');
+      } catch (e) {
+        // Non-fatal — local state is already updated
+        debugPrint('⚠️ Could not sync delivered status to cloud: $e');
+      }
+    }
+  }
+
   Stream<List<Order>> watchAllOrders() {
     return _localDb.watchAllOrders().map((localOrders) {
       return localOrders.map((local) {
@@ -119,15 +152,13 @@ class OrderRepository {
 
   Order _localToModel(LocalOrder local, List<OrderItemDto> items) {
     // Convert DTOs back to CartItems for display
-    // In real app, we'd need to fetch MenuItem details
     final cartItems = items.map((dto) {
-      // Simplified - in production, fetch from menu cache
       return CartItem(
         menuItem: MenuItem(
           id: dto.skuId,
           sku: dto.skuId,
-          organizationId: 'tenant-1',
-          name: 'Item ${dto.skuId}',
+          organizationId: '',
+          name: dto.name ?? dto.skuId,
           price: dto.unitPrice,
         ),
         quantity: dto.quantity,
