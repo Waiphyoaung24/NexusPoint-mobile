@@ -67,6 +67,7 @@ Map<String, dynamic> _$$OrganizationImplToJson(_$OrganizationImpl instance) =>
 _$OrderItemDtoImpl _$$OrderItemDtoImplFromJson(Map<String, dynamic> json) =>
     _$OrderItemDtoImpl(
       skuId: json['skuId'] as String,
+      name: json['name'] as String?,
       quantity: (json['quantity'] as num).toInt(),
       unitPrice: _parsePrice(json['unitPrice']),
       notes: json['notes'] as String?,
@@ -75,6 +76,7 @@ _$OrderItemDtoImpl _$$OrderItemDtoImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$OrderItemDtoImplToJson(_$OrderItemDtoImpl instance) =>
     <String, dynamic>{
       'skuId': instance.skuId,
+      'name': instance.name,
       'quantity': instance.quantity,
       'unitPrice': instance.unitPrice,
       'notes': instance.notes,

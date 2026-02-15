@@ -752,6 +752,7 @@ OrderItemDto _$OrderItemDtoFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$OrderItemDto {
   String get skuId => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
   @JsonKey(fromJson: _parsePrice)
   double get unitPrice => throw _privateConstructorUsedError;
@@ -771,6 +772,7 @@ abstract class $OrderItemDtoCopyWith<$Res> {
   @useResult
   $Res call(
       {String skuId,
+      String? name,
       int quantity,
       @JsonKey(fromJson: _parsePrice) double unitPrice,
       String? notes});
@@ -790,6 +792,7 @@ class _$OrderItemDtoCopyWithImpl<$Res, $Val extends OrderItemDto>
   @override
   $Res call({
     Object? skuId = null,
+    Object? name = freezed,
     Object? quantity = null,
     Object? unitPrice = null,
     Object? notes = freezed,
@@ -799,6 +802,10 @@ class _$OrderItemDtoCopyWithImpl<$Res, $Val extends OrderItemDto>
           ? _value.skuId
           : skuId // ignore: cast_nullable_to_non_nullable
               as String,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
       quantity: null == quantity
           ? _value.quantity
           : quantity // ignore: cast_nullable_to_non_nullable
@@ -825,6 +832,7 @@ abstract class _$$OrderItemDtoImplCopyWith<$Res>
   @useResult
   $Res call(
       {String skuId,
+      String? name,
       int quantity,
       @JsonKey(fromJson: _parsePrice) double unitPrice,
       String? notes});
@@ -842,6 +850,7 @@ class __$$OrderItemDtoImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? skuId = null,
+    Object? name = freezed,
     Object? quantity = null,
     Object? unitPrice = null,
     Object? notes = freezed,
@@ -851,6 +860,10 @@ class __$$OrderItemDtoImplCopyWithImpl<$Res>
           ? _value.skuId
           : skuId // ignore: cast_nullable_to_non_nullable
               as String,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
       quantity: null == quantity
           ? _value.quantity
           : quantity // ignore: cast_nullable_to_non_nullable
@@ -872,6 +885,7 @@ class __$$OrderItemDtoImplCopyWithImpl<$Res>
 class _$OrderItemDtoImpl implements _OrderItemDto {
   const _$OrderItemDtoImpl(
       {required this.skuId,
+      this.name,
       required this.quantity,
       @JsonKey(fromJson: _parsePrice) required this.unitPrice,
       this.notes});
@@ -882,6 +896,8 @@ class _$OrderItemDtoImpl implements _OrderItemDto {
   @override
   final String skuId;
   @override
+  final String? name;
+  @override
   final int quantity;
   @override
   @JsonKey(fromJson: _parsePrice)
@@ -891,7 +907,7 @@ class _$OrderItemDtoImpl implements _OrderItemDto {
 
   @override
   String toString() {
-    return 'OrderItemDto(skuId: $skuId, quantity: $quantity, unitPrice: $unitPrice, notes: $notes)';
+    return 'OrderItemDto(skuId: $skuId, name: $name, quantity: $quantity, unitPrice: $unitPrice, notes: $notes)';
   }
 
   @override
@@ -900,6 +916,7 @@ class _$OrderItemDtoImpl implements _OrderItemDto {
         (other.runtimeType == runtimeType &&
             other is _$OrderItemDtoImpl &&
             (identical(other.skuId, skuId) || other.skuId == skuId) &&
+            (identical(other.name, name) || other.name == name) &&
             (identical(other.quantity, quantity) ||
                 other.quantity == quantity) &&
             (identical(other.unitPrice, unitPrice) ||
@@ -910,7 +927,7 @@ class _$OrderItemDtoImpl implements _OrderItemDto {
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, skuId, quantity, unitPrice, notes);
+      Object.hash(runtimeType, skuId, name, quantity, unitPrice, notes);
 
   @JsonKey(ignore: true)
   @override
@@ -929,6 +946,7 @@ class _$OrderItemDtoImpl implements _OrderItemDto {
 abstract class _OrderItemDto implements OrderItemDto {
   const factory _OrderItemDto(
       {required final String skuId,
+      final String? name,
       required final int quantity,
       @JsonKey(fromJson: _parsePrice) required final double unitPrice,
       final String? notes}) = _$OrderItemDtoImpl;
@@ -938,6 +956,8 @@ abstract class _OrderItemDto implements OrderItemDto {
 
   @override
   String get skuId;
+  @override
+  String? get name;
   @override
   int get quantity;
   @override

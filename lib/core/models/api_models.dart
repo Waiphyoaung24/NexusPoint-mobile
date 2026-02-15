@@ -63,6 +63,7 @@ class Organization with _$Organization {
 class OrderItemDto with _$OrderItemDto {
   const factory OrderItemDto({
     required String skuId,
+    String? name,
     required int quantity,
     @JsonKey(fromJson: _parsePrice) required double unitPrice,
     String? notes,

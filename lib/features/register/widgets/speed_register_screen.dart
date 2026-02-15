@@ -647,6 +647,7 @@ class _CartSummary extends ConsumerWidget {
           final orderItems = cartState.items.map((item) {
             return OrderItemDto(
               skuId: item.menuItem.id,
+              name: item.menuItem.name,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               notes: item.notes,
