@@ -90,7 +90,8 @@ class SyncServiceNotifier extends StateNotifier<SyncState> {
       }
     });
 
-    // Listen to connectivity changes and trigger sync when online
+    // Listen to connectivity changes and trigger sync when online.
+    // connectivity_plus v5.0.2 emits a single ConnectivityResult per event.
     _connectivitySub = Connectivity()
         .onConnectivityChanged
         .listen((result) async {
@@ -100,7 +101,7 @@ class SyncServiceNotifier extends StateNotifier<SyncState> {
       }
     });
 
-    // Attempt an initial sync in case we're already online
+    // Attempt an initial sync in case we're already online.
     final initial = await Connectivity().checkConnectivity();
     if (initial != ConnectivityResult.none) {
       await syncPending();

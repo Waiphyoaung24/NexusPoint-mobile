@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexuspoint_pos/features/orders/services/sync_service.dart';
@@ -51,6 +52,26 @@ void main() {
       expect(updated.pendingCount, 1);
       expect(updated.lastError, 'previous error');
     });
+
+    test('copyWith clearError=true sets lastError to null', () {
+      final state = const SyncState(
+        status: SyncStatus.error,
+        lastError: 'something went wrong',
+      );
+      final cleared = state.copyWith(
+        status: SyncStatus.syncing,
+        clearError: true,
+      );
+      expect(cleared.status, SyncStatus.syncing);
+      expect(cleared.lastError, isNull);
+    });
+
+    test('copyWith clearError=false (default) preserves lastError', () {
+      final state =
+          const SyncState(status: SyncStatus.error, lastError: 'err');
+      final updated = state.copyWith(status: SyncStatus.idle);
+      expect(updated.lastError, 'err');
+    });
   });
 
   group('SyncStatus enum', () {
@@ -69,6 +90,32 @@ void main() {
       // This test verifies the provider compiles and the initial state type.
       const state = SyncState();
       expect(state, isA<SyncState>());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Connectivity_plus v5.0.2 online-check logic (single ConnectivityResult)
+  // ---------------------------------------------------------------------------
+  group('connectivity_plus v5.0.2 — isOnline check', () {
+    // Replicates the logic used in SyncServiceNotifier._init():
+    //   final isOnline = result != ConnectivityResult.none;
+    bool isOnline(ConnectivityResult result) =>
+        result != ConnectivityResult.none;
+
+    test('wifi is online', () {
+      expect(isOnline(ConnectivityResult.wifi), isTrue);
+    });
+
+    test('mobile is online', () {
+      expect(isOnline(ConnectivityResult.mobile), isTrue);
+    });
+
+    test('ethernet is online', () {
+      expect(isOnline(ConnectivityResult.ethernet), isTrue);
+    });
+
+    test('none is offline', () {
+      expect(isOnline(ConnectivityResult.none), isFalse);
     });
   });
 }

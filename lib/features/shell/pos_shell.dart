@@ -7,6 +7,7 @@ import '../menu/widgets/menu_screen.dart';
 import '../dashboard/widgets/bridge_dashboard_screen.dart';
 import '../register/widgets/speed_register_screen.dart';
 import '../orders/widgets/order_history_screen.dart';
+import '../orders/services/sync_service.dart';
 
 // Shell Navigation State
 final shellNavigationProvider = StateProvider<int>((ref) => 0);
@@ -18,6 +19,9 @@ class PosShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final selectedIndex = ref.watch(shellNavigationProvider);
+    // Initialize the sync service so it starts listening for connectivity
+    // and processes any pending queue items when the shell mounts.
+    ref.watch(syncServiceProvider);
 
     return Scaffold(
       body: Row(
