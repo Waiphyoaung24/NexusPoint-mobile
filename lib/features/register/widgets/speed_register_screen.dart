@@ -5,6 +5,7 @@ import '../../../core/models/menu_item.dart';
 import '../../../core/models/order.dart';
 import '../../../core/models/api_models.dart';
 import '../../menu/providers/menu_provider.dart';
+import '../../../core/models/cart_item.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../orders/repositories/order_repository.dart';
 
@@ -398,7 +399,7 @@ class _CartPanel extends ConsumerWidget {
 }
 
 class _CartItemCard extends StatelessWidget {
-  final item;
+  final CartItem item;
   final VoidCallback onRemove;
   final VoidCallback onIncrease;
   final VoidCallback onDecrease;
