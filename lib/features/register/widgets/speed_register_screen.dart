@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../../../core/models/menu_item.dart';
-import '../../../core/models/order.dart';
-import '../../../core/models/api_models.dart';
 import '../../menu/providers/menu_provider.dart';
 import '../../../core/models/cart_item.dart';
 import '../../cart/providers/cart_provider.dart';
-import '../../orders/repositories/order_repository.dart';
+import '../../checkout/widgets/checkout_modal.dart';
 
 class SpeedRegisterScreen extends ConsumerWidget {
   const SpeedRegisterScreen({super.key});
@@ -615,7 +613,7 @@ class _CartSummary extends ConsumerWidget {
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                _showCheckoutDialog(context, ref, total);
+                showCheckoutModal(context, total);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -637,147 +635,4 @@ class _CartSummary extends ConsumerWidget {
     );
   }
 
-  void _showCheckoutDialog(BuildContext context, WidgetRef ref, double total) {
-    showDialog(
-      context: context,
-      builder: (context) => _CheckoutDialog(
-        total: total,
-        onCheckout: (paymentMethod) async {
-          // Get cart items and convert to OrderItemDto
-          final cartState = ref.read(cartProvider);
-          final orderItems = cartState.items.map((item) {
-            return OrderItemDto(
-              skuId: item.menuItem.id,
-              name: item.menuItem.name,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              notes: item.notes,
-            );
-          }).toList();
-
-          // Create order using repository
-          try {
-            await ref.read(orderRepositoryProvider).createOrder(
-                  source: OrderSource.dinein,
-                  items: orderItems,
-                  totalAmount: total,
-                  paymentMethod: paymentMethod,
-                );
-
-            // Clear cart after successful order
-            ref.read(cartProvider.notifier).clear();
-
-            if (context.mounted) {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Order created successfully!'),
-                  backgroundColor: PosTheme.successGreen,
-                ),
-              );
-            }
-          } catch (e) {
-            if (context.mounted) {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Failed to create order: $e'),
-                  backgroundColor: PosTheme.dangerRed,
-                ),
-              );
-            }
-          }
-        },
-      ),
-    );
-  }
-}
-
-class _CheckoutDialog extends StatefulWidget {
-  final double total;
-  final Future<void> Function(PaymentMethod) onCheckout;
-
-  const _CheckoutDialog({
-    required this.total,
-    required this.onCheckout,
-  });
-
-  @override
-  State<_CheckoutDialog> createState() => _CheckoutDialogState();
-}
-
-class _CheckoutDialogState extends State<_CheckoutDialog> {
-  PaymentMethod _selectedMethod = PaymentMethod.cash;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Payment Method'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          RadioListTile<PaymentMethod>(
-            title: const Text('Cash'),
-            value: PaymentMethod.cash,
-            groupValue: _selectedMethod,
-            onChanged: (value) {
-              setState(() {
-                _selectedMethod = value!;
-              });
-            },
-          ),
-          RadioListTile<PaymentMethod>(
-            title: const Text('PromptPay'),
-            value: PaymentMethod.promptpay,
-            groupValue: _selectedMethod,
-            onChanged: (value) {
-              setState(() {
-                _selectedMethod = value!;
-              });
-            },
-          ),
-          RadioListTile<PaymentMethod>(
-            title: const Text('Card'),
-            value: PaymentMethod.card,
-            groupValue: _selectedMethod,
-            onChanged: (value) {
-              setState(() {
-                _selectedMethod = value!;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                'Total',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const Spacer(),
-              Text(
-                '\$${widget.total.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: PosTheme.primaryBlue,
-                    ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            widget.onCheckout(_selectedMethod);
-          },
-          child: const Text('Confirm Payment'),
-        ),
-      ],
-    );
-  }
 }
