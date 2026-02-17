@@ -59,6 +59,9 @@ class Organization with _$Organization {
 }
 
 // Orders
+
+/// Local DTO — used for SQLite storage and cart display.
+/// Field names are Flutter-centric (skuId, unitPrice as double).
 @freezed
 class OrderItemDto with _$OrderItemDto {
   const factory OrderItemDto({
@@ -73,20 +76,80 @@ class OrderItemDto with _$OrderItemDto {
       _$OrderItemDtoFromJson(json);
 }
 
+/// Backend DTO — matches the Zod schema expected by order.create.
+/// Uses menuItemId, price as string ("50.00").
+/// Also handles old-format queue items via [_normalizeBackendOrderItem].
+@freezed
+class BackendOrderItemDto with _$BackendOrderItemDto {
+  const factory BackendOrderItemDto({
+    required String menuItemId,
+    required String name,
+    required int quantity,
+    required String price, // decimal string e.g. "50.00"
+    String? notes,
+  }) = _BackendOrderItemDto;
+
+  factory BackendOrderItemDto.fromJson(Map<String, dynamic> json) =>
+      _$BackendOrderItemDtoFromJson(_normalizeBackendOrderItem(json));
+
+  /// Convert a local [OrderItemDto] to the backend shape.
+  static BackendOrderItemDto fromOrderItemDto(OrderItemDto dto) =>
+      BackendOrderItemDto(
+        menuItemId: dto.skuId,
+        name: dto.name ?? dto.skuId,
+        quantity: dto.quantity,
+        price: dto.unitPrice.toStringAsFixed(2),
+        notes: dto.notes,
+      );
+}
+
+/// Normalizes old-format items stored in the sync queue (skuId/unitPrice)
+/// so they can be deserialized into [BackendOrderItemDto].
+Map<String, dynamic> _normalizeBackendOrderItem(Map<String, dynamic> json) {
+  return {
+    'menuItemId': json['menuItemId'] ?? json['skuId'] ?? '',
+    'name': json['name'] ?? json['menuItemId'] ?? json['skuId'] ?? '',
+    'quantity': json['quantity'] ?? 1,
+    'price': json['price'] ??
+        (json['unitPrice'] != null
+            ? (json['unitPrice'] as num).toStringAsFixed(2)
+            : '0.00'),
+    if (json['notes'] != null) 'notes': json['notes'],
+  };
+}
+
+/// Backend request DTO — matches the Zod schema for order.create exactly.
+/// Fields not in the backend schema (tenantId, paymentMethod) are omitted.
 @freezed
 class OrderRequest with _$OrderRequest {
+  @JsonSerializable(explicitToJson: true)
   const factory OrderRequest({
-    required String tenantId,
-    required String branchId,
+    String? branchId,
     required String source,
-    required List<OrderItemDto> items,
-    @JsonKey(fromJson: _parsePrice) required double totalAmount,
-    required String paymentMethod,
-    String? tableNumber,
+    required List<BackendOrderItemDto> items,
+    required String subtotal, // decimal string e.g. "100.00"
+    required String total, // decimal string e.g. "100.00"
+    String? discount,
+    String? notes,
   }) = _OrderRequest;
 
+  /// Handles both new-format payloads (subtotal/total) and old-format payloads
+  /// from the sync queue (totalAmount as double).
   factory OrderRequest.fromJson(Map<String, dynamic> json) =>
-      _$OrderRequestFromJson(json);
+      _$OrderRequestFromJson(_normalizeOrderRequest(json));
+}
+
+/// Normalizes old-format sync queue payloads (totalAmount as double) into the
+/// current backend shape (subtotal/total as strings).
+Map<String, dynamic> _normalizeOrderRequest(Map<String, dynamic> json) {
+  final fallbackAmount = json['totalAmount'] != null
+      ? (json['totalAmount'] as num).toStringAsFixed(2)
+      : '0.00';
+  return {
+    ...json,
+    'subtotal': json['subtotal'] ?? fallbackAmount,
+    'total': json['total'] ?? fallbackAmount,
+  };
 }
 
 @freezed
@@ -95,8 +158,10 @@ class OrderResponse with _$OrderResponse {
     required String orderId,
     @JsonKey(name: 'order_number', defaultValue: '') String? orderNumber,
     required String status,
-    @JsonKey(fromJson: _parsePrice, defaultValue: 0.0) double totalAmount,
+    @JsonKey(fromJson: _parsePrice) @Default(0.0) double totalAmount,
     required DateTime createdAt,
+    @Default('pos') String source,
+    @Default([]) List<BackendOrderItemDto> items,
   }) = _OrderResponse;
 
   factory OrderResponse.fromJson(Map<String, dynamic> json) =>
@@ -117,6 +182,10 @@ Map<String, dynamic> _normalizeOrderResponse(Map<String, dynamic> json) {
         json['totalAmount'] ?? json['total'] ?? json['subtotal'] ?? 0.0,
     // created_at or createdAt
     'createdAt': json['createdAt'] ?? json['created_at'] ?? DateTime.now().toIso8601String(),
+    // source (pos, grab, etc.)
+    'source': json['source'] ?? 'pos',
+    // items from backend response
+    if (json['items'] != null) 'items': json['items'],
   };
 }
 

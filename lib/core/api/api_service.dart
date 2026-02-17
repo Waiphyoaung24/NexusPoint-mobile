@@ -74,14 +74,25 @@ class PosApiService {
 
           
 
-          // If it's a 404, the procedure might not exist, so don't keep trying formats
-
-          if (e.response?.statusCode == 404) {
-
-            debugPrint('❌ Procedure $procedure not found (404)');
-
+          final status = e.response?.statusCode;
+          if (status == 404) {
+            debugPrint('❌ $procedure not found (404)');
             break;
-
+          }
+          // 500 = server error (cold-start) — retry with backoff
+          if (status == 500) {
+            for (final delay in [2, 4]) {
+              debugPrint('⚠️ $procedure returned 500 — retrying in ${delay}s');
+              await Future.delayed(Duration(seconds: delay));
+              try {
+                final retry = await _dio.get('trpc/$procedure', queryParameters: format);
+                return _parseTrpcResponse(retry.data, isBatch: format.containsKey('batch'));
+              } on DioException catch (retryError) {
+                lastError = retryError;
+                if (retryError.response?.statusCode != 500) break;
+              }
+            }
+            break;
           }
 
           continue;
@@ -100,37 +111,43 @@ class PosApiService {
 
     Future<dynamic> _trpcMutation(String procedure, {Map<String, dynamic>? input}) async {
 
+      // Strip null values — tRPC Zod .optional() fields reject explicit null
+      // (they only accept the field being absent). Freezed toJson() serializes
+      // nullable optional fields as null, so we strip them here.
+      final cleanInput = _stripNulls(input ?? {});
+
       // Try multiple formats for mutations
 
       final formats = [
 
-        // Format 1: Batched with JSON wrapper (tRPC 10+ with transformer)
+        // Format 1: Non-batched without JSON wrapper
+        // tRPC v11 without superjson uses plain JSON body — try this first.
+
+        {
+
+          'params': <String, dynamic>{},
+
+          'data': cleanInput
+
+        },
+
+        // Format 2: Batched with JSON wrapper (tRPC 10+ with superjson transformer)
 
         {
 
           'params': {'batch': '1'},
 
-          'data': {"0": {"json": input ?? {}}}
+          'data': {"0": {"json": cleanInput}}
 
         },
 
-        // Format 2: Non-batched with JSON wrapper (Most common for single mutations)
+        // Format 3: Non-batched with JSON wrapper
 
         {
 
           'params': <String, dynamic>{},
 
-          'data': {"json": input ?? {}}
-
-        },
-
-        // Format 3: Non-batched without JSON wrapper
-
-        {
-
-          'params': <String, dynamic>{},
-
-          'data': input ?? {}
+          'data': {"json": cleanInput}
 
         },
 
@@ -409,7 +426,7 @@ class PosApiService {
       try {
         debugPrint('🔄 Updating order status via tRPC: order.updateStatus');
         await _trpcMutation('order.updateStatus', input: {
-          'orderId': orderId,
+          'id': orderId,
           'status': status,
         });
         debugPrint('✅ Order $orderId status updated to $status');
@@ -786,6 +803,26 @@ class PosApiService {
       }
 
     }
+
+  /// Recursively removes entries whose value is null.
+  /// Zod `.optional()` fields only accept absent keys — not explicit null.
+  Map<String, dynamic> _stripNulls(Map<String, dynamic> map) {
+    final result = <String, dynamic>{};
+    for (final entry in map.entries) {
+      if (entry.value == null) continue;
+      if (entry.value is Map<String, dynamic>) {
+        result[entry.key] = _stripNulls(entry.value as Map<String, dynamic>);
+      } else if (entry.value is List) {
+        result[entry.key] = (entry.value as List).map((item) {
+          if (item is Map<String, dynamic>) return _stripNulls(item);
+          return item;
+        }).toList();
+      } else {
+        result[entry.key] = entry.value;
+      }
+    }
+    return result;
+  }
 
   ApiException _handleError(DioException error) {
     if (error.type == DioExceptionType.connectionTimeout ||

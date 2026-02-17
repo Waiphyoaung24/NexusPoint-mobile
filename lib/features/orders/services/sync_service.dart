@@ -83,10 +83,13 @@ class SyncServiceNotifier extends StateNotifier<SyncState> {
   // --------------------------------------------------------------------------
 
   Future<void> _init() async {
-    // Watch pending count
+    // Watch pending count — trigger sync when new items arrive
     _syncQueueDao.watchPendingCount().listen((count) {
       if (mounted) {
         state = state.copyWith(pendingCount: count);
+        if (count > 0) {
+          syncPending();
+        }
       }
     });
 

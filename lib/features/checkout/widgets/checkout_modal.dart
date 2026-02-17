@@ -7,6 +7,11 @@ import '../../../core/models/api_models.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../orders/repositories/order_repository.dart';
 import '../providers/checkout_provider.dart';
+import '../../printer/providers/printer_provider.dart';
+import '../../printer/services/printer_service.dart';
+import '../../printer/services/receipt_builder.dart';
+import '../../printer/services/kitchen_ticket_builder.dart';
+import '../../orders/services/order_polling_service.dart';
 
 Future<bool> showCheckoutModal(BuildContext context, double total) async {
   final result = await showModalBottomSheet<bool>(
@@ -217,6 +222,12 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
       ref.read(cartProvider.notifier).clear();
       checkoutNotifier.setSuccess(order.orderNumber);
 
+      // Trigger immediate poll so other devices see this order faster
+      ref.read(orderPollingServiceProvider.notifier).pollNow();
+
+      // Auto-print receipt and kitchen ticket (if printer connected)
+      _autoPrint(ref, order, checkout);
+
       if (context.mounted) {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -228,6 +239,44 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
       }
     } catch (e) {
       checkoutNotifier.setError('Failed to create order: $e');
+    }
+  }
+
+  /// Queue receipt + kitchen ticket print jobs after successful checkout.
+  Future<void> _autoPrint(WidgetRef ref, Order order, CheckoutState checkout) async {
+    final printerState = ref.read(printerProvider);
+    if (!printerState.isConnected) return;
+
+    try {
+      // Build receipt bytes
+      final receiptBuilder = ReceiptBuilder();
+      final receiptBytes = await receiptBuilder.buildReceipt(
+        order: order,
+        tenderedAmount: checkout.paymentMethod == PaymentMethod.cash
+            ? checkout.tenderedAmount
+            : null,
+        changeAmount: checkout.paymentMethod == PaymentMethod.cash
+            ? checkout.changeAmount
+            : null,
+      );
+
+      ref.read(printerProvider.notifier).enqueueJob(PrintJob(
+        type: PrintJobType.receipt,
+        data: receiptBytes,
+        orderNumber: order.orderNumber,
+      ));
+
+      // Build kitchen ticket bytes
+      final kitchenBuilder = KitchenTicketBuilder();
+      final kitchenBytes = await kitchenBuilder.buildTicket(order: order);
+
+      ref.read(printerProvider.notifier).enqueueJob(PrintJob(
+        type: PrintJobType.kitchenTicket,
+        data: kitchenBytes,
+        orderNumber: order.orderNumber,
+      ));
+    } catch (e) {
+      debugPrint('Auto-print failed: $e');
     }
   }
 }

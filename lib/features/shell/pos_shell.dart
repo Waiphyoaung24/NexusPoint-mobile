@@ -8,6 +8,9 @@ import '../dashboard/widgets/bridge_dashboard_screen.dart';
 import '../register/widgets/speed_register_screen.dart';
 import '../orders/widgets/order_history_screen.dart';
 import '../orders/services/sync_service.dart';
+import '../orders/services/order_polling_service.dart';
+import '../printer/providers/printer_provider.dart';
+import '../printer/widgets/printer_settings_screen.dart';
 
 // Shell Navigation State
 final shellNavigationProvider = StateProvider<int>((ref) => 0);
@@ -22,6 +25,8 @@ class PosShell extends ConsumerWidget {
     // Initialize the sync service so it starts listening for connectivity
     // and processes any pending queue items when the shell mounts.
     ref.watch(syncServiceProvider);
+    // Initialize order polling so orders from other devices appear automatically.
+    ref.watch(orderPollingServiceProvider);
 
     return Scaffold(
       body: Row(
@@ -197,13 +202,22 @@ class PosShell extends ConsumerWidget {
         const Divider(),
         const SizedBox(height: 8),
 
-        // Settings Button
+        // Printer Status
+        _PrinterIndicator(),
+
+        const SizedBox(height: 8),
+
+        // Settings Button (opens Printer Settings)
         IconButton(
           icon: const Icon(Icons.settings_outlined),
           onPressed: () {
-            // TODO: Navigate to settings
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const PrinterSettingsScreen(),
+              ),
+            );
           },
-          tooltip: 'Settings',
+          tooltip: 'Printer Settings',
         ),
 
         const SizedBox(height: 8),
@@ -240,39 +254,6 @@ class PosShell extends ConsumerWidget {
     }
   }
 
-  // Placeholder screens - will be replaced with actual implementations
-  Widget _buildBridgeDashboardPlaceholder() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.dashboard,
-            size: 64,
-            color: PosTheme.textSecondary.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Bridge Dashboard',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: PosTheme.textSecondary.withValues(alpha: 0.7),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Kanban board coming soon',
-            style: TextStyle(
-              fontSize: 14,
-              color: PosTheme.textSecondary.withValues(alpha: 0.5),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildFloorPlanPlaceholder() {
     return Center(
       child: Column(
@@ -305,66 +286,24 @@ class PosShell extends ConsumerWidget {
     );
   }
 
-  Widget _buildSpeedRegisterPlaceholder() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.receipt_long,
-            size: 64,
-            color: PosTheme.textSecondary.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Speed Register',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: PosTheme.textSecondary.withValues(alpha: 0.7),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Split view register coming soon',
-            style: TextStyle(
-              fontSize: 14,
-              color: PosTheme.textSecondary.withValues(alpha: 0.5),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+}
 
-  Widget _buildOrderHistoryPlaceholder() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.history,
-            size: 64,
-            color: PosTheme.textSecondary.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Order History',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: PosTheme.textSecondary.withValues(alpha: 0.7),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Transaction history coming soon',
-            style: TextStyle(
-              fontSize: 14,
-              color: PosTheme.textSecondary.withValues(alpha: 0.5),
-            ),
-          ),
-        ],
+/// Small printer connection indicator for the navigation rail.
+class _PrinterIndicator extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final printerState = ref.watch(printerProvider);
+
+    return Tooltip(
+      message: printerState.isConnected
+          ? 'Printer: ${printerState.deviceName}'
+          : 'Printer disconnected',
+      child: Icon(
+        printerState.isConnected ? Icons.print : Icons.print_disabled,
+        size: 20,
+        color: printerState.isConnected
+            ? PosTheme.successGreen
+            : PosTheme.textSecondary.withValues(alpha: 0.4),
       ),
     );
   }

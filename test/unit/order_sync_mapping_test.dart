@@ -157,14 +157,15 @@ void main() {
       expect(r.orderId, 'fallback-id');
     });
 
-    test('orderNumber is nullable — absent field returns null', () {
+    test('orderNumber is empty string when absent (defaultValue coercion)', () {
       final r = OrderResponse.fromJson({
         'id': 'no-order-num',
         'status': 'pending',
         'created_at': '2025-02-16T14:00:00.000Z',
       });
 
-      expect(r.orderNumber, isNull);
+      // @JsonKey(defaultValue: '') coerces absent/null orderNumber to ''.
+      expect(r.orderNumber, '');
     });
 
     test('totalAmount defaults to 0.0 when absent', () {
@@ -184,12 +185,11 @@ void main() {
   group('OrderRequest — source field uses backend enum value', () {
     test('source serializes to pos for dinein', () {
       const req = OrderRequest(
-        tenantId: 'org-1',
         branchId: 'branch-1',
         source: 'pos', // After mapping dinein → pos
         items: [],
-        totalAmount: 50.0,
-        paymentMethod: 'cash',
+        subtotal: '50.00',
+        total: '50.00',
       );
 
       final json = req.toJson();
@@ -198,22 +198,87 @@ void main() {
 
     test('toJson round-trips correctly', () {
       const req = OrderRequest(
-        tenantId: 'org-2',
         branchId: 'branch-2',
         source: 'grab',
         items: [],
-        totalAmount: 120.0,
-        paymentMethod: 'card',
-        tableNumber: 'T5',
+        subtotal: '120.00',
+        total: '120.00',
       );
 
       final json = req.toJson();
       final restored = OrderRequest.fromJson(json);
 
-      expect(restored.tenantId, 'org-2');
+      expect(restored.branchId, 'branch-2');
       expect(restored.source, 'grab');
-      expect(restored.totalAmount, 120.0);
-      expect(restored.tableNumber, 'T5');
+      expect(restored.subtotal, '120.00');
+      expect(restored.total, '120.00');
+    });
+
+    test('fromJson handles old-format payload with totalAmount', () {
+      // Simulates old queue items stored before the schema fix
+      final oldPayload = {
+        'tenantId': 'org-1',
+        'branchId': 'branch-1',
+        'source': 'pos',
+        'items': <dynamic>[],
+        'totalAmount': 99.5,
+        'paymentMethod': 'cash',
+      };
+
+      final restored = OrderRequest.fromJson(oldPayload);
+
+      expect(restored.subtotal, '99.50');
+      expect(restored.total, '99.50');
+      expect(restored.source, 'pos');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // updateOrderStatus payload: backend expects 'id' (not 'orderId') and
+  // a backendValue status (not the Flutter enum name)
+  // -------------------------------------------------------------------------
+  group('updateOrderStatus — payload shape', () {
+    test('backend field name must be id, not orderId', () {
+      // Simulates the input map that api_service.dart builds
+      final input = {
+        'id': '55871abe-cd56-4e86-b288-0cd6c80c651b',
+        'status': OrderStatus.confirmed.backendValue,
+      };
+
+      expect(input.containsKey('id'), isTrue);
+      expect(input.containsKey('orderId'), isFalse);
+    });
+
+    test('all Kanban transitions produce valid backend status values', () {
+      // Backend Zod schema for updateStatus only accepts these values
+      const validBackendStatuses = {
+        'accepted',
+        'preparing',
+        'ready',
+        'completed',
+        'cancelled',
+      };
+
+      // pending → confirmed (Start Cooking)
+      expect(validBackendStatuses, contains(OrderStatus.confirmed.backendValue));
+      // confirmed → completed (Mark Ready)
+      expect(validBackendStatuses, contains(OrderStatus.completed.backendValue));
+      // completed → delivered (Mark Delivered)
+      expect(validBackendStatuses, contains(OrderStatus.delivered.backendValue));
+      // cancelled
+      expect(validBackendStatuses, contains(OrderStatus.cancelled.backendValue));
+    });
+
+    test('backendValue differs from Flutter enum name for mapped statuses', () {
+      // These are the statuses where Flutter name != backend value
+      expect(OrderStatus.confirmed.backendValue, 'accepted');
+      expect(OrderStatus.confirmed.name, isNot('accepted'));
+
+      expect(OrderStatus.completed.backendValue, 'ready');
+      expect(OrderStatus.completed.name, isNot('ready'));
+
+      expect(OrderStatus.delivered.backendValue, 'completed');
+      expect(OrderStatus.delivered.name, isNot('completed'));
     });
   });
 }

@@ -430,7 +430,7 @@ class _OrderDetailsModalState extends ConsumerState<OrderDetailsModal> {
   bool _isUpdating = false;
 
   // Determine the next logical status and button label
-  ({OrderStatus? next, String label, Color color, IconData icon, bool isDelivery})?
+  ({OrderStatus? next, String label, Color color, IconData icon})?
       get _nextAction {
     return switch (widget.order.status) {
       OrderStatus.pending => (
@@ -438,23 +438,20 @@ class _OrderDetailsModalState extends ConsumerState<OrderDetailsModal> {
           label: 'Start Cooking',
           color: PosTheme.accentAmber,
           icon: Icons.outdoor_grill_outlined,
-          isDelivery: false,
         ),
       OrderStatus.confirmed => (
           next: OrderStatus.completed,
           label: 'Mark Ready',
           color: PosTheme.successGreen,
           icon: Icons.check_circle_outline,
-          isDelivery: false,
         ),
       OrderStatus.completed => (
           next: OrderStatus.delivered,
           label: 'Mark Delivered',
           color: PosTheme.primaryBlue,
           icon: Icons.local_shipping_outlined,
-          isDelivery: true,
         ),
-      _ => null, // delivered / cancelled — final states
+      _ => null,
     };
   }
 
@@ -465,17 +462,7 @@ class _OrderDetailsModalState extends ConsumerState<OrderDetailsModal> {
 
     setState(() => _isUpdating = true);
     try {
-      if (action.isDelivery) {
-        // Mark delivered locally + push to cloud if already synced
-        await ref.read(orderRepositoryProvider).markDelivered(
-              localId,
-              serverId: widget.order.isSynced ? widget.order.orderId : null,
-            );
-      } else {
-        await ref
-            .read(orderRepositoryProvider)
-            .updateStatus(localId, action.next!);
-      }
+      await ref.read(orderRepositoryProvider).updateStatus(localId, action.next!);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {

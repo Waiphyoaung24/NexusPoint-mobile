@@ -2,7 +2,7 @@
 
 > Last updated: 2026-02-17
 > Branch: `feature/flutter-pos-mvp`
-> Tests: 107 passing (83 original + 24 added today)
+> Tests: 127 passing (107 prior + 20 added today)
 
 ---
 
@@ -94,22 +94,29 @@
 - [x] Cart clear on successful order
 - [x] Tests: 8 provider + 6 integration + 4 branchId + 3 cart + 3 auth = 24 new tests
 
+### Phase 11 — Bluetooth Printing (2026-02-17)
+- [x] `PrinterService` — BLE scan, connect, disconnect via `flutter_blue_plus`
+- [x] Write characteristic discovery + MTU-chunked data transfer
+- [x] Print job queue (enqueue, auto-process on connect)
+- [x] Saved printer persistence (SharedPreferences)
+- [x] `PrinterProvider` (StateNotifier) — scan/connect/disconnect state management
+- [x] `PrinterSettingsScreen` — status card, scan, device list, connect/disconnect, test print
+- [x] Printer status indicator (`_PrinterIndicator`) in PosShell navigation rail
+- [x] `ReceiptBuilder` — ESC/POS receipt format (header, items, totals, payment, change, footer)
+- [x] `KitchenTicketBuilder` — ESC/POS kitchen ticket (large font, source badge, item notes)
+- [x] Auto-print receipt + kitchen ticket on checkout success
+- [x] Tests: 8 printer service + 7 receipt/kitchen builder = 15 new tests
+
+### Phase 12 — Polish (2026-02-17)
+- [x] `ErrorBanner` widget — global error state with retry/dismiss via `MaterialBanner`
+- [x] `MenuGridSkeleton` — shimmer loading skeleton for menu grid
+- [x] Haptic feedback (`HapticFeedback.lightImpact()`) on menu item tap
+- [x] Removed unused placeholder methods from PosShell
+- [x] Tests: 5 error banner state tests
+
 ---
 
 ## Remaining — MVP
-
-### Bluetooth Printing (Original Tasks 16–17, 19)
-- [ ] `PrinterService` in `lib/features/printer/services/`
-- [ ] `flutter_blue_plus` scan, connect, disconnect
-- [ ] ESC/POS receipt builder (`esc_pos_utils`)
-- [ ] Kitchen ticket builder (different format from receipt)
-- [ ] Print job queue
-- [ ] `PrinterSettingsScreen` — scan list, pair/unpair
-- [ ] Saved printer persistence (SharedPreferences)
-- [ ] Printer status indicator in PosShell
-- [ ] Auto-print receipt on checkout success
-- [ ] Auto-print kitchen ticket
-- [ ] Manual reprint from order history
 
 ### Integration Tests (Original Task 22–23)
 - [ ] End-to-end order flow: login → add items → checkout → receipt
@@ -119,11 +126,9 @@
 - [ ] iPad (iOS 13+) physical device test
 - [ ] Bluetooth printer pairing and printing test
 
-### Polish (Original Task 24–25)
-- [ ] Error banner widget (`lib/shared/widgets/error_banner.dart`)
-- [ ] Loading skeletons for menu grid
-- [ ] Haptic feedback on cart actions
+### Polish — Remaining
 - [ ] Image caching for menu item images
+- [ ] Manual reprint from order history
 
 ---
 
@@ -154,20 +159,20 @@ lib/
 ├── features/
 │   ├── auth/         ← auth_provider, login_screen, pin_dialog  ✅
 │   ├── cart/         ← cart_provider                            ✅
-│   ├── checkout/     ← checkout_provider, checkout_modal        ✅ NEW
+│   ├── checkout/     ← checkout_provider, checkout_modal        ✅
 │   ├── dashboard/    ← bridge_dashboard_screen (Kanban)         ✅
 │   ├── menu/         ← menu_repository, menu_provider, menu_screen ✅
 │   ├── orders/       ← order_repository, order_provider, sync_service, order_history ✅
-│   ├── printer/      ← EMPTY                                   ❌
+│   ├── printer/      ← printer_service, printer_provider, receipt/kitchen builders, settings ✅
 │   ├── register/     ← speed_register_screen                   ✅
 │   └── shell/        ← pos_shell.dart                          ✅
 └── shared/
-    └── widgets/      ← connection_heartbeat                     ✅
+    └── widgets/      ← connection_heartbeat, error_banner, loading_skeleton ✅
 ```
 
 ---
 
-## Test Coverage (107 tests)
+## Test Coverage (127 tests)
 
 | File | Tests | What |
 |------|-------|------|
@@ -181,5 +186,8 @@ lib/
 | `checkout_modal_test.dart` | 6 | Cash/promptpay flows, state transitions |
 | `sync_service_test.dart` | 7 | Retry, connectivity, pending count |
 | `pin_dialog_test.dart` | 6 | Numpad, backspace, lockout |
+| `printer_service_test.dart` | 8 | PrinterState, PrintJob, PrinterNotifier |
+| `receipt_builder_test.dart` | 7 | Receipt format, kitchen ticket, source badges |
+| `error_banner_test.dart` | 5 | Error state, retry, dismiss |
 | `widget_test.dart` | 1 | App loads with AuthGate |
 | + generated mock tests | ~54 | Mockito generated mocks |

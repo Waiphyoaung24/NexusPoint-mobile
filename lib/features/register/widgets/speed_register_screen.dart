@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../../../core/models/menu_item.dart';
@@ -6,6 +7,7 @@ import '../../menu/providers/menu_provider.dart';
 import '../../../core/models/cart_item.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../checkout/widgets/checkout_modal.dart';
+import '../../../shared/widgets/loading_skeleton.dart';
 
 class SpeedRegisterScreen extends ConsumerWidget {
   const SpeedRegisterScreen({super.key});
@@ -128,9 +130,7 @@ class _MenuGrid extends ConsumerWidget {
                 );
               },
             ),
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      loading: () => const MenuGridSkeleton(),
       error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -164,6 +164,7 @@ class _MenuItemCard extends ConsumerWidget {
     return Card(
       child: InkWell(
         onTap: () {
+          HapticFeedback.lightImpact();
           ref.read(cartProvider.notifier).addItem(item);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

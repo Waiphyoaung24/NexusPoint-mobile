@@ -82,37 +82,64 @@ Map<String, dynamic> _$$OrderItemDtoImplToJson(_$OrderItemDtoImpl instance) =>
       'notes': instance.notes,
     };
 
+_$BackendOrderItemDtoImpl _$$BackendOrderItemDtoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$BackendOrderItemDtoImpl(
+      menuItemId: json['menuItemId'] as String,
+      name: json['name'] as String,
+      quantity: (json['quantity'] as num).toInt(),
+      price: json['price'] as String,
+      notes: json['notes'] as String?,
+    );
+
+Map<String, dynamic> _$$BackendOrderItemDtoImplToJson(
+        _$BackendOrderItemDtoImpl instance) =>
+    <String, dynamic>{
+      'menuItemId': instance.menuItemId,
+      'name': instance.name,
+      'quantity': instance.quantity,
+      'price': instance.price,
+      'notes': instance.notes,
+    };
+
 _$OrderRequestImpl _$$OrderRequestImplFromJson(Map<String, dynamic> json) =>
     _$OrderRequestImpl(
-      tenantId: json['tenantId'] as String,
-      branchId: json['branchId'] as String,
+      branchId: json['branchId'] as String?,
       source: json['source'] as String,
       items: (json['items'] as List<dynamic>)
-          .map((e) => OrderItemDto.fromJson(e as Map<String, dynamic>))
+          .map((e) => BackendOrderItemDto.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalAmount: _parsePrice(json['totalAmount']),
-      paymentMethod: json['paymentMethod'] as String,
-      tableNumber: json['tableNumber'] as String?,
+      subtotal: json['subtotal'] as String,
+      total: json['total'] as String,
+      discount: json['discount'] as String?,
+      notes: json['notes'] as String?,
     );
 
 Map<String, dynamic> _$$OrderRequestImplToJson(_$OrderRequestImpl instance) =>
     <String, dynamic>{
-      'tenantId': instance.tenantId,
       'branchId': instance.branchId,
       'source': instance.source,
-      'items': instance.items,
-      'totalAmount': instance.totalAmount,
-      'paymentMethod': instance.paymentMethod,
-      'tableNumber': instance.tableNumber,
+      'items': instance.items.map((e) => e.toJson()).toList(),
+      'subtotal': instance.subtotal,
+      'total': instance.total,
+      'discount': instance.discount,
+      'notes': instance.notes,
     };
 
 _$OrderResponseImpl _$$OrderResponseImplFromJson(Map<String, dynamic> json) =>
     _$OrderResponseImpl(
       orderId: json['orderId'] as String,
-      orderNumber: json['order_number'] as String?,
+      orderNumber: json['order_number'] as String? ?? '',
       status: json['status'] as String,
-      totalAmount: _parsePrice(json['totalAmount']),
+      totalAmount:
+          json['totalAmount'] == null ? 0.0 : _parsePrice(json['totalAmount']),
       createdAt: DateTime.parse(json['createdAt'] as String),
+      source: json['source'] as String? ?? 'pos',
+      items: (json['items'] as List<dynamic>?)
+              ?.map((e) =>
+                  BackendOrderItemDto.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$OrderResponseImplToJson(_$OrderResponseImpl instance) =>
@@ -122,6 +149,8 @@ Map<String, dynamic> _$$OrderResponseImplToJson(_$OrderResponseImpl instance) =>
       'status': instance.status,
       'totalAmount': instance.totalAmount,
       'createdAt': instance.createdAt.toIso8601String(),
+      'source': instance.source,
+      'items': instance.items,
     };
 
 _$MenuItemDtoImpl _$$MenuItemDtoImplFromJson(Map<String, dynamic> json) =>

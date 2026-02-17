@@ -77,14 +77,14 @@ class OrderRepository {
       entityId: localOrder.id,
       action: 'create',
       payloadJson: jsonEncode(OrderRequest(
-        tenantId: user.tenantId!,
         branchId: user.branchId ?? user.tenantId!,
         // Map Flutter enum to backend DB enum value (dinein → pos)
         source: source.backendValue,
-        items: items,
-        totalAmount: totalAmount,
-        paymentMethod: paymentMethod.name,
-        tableNumber: tableNumber,
+        items: items
+            .map(BackendOrderItemDto.fromOrderItemDto)
+            .toList(),
+        subtotal: totalAmount.toStringAsFixed(2),
+        total: totalAmount.toStringAsFixed(2),
       ).toJson()),
       priority: 1,
     );
@@ -102,34 +102,22 @@ class OrderRepository {
     }).toList();
   }
 
+  /// Updates order status locally and pushes to cloud if synced.
+  /// Looks up the serverId from local DB — works on any device.
   Future<void> updateStatus(int localId, OrderStatus newStatus) async {
     await _localDb.updateOrder(
       localId,
       OrdersCompanion(status: drift.Value(newStatus.name)),
     );
-  }
 
-  /// Marks an order as delivered locally and syncs to cloud only if the
-  /// order was previously synced (has a server orderId). Never creates a
-  /// new remote record.
-  Future<void> markDelivered(int localId, {String? serverId}) async {
-    // 1. Update local DB first (offline-safe)
-    await _localDb.updateOrder(
-      localId,
-      OrdersCompanion(status: drift.Value(OrderStatus.delivered.name)),
-    );
-
-    // 2. Push status to cloud only if already synced
-    if (serverId != null && serverId.isNotEmpty) {
+    final local = await _localDb.getOrderById(localId);
+    final serverId = local?.orderId;
+    if (local != null && local.isSynced && serverId != null && serverId.isNotEmpty) {
       try {
-        await _api.updateOrderStatus(
-          orderId: serverId,
-          status: OrderStatus.delivered.name,
-        );
-        debugPrint('✅ Order $serverId marked delivered on cloud');
+        await _api.updateOrderStatus(orderId: serverId, status: newStatus.backendValue);
+        debugPrint('✅ Order $serverId status → ${newStatus.backendValue}');
       } catch (e) {
-        // Non-fatal — local state is already updated
-        debugPrint('⚠️ Could not sync delivered status to cloud: $e');
+        debugPrint('⚠️ Could not push status to cloud: $e');
       }
     }
   }
@@ -147,40 +135,81 @@ class OrderRepository {
         branchId: branchId,
       );
 
-      for (final r in remote) {
-        // Try to find an existing local order by server ID
-        final localOrders = await _localDb.getAllOrders();
-        final existing = localOrders
-            .where((o) => o.orderId == r.orderId)
-            .toList();
+      // Load all local orders once (avoid O(n²) per-item queries)
+      final localOrders = await _localDb.getAllOrders();
+      final localByServerId = {
+        for (final o in localOrders)
+          if (o.orderId != null) o.orderId!: o,
+      };
 
-        if (existing.isEmpty) {
-          // Insert cloud order as a synced local record
+      for (final r in remote) {
+        final existing = localByServerId[r.orderId];
+        final serverStatus = OrderStatusBackend.fromBackend(r.status).name;
+
+        if (existing == null) {
+          // Convert backend items to local OrderItemDto format for storage
+          final localItems = r.items.map((bi) => OrderItemDto(
+            skuId: bi.menuItemId,
+            name: bi.name,
+            quantity: bi.quantity,
+            unitPrice: double.tryParse(bi.price) ?? 0.0,
+            notes: bi.notes,
+          )).toList();
+
+          // Map backend source value to Flutter enum
+          final sourceEnum = OrderSourceBackend.fromBackend(r.source);
+
+          // New order from another device — insert locally as synced
+          final orderNum = (r.orderNumber != null && r.orderNumber!.isNotEmpty)
+              ? r.orderNumber!
+              : r.orderId;
           await _localDb.insertOrder(
             OrdersCompanion(
-              orderNumber: drift.Value(r.orderNumber ?? r.orderId),
+              orderNumber: drift.Value(orderNum),
               orderId: drift.Value(r.orderId),
-              source: drift.Value(OrderSource.dinein.name), // default
-              status: drift.Value(
-                OrderStatusBackend.fromBackend(r.status).name,
-              ),
+              source: drift.Value(sourceEnum.name),
+              status: drift.Value(serverStatus),
               totalAmount: drift.Value(r.totalAmount),
               paymentMethod: const drift.Value('cash'),
-              itemsJson: const drift.Value('[]'),
+              itemsJson: drift.Value(jsonEncode(localItems.map((e) => e.toJson()).toList())),
               createdAt: drift.Value(r.createdAt),
               isSynced: const drift.Value(true),
               syncedAt: drift.Value(DateTime.now()),
             ),
           );
+        } else {
+          final needsStatusUpdate = existing.status != serverStatus;
+          final hasEmptyItems = existing.itemsJson == '[]' || existing.itemsJson.isEmpty;
+          final needsItemsUpdate = hasEmptyItems && r.items.isNotEmpty;
+
+          if (needsStatusUpdate || needsItemsUpdate) {
+            var companion = OrdersCompanion(
+              status: drift.Value(serverStatus),
+            );
+
+            if (needsItemsUpdate) {
+              final localItems = r.items.map((bi) => OrderItemDto(
+                skuId: bi.menuItemId,
+                name: bi.name,
+                quantity: bi.quantity,
+                unitPrice: double.tryParse(bi.price) ?? 0.0,
+                notes: bi.notes,
+              )).toList();
+              companion = OrdersCompanion(
+                status: drift.Value(serverStatus),
+                itemsJson: drift.Value(jsonEncode(localItems.map((e) => e.toJson()).toList())),
+                totalAmount: drift.Value(r.totalAmount),
+              );
+            }
+
+            await _localDb.updateOrder(existing.id, companion);
+          }
         }
       }
     } on ApiException catch (e) {
       if (e.statusCode == 404) {
-        // Backend order.list procedure not implemented yet — skip silently
-        debugPrint(
-          '⚠️ order.list not found on backend (404). '
-          'Using local orders only.',
-        );
+        // Backend order.list not yet implemented — skip silently
+        debugPrint('⚠️ order.list not found on backend (404). Using local orders only.');
       } else {
         debugPrint('⚠️ Cloud fetch failed: $e');
       }
