@@ -1,12 +1,12 @@
 # NexusPoint POS — Progress Tracker
 
-> Last updated: 2026-02-15
+> Last updated: 2026-02-17
 > Branch: `feature/flutter-pos-mvp`
-> Next action: `/superpowers:write-plan` for remaining MVP tasks
+> Tests: 107 passing (83 original + 24 added today)
 
 ---
 
-## ✅ Completed
+## Completed
 
 ### Phase 1 — Project Initialization
 - [x] Flutter project created (`store.nexuspoint`, android + ios)
@@ -26,7 +26,7 @@
 ### Phase 3 — API Layer
 - [x] API DTOs in `api_models.dart` (auth, orders, menu)
 - [x] Custom exceptions: `ApiException`, `NetworkException`, `UnauthorizedException`
-- [x] `PosApiService` (Retrofit) — login, orders, menu endpoints
+- [x] `PosApiService` — tRPC-based for auth/org/orders/menu endpoints
 - [x] `Dio` provider with JWT interceptor + auto 401 clear
 - [x] `AuthTokenProvider` with SharedPreferences persistence
 - [x] `PrettyDioLogger` in debug mode
@@ -56,84 +56,70 @@
 - [x] `OrderProvider` (StreamProvider) — watch all orders via Drift
 - [x] Order number generation (`ORD-YYYYMMDD-HHMMSS`)
 - [x] `SyncQueue` enqueue on order create
+- [x] `updateStatus` and `markDelivered` with cloud sync
+- [x] `fetchAndMergeFromCloud` for remote order merging
 
 ### Phase 7 — Platform Permissions
 - [x] Android: Bluetooth (SCAN, CONNECT, ADMIN), Location, Internet
 - [x] Android: minSdk 21 for BLE
 - [x] iOS: `NSBluetoothAlwaysUsageDescription`, `NSLocationWhenInUseUsageDescription`
 
-### Phase 8 — UI Shell & Screens (Beyond Original Plan)
-- [x] `PosShell` — NavigationRail (extended ≥1024px) with 4 destinations
-  - Bridge, Register, Menu, Orders
+### Phase 8 — UI Shell & Screens
+- [x] `PosShell` — NavigationRail (extended >=1024px) with 4 destinations
 - [x] `PosTheme` — light theme, blue/white palette, Material 3
 - [x] `BridgeDashboardScreen` — 3-column Kanban (Pending / In Progress / Done)
 - [x] `SpeedRegisterScreen` — split-view (menu grid left, cart right)
 - [x] `ConnectionHeartbeat` widget — API connectivity status indicator
 
+### Phase 9 — Background Sync & Order History (2026-02-15)
+- [x] `SyncServiceNotifier` with retry logic (max 3 attempts, `markFailed`)
+- [x] `connectivity_plus` listener — trigger sync on reconnect
+- [x] `SyncState` with `idle / syncing / error` + `pendingCount`
+- [x] Tests: `test/unit/sync_service_test.dart` (7 tests)
+- [x] `OrderHistoryScreen` — orders grouped by day, detail bottom sheet
+- [x] `_SyncBadge` (local / synced), `_StatusChip` (pending/confirmed/done/cancelled)
+- [x] `PinDialog` — 4-digit numpad with lockout handling
+- [x] Kanban status advancement + Mark Delivered with cloud sync
+
+### Phase 10 — Tech Debt + Checkout Flow (2026-02-17)
+- [x] Move `appDatabaseProvider` from `menu_repository.dart` to `core/providers/database_provider.dart`
+- [x] Replace hardcoded `branchId: 'default'` with `user.branchId ?? user.tenantId!`
+- [x] Add `branchId` field to `User` model (nullable String)
+- [x] Replace all `print()` with `debugPrint()` in `api_service.dart` (40 calls)
+- [x] Fix untyped `item` in `_CartItemCard` → `final CartItem item;`
+- [x] Add auth null org tests (3 tests)
+- [x] **CheckoutProvider** — payment method selection, cash change calculation, quick cash suggestions
+- [x] **CheckoutModal** — bottom sheet with Cash (tendered + change) and PromptPay (QR placeholder)
+- [x] Wire checkout into SpeedRegister (replaced old AlertDialog)
+- [x] Cart clear on successful order
+- [x] Tests: 8 provider + 6 integration + 4 branchId + 3 cart + 3 auth = 24 new tests
+
 ---
 
-## ❌ Remaining — MVP Critical Path
+## Remaining — MVP
 
-### Task 16 — Bluetooth Printer Service
+### Bluetooth Printing (Original Tasks 16–17, 19)
 - [ ] `PrinterService` in `lib/features/printer/services/`
 - [ ] `flutter_blue_plus` scan, connect, disconnect
 - [ ] ESC/POS receipt builder (`esc_pos_utils`)
 - [ ] Kitchen ticket builder (different format from receipt)
 - [ ] Print job queue
-
-### Task 17 — Printer Discovery & Pairing UI
 - [ ] `PrinterSettingsScreen` — scan list, pair/unpair
 - [ ] Saved printer persistence (SharedPreferences)
 - [ ] Printer status indicator in PosShell
-
-### Task 18 — Checkout Flow
-- [ ] `CheckoutScreen` / checkout modal from SpeedRegister
-- [ ] Payment method selector: cash / PromptPay / card
-- [ ] Cash: enter tendered amount → change calculation
-- [ ] PromptPay: QR code display
-- [ ] Order submission via `OrderRepository.createOrder()`
-- [ ] Success confirmation with order number
-- [ ] Cart clear on success
-
-### Task 19 — Receipt & Kitchen Ticket Printing
 - [ ] Auto-print receipt on checkout success
 - [ ] Auto-print kitchen ticket
 - [ ] Manual reprint from order history
-- [ ] Print preview (optional)
 
-### Task 20 — Background Sync Service ✅ (2026-02-15)
-- [x] `SyncServiceNotifier` in `lib/features/orders/services/sync_service.dart`
-- [x] Retry logic (max 3 attempts, `markFailed` after limit)
-- [x] `connectivity_plus` listener — trigger sync on reconnect
-- [x] `SyncState` with `idle / syncing / error` + `pendingCount`
-- [x] `syncServiceProvider` (Riverpod StateNotifier)
-- [x] Tests: `test/unit/sync_service_test.dart` (7 tests)
-
-### Task 21 — Order History UI ✅ (2026-02-15)
-- [x] `OrderHistoryScreen` in `lib/features/orders/widgets/`
-- [x] Orders grouped by day with time display
-- [x] Order detail bottom sheet (items, total, payment, table)
-- [x] `_SyncBadge` (local / synced), `_StatusChip` (pending/confirmed/done/cancelled)
-- [x] Wired into `PosShell` case 4 (replaced placeholder)
-- [x] Tests: `test/unit/order_provider_test.dart` (5 tests)
-
-### Task 22 — PIN Dialog ✅ (2026-02-15)
-- [x] `lib/features/auth/widgets/pin_dialog.dart` — `showPinDialog()` helper
-- [x] 4-digit numpad with backspace, PIN dots, error message, lockout handling
-- [x] Calls `authProvider.verifyManagerPin()` — existing lockout logic preserved
-- [x] Tests: `test/widget/pin_dialog_test.dart` (6 tests)
-
-### Task 23 — Integration Tests
+### Integration Tests (Original Task 22–23)
 - [ ] End-to-end order flow: login → add items → checkout → receipt
 - [ ] Offline mode test: create order without internet → sync on reconnect
 - [ ] `integration_test/app_test.dart`
-
-### Task 24 — Physical Device Testing
-- [ ] Android tablet (Android 8+)
-- [ ] iPad (iOS 13+)
+- [ ] Android tablet (Android 8+) physical device test
+- [ ] iPad (iOS 13+) physical device test
 - [ ] Bluetooth printer pairing and printing test
 
-### Task 25 — Polish & Performance
+### Polish (Original Task 24–25)
 - [ ] Error banner widget (`lib/shared/widgets/error_banner.dart`)
 - [ ] Loading skeletons for menu grid
 - [ ] Haptic feedback on cart actions
@@ -141,14 +127,16 @@
 
 ---
 
-## Known Issues / Blockers
+## Known Issues / Resolved
 
 | # | Issue | Status |
 |---|-------|--------|
-| 1 | `session.active_organization_id` may be NULL for new users | Workaround in `FIX_SUMMARY.md` |
-| 2 | `CartItem` has no widget — SpeedRegister cart panel needs cart items list | Needed for Task 18 |
-| 3 | `appDatabaseProvider` defined in `menu_repository.dart` — should move to `core/providers/` | Tech debt |
-| 4 | `order_repository.dart` hardcodes `branchId: 'default'` | Needs settings/config |
+| 1 | `session.active_organization_id` may be NULL for new users | Resolved — auth flow handles gracefully, tests added |
+| 2 | `CartItem` has no widget — SpeedRegister cart panel needs cart items list | Resolved — `_CartItemCard` typed, cart panel working |
+| 3 | `appDatabaseProvider` defined in `menu_repository.dart` | Resolved — moved to `core/providers/database_provider.dart` |
+| 4 | `order_repository.dart` hardcodes `branchId: 'default'` | Resolved — uses `user.branchId ?? user.tenantId!` |
+| 5 | `print()` calls in `api_service.dart` pollute release builds | Resolved — all 40 replaced with `debugPrint()` |
+| 6 | `api_models.freezed.dart` deleted by `build_runner --delete-conflicting-outputs` | Known — json_annotation version constraint issue; restored from git |
 
 ---
 
@@ -157,34 +145,41 @@
 ```
 lib/
 ├── core/
-│   ├── api/          ← api_service.dart (Retrofit), api_exception.dart
+│   ├── api/          ← api_service.dart (tRPC), api_exception.dart
 │   ├── config/       ← app_config.dart (flavors, dart-define)
 │   ├── database/     ← app_database.dart + tables/ + daos/
 │   ├── models/       ← MenuItem, Order, CartItem, User, api_models
-│   ├── providers/    ← dio_provider, auth_token_provider
+│   ├── providers/    ← dio_provider, auth_token_provider, database_provider
 │   └── theme/        ← pos_theme.dart
 ├── features/
-│   ├── auth/         ← auth_provider, login_screen       ✅
-│   ├── cart/         ← cart_provider                     ✅ (no UI yet)
-│   ├── dashboard/    ← bridge_dashboard_screen            ✅
+│   ├── auth/         ← auth_provider, login_screen, pin_dialog  ✅
+│   ├── cart/         ← cart_provider                            ✅
+│   ├── checkout/     ← checkout_provider, checkout_modal        ✅ NEW
+│   ├── dashboard/    ← bridge_dashboard_screen (Kanban)         ✅
 │   ├── menu/         ← menu_repository, menu_provider, menu_screen ✅
-│   ├── orders/       ← order_repository, order_provider  ✅ (no UI yet)
-│   ├── printer/      ← EMPTY                             ❌
-│   ├── register/     ← speed_register_screen             ✅ (no checkout)
-│   └── shell/        ← pos_shell.dart                    ✅
+│   ├── orders/       ← order_repository, order_provider, sync_service, order_history ✅
+│   ├── printer/      ← EMPTY                                   ❌
+│   ├── register/     ← speed_register_screen                   ✅
+│   └── shell/        ← pos_shell.dart                          ✅
 └── shared/
-    └── widgets/      ← connection_heartbeat               ✅
+    └── widgets/      ← connection_heartbeat                     ✅
 ```
 
 ---
 
-## Next Session Plan Scope
+## Test Coverage (107 tests)
 
-For `/superpowers:write-plan`, focus on these in priority order:
-
-1. **Checkout Flow** (Task 18) — highest business value, unblocks everything
-2. **Cart UI in SpeedRegister** — complete the register screen
-3. **PIN Dialog** (Task 22) — needed for manager overrides
-4. **Order History UI** (Task 21) — complete the Orders nav destination
-5. **Background Sync** (Task 20) — offline reliability
-6. **Bluetooth Printer** (Tasks 16–19) — receipt printing
+| File | Tests | What |
+|------|-------|------|
+| `auth_provider_test.dart` | 6 | Login, OTP, session, org selection |
+| `auth_null_org_test.dart` | 3 | Null tenantId edge cases |
+| `cart_provider_test.dart` | 4 | Add, update, remove, tax calc |
+| `cart_item_card_test.dart` | 3 | Cart panel add/clear/summary |
+| `order_provider_test.dart` | 5 | Order stream, empty state |
+| `order_repository_branch_test.dart` | 4 | branchId serialization |
+| `checkout_provider_test.dart` | 8 | Payment methods, change calc, quick cash |
+| `checkout_modal_test.dart` | 6 | Cash/promptpay flows, state transitions |
+| `sync_service_test.dart` | 7 | Retry, connectivity, pending count |
+| `pin_dialog_test.dart` | 6 | Numpad, backspace, lockout |
+| `widget_test.dart` | 1 | App loads with AuthGate |
+| + generated mock tests | ~54 | Mockito generated mocks |
