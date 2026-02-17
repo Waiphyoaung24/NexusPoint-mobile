@@ -7,16 +7,13 @@ import '../../../core/database/app_database.dart';
 import '../../../core/database/daos/menu_dao.dart';
 import '../../../core/api/api_service.dart';
 import '../../../core/providers/dio_provider.dart';
+import '../../../core/providers/database_provider.dart';
 
 final menuRepositoryProvider = Provider<MenuRepository>((ref) {
   return MenuRepository(
     ref.read(posApiServiceProvider),
     ref.read(appDatabaseProvider).menuDao,
   );
-});
-
-final appDatabaseProvider = Provider<AppDatabase>((ref) {
-  return AppDatabase();
 });
 
 class MenuRepository {

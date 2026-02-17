@@ -14,7 +14,7 @@ import '../../../core/database/daos/order_dao.dart';
 import '../../../core/database/daos/sync_queue_dao.dart';
 import '../../../core/api/api_service.dart';
 import '../../../core/providers/dio_provider.dart';
-import '../../menu/repositories/menu_repository.dart';
+import '../../../core/providers/database_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 
 final orderRepositoryProvider = Provider<OrderRepository>((ref) {
