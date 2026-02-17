@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../models/api_models.dart';
 import '../models/user.dart';
@@ -63,11 +64,11 @@ class PosApiService {
 
           lastError = e;
 
-          print('⚠️  tRPC Query format attempt failed ($procedure): ${e.response?.statusCode} ${e.message}');
+          debugPrint('⚠️  tRPC Query format attempt failed ($procedure): ${e.response?.statusCode} ${e.message}');
 
           if (e.response?.data != null) {
 
-            print('📦 Error data: ${e.response?.data}');
+            debugPrint('📦 Error data: ${e.response?.data}');
 
           }
 
@@ -77,7 +78,7 @@ class PosApiService {
 
           if (e.response?.statusCode == 404) {
 
-            print('❌ Procedure $procedure not found (404)');
+            debugPrint('❌ Procedure $procedure not found (404)');
 
             break;
 
@@ -165,11 +166,11 @@ class PosApiService {
 
           lastError = e;
 
-          print('⚠️  tRPC Mutation format attempt failed ($procedure): ${e.response?.statusCode} ${e.message}');
+          debugPrint('⚠️  tRPC Mutation format attempt failed ($procedure): ${e.response?.statusCode} ${e.message}');
 
           if (e.response?.data != null) {
 
-            print('📦 Error data: ${e.response?.data}');
+            debugPrint('📦 Error data: ${e.response?.data}');
 
           }
 
@@ -179,7 +180,7 @@ class PosApiService {
 
           if (e.response?.statusCode == 404) {
 
-            print('❌ Procedure $procedure not found (404)');
+            debugPrint('❌ Procedure $procedure not found (404)');
 
             break;
 
@@ -237,7 +238,7 @@ class PosApiService {
 
         if (e is ApiException) rethrow;
 
-        print('⚠️  Error parsing tRPC response: $e');
+        debugPrint('⚠️  Error parsing tRPC response: $e');
 
       }
 
@@ -299,7 +300,7 @@ class PosApiService {
 
         final data = response.data;
 
-        print('📦 Raw Auth Response: $data');
+        debugPrint('📦 Raw Auth Response: $data');
 
   
 
@@ -311,7 +312,7 @@ class PosApiService {
 
   
 
-        print('👤 User Data: $userData');
+        debugPrint('👤 User Data: $userData');
 
   
 
@@ -323,7 +324,7 @@ class PosApiService {
 
   
 
-        print('🏢 Active Organization ID: $activeOrgId');
+        debugPrint('🏢 Active Organization ID: $activeOrgId');
 
   
 
@@ -337,7 +338,7 @@ class PosApiService {
 
           organizations = orgData.map((json) => Organization.fromJson(json)).toList();
 
-          print('🏢 Found ${organizations.length} organizations in response');
+          debugPrint('🏢 Found ${organizations.length} organizations in response');
 
         }
 
@@ -381,7 +382,7 @@ class PosApiService {
 
       try {
 
-        print('🛒 Creating order via tRPC: order.create');
+        debugPrint('🛒 Creating order via tRPC: order.create');
 
         final data = await _trpcMutation('order.create', input: request.toJson());
 
@@ -389,7 +390,7 @@ class PosApiService {
 
       } catch (e) {
 
-        print('❌ order.create failed: $e');
+        debugPrint('❌ order.create failed: $e');
 
         rethrow;
 
@@ -406,14 +407,14 @@ class PosApiService {
       required String status,
     }) async {
       try {
-        print('🔄 Updating order status via tRPC: order.updateStatus');
+        debugPrint('🔄 Updating order status via tRPC: order.updateStatus');
         await _trpcMutation('order.updateStatus', input: {
           'orderId': orderId,
           'status': status,
         });
-        print('✅ Order $orderId status updated to $status');
+        debugPrint('✅ Order $orderId status updated to $status');
       } catch (e) {
-        print('❌ order.updateStatus failed: $e');
+        debugPrint('❌ order.updateStatus failed: $e');
         rethrow;
       }
     }
@@ -430,7 +431,7 @@ class PosApiService {
 
       try {
 
-        print('📋 Fetching orders via tRPC: order.list');
+        debugPrint('📋 Fetching orders via tRPC: order.list');
 
         final data = await _trpcQuery('order.list', input: {
 
@@ -454,7 +455,7 @@ class PosApiService {
 
       } catch (e) {
 
-        print('❌ order.list failed: $e');
+        debugPrint('❌ order.list failed: $e');
 
         rethrow;
 
@@ -472,7 +473,7 @@ class PosApiService {
 
         final response = await _dio.get('auth/get-session');
 
-        print('📦 Session Response: ${response.data}');
+        debugPrint('📦 Session Response: ${response.data}');
 
         return response.data;
 
@@ -504,13 +505,13 @@ class PosApiService {
 
         try {
 
-          print('🔍 Calling tRPC: $procedure');
+          debugPrint('🔍 Calling tRPC: $procedure');
 
           final data = await _trpcQuery(procedure);
 
           if (data is List) {
 
-            print('✅ Got ${data.length} organizations from $procedure');
+            debugPrint('✅ Got ${data.length} organizations from $procedure');
 
             return data.map((json) => Organization.fromJson(json)).toList();
 
@@ -518,7 +519,7 @@ class PosApiService {
 
         } catch (e) {
 
-          print('⚠️  tRPC $procedure failed: $e');
+          debugPrint('⚠️  tRPC $procedure failed: $e');
 
         }
 
@@ -544,7 +545,7 @@ class PosApiService {
 
         try {
 
-          print('🔍 Calling REST: $endpoint');
+          debugPrint('🔍 Calling REST: $endpoint');
 
           final response = await _dio.get(endpoint);
 
@@ -572,7 +573,7 @@ class PosApiService {
 
           if (listData != null && listData is List) {
 
-            print('✅ REST $endpoint worked!');
+            debugPrint('✅ REST $endpoint worked!');
 
             return listData.map((json) => Organization.fromJson(json)).toList();
 
@@ -580,7 +581,7 @@ class PosApiService {
 
         } catch (e) {
 
-          print('⚠️  REST $endpoint failed: $e');
+          debugPrint('⚠️  REST $endpoint failed: $e');
 
         }
 
@@ -588,7 +589,7 @@ class PosApiService {
 
   
 
-      print('❌ All organization list endpoints failed');
+      debugPrint('❌ All organization list endpoints failed');
 
       return [];
 
@@ -598,7 +599,7 @@ class PosApiService {
 
     Future<void> setActiveOrganization(String organizationId) async {
 
-      print('🔄 Setting active organization: $organizationId');
+      debugPrint('🔄 Setting active organization: $organizationId');
 
   
 
@@ -616,7 +617,7 @@ class PosApiService {
 
         try {
 
-          print('🔍 Calling tRPC: $procedure');
+          debugPrint('🔍 Calling tRPC: $procedure');
 
           await _trpcMutation(procedure, input: {
 
@@ -624,13 +625,13 @@ class PosApiService {
 
           });
 
-          print('✅ Active organization set successfully via $procedure');
+          debugPrint('✅ Active organization set successfully via $procedure');
 
           return;
 
         } catch (e) {
 
-          print('⚠️  tRPC $procedure failed: $e');
+          debugPrint('⚠️  tRPC $procedure failed: $e');
 
         }
 
@@ -654,7 +655,7 @@ class PosApiService {
 
         try {
 
-          print('🔍 Calling REST: $endpoint');
+          debugPrint('🔍 Calling REST: $endpoint');
 
           await _dio.post(
 
@@ -664,13 +665,13 @@ class PosApiService {
 
           );
 
-          print('✅ REST $endpoint worked!');
+          debugPrint('✅ REST $endpoint worked!');
 
           return;
 
         } catch (e) {
 
-          print('⚠️  REST $endpoint failed: $e');
+          debugPrint('⚠️  REST $endpoint failed: $e');
 
         }
 
@@ -696,7 +697,7 @@ class PosApiService {
 
       try {
 
-        print('🏢 Creating organization: $name ($slug)');
+        debugPrint('🏢 Creating organization: $name ($slug)');
 
   
 
@@ -714,13 +715,13 @@ class PosApiService {
 
   
 
-        print('✅ Organization created: ${data['id']}');
+        debugPrint('✅ Organization created: ${data['id']}');
 
         return Organization.fromJson(data);
 
       } catch (e) {
 
-        print('❌ Failed to create organization: $e');
+        debugPrint('❌ Failed to create organization: $e');
 
         rethrow;
 
@@ -736,7 +737,7 @@ class PosApiService {
 
       try {
 
-        print('🍽️ Fetching menu items via tRPC: menu.listItems');
+        debugPrint('🍽️ Fetching menu items via tRPC: menu.listItems');
 
         final data = await _trpcQuery('menu.listItems');
 
@@ -752,7 +753,7 @@ class PosApiService {
 
       } catch (e) {
 
-        print('❌ menu.listItems failed: $e');
+        debugPrint('❌ menu.listItems failed: $e');
 
         rethrow;
 
@@ -766,7 +767,7 @@ class PosApiService {
 
       try {
 
-        print('📝 Updating menu item via tRPC: menu.updateItem');
+        debugPrint('📝 Updating menu item via tRPC: menu.updateItem');
 
         await _trpcMutation('menu.updateItem', input: {
 
@@ -778,7 +779,7 @@ class PosApiService {
 
       } catch (e) {
 
-        print('❌ menu.updateItem failed: $e');
+        debugPrint('❌ menu.updateItem failed: $e');
 
         rethrow;
 
