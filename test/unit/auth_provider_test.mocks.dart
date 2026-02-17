@@ -112,6 +112,24 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
       ) as _i4.Future<_i2.OrderResponse>);
 
   @override
+  _i4.Future<void> updateOrderStatus({
+    required String? orderId,
+    required String? status,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateOrderStatus,
+          [],
+          {
+            #orderId: orderId,
+            #status: status,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
   _i4.Future<List<_i2.OrderResponse>> getOrders({
     required String? tenantId,
     required String? branchId,
