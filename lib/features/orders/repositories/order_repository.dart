@@ -78,7 +78,7 @@ class OrderRepository {
       action: 'create',
       payloadJson: jsonEncode(OrderRequest(
         tenantId: user.tenantId!,
-        branchId: 'default', // TODO: Get from settings
+        branchId: user.branchId ?? user.tenantId!,
         // Map Flutter enum to backend DB enum value (dinein → pos)
         source: source.backendValue,
         items: items,

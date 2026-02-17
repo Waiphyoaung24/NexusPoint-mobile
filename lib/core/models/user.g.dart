@@ -15,6 +15,7 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
       name: json['name'] as String?,
       image: json['image'] as String?,
       emailVerified: json['emailVerified'] as bool?,
+      branchId: json['branchId'] as String?,
       managerPinHash: json['managerPinHash'] as String?,
       isActive: json['isActive'] as bool? ?? true,
     );
@@ -29,6 +30,7 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
       'name': instance.name,
       'image': instance.image,
       'emailVerified': instance.emailVerified,
+      'branchId': instance.branchId,
       'managerPinHash': instance.managerPinHash,
       'isActive': instance.isActive,
     };

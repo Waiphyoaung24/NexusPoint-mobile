@@ -29,6 +29,7 @@ mixin _$User {
   String? get name => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
   bool? get emailVerified => throw _privateConstructorUsedError;
+  String? get branchId => throw _privateConstructorUsedError;
   String? get managerPinHash => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
 
@@ -51,6 +52,7 @@ abstract class $UserCopyWith<$Res> {
       String? name,
       String? image,
       bool? emailVerified,
+      String? branchId,
       String? managerPinHash,
       bool isActive});
 }
@@ -76,6 +78,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? name = freezed,
     Object? image = freezed,
     Object? emailVerified = freezed,
+    Object? branchId = freezed,
     Object? managerPinHash = freezed,
     Object? isActive = null,
   }) {
@@ -112,6 +115,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.emailVerified
           : emailVerified // ignore: cast_nullable_to_non_nullable
               as bool?,
+      branchId: freezed == branchId
+          ? _value.branchId
+          : branchId // ignore: cast_nullable_to_non_nullable
+              as String?,
       managerPinHash: freezed == managerPinHash
           ? _value.managerPinHash
           : managerPinHash // ignore: cast_nullable_to_non_nullable
@@ -140,6 +147,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       String? name,
       String? image,
       bool? emailVerified,
+      String? branchId,
       String? managerPinHash,
       bool isActive});
 }
@@ -162,6 +170,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? name = freezed,
     Object? image = freezed,
     Object? emailVerified = freezed,
+    Object? branchId = freezed,
     Object? managerPinHash = freezed,
     Object? isActive = null,
   }) {
@@ -198,6 +207,10 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.emailVerified
           : emailVerified // ignore: cast_nullable_to_non_nullable
               as bool?,
+      branchId: freezed == branchId
+          ? _value.branchId
+          : branchId // ignore: cast_nullable_to_non_nullable
+              as String?,
       managerPinHash: freezed == managerPinHash
           ? _value.managerPinHash
           : managerPinHash // ignore: cast_nullable_to_non_nullable
@@ -222,6 +235,7 @@ class _$UserImpl implements _User {
       this.name,
       this.image,
       this.emailVerified,
+      this.branchId,
       this.managerPinHash,
       this.isActive = true});
 
@@ -246,6 +260,8 @@ class _$UserImpl implements _User {
   @override
   final bool? emailVerified;
   @override
+  final String? branchId;
+  @override
   final String? managerPinHash;
   @override
   @JsonKey()
@@ -253,7 +269,7 @@ class _$UserImpl implements _User {
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, tenantId: $tenantId, organizationId: $organizationId, role: $role, name: $name, image: $image, emailVerified: $emailVerified, managerPinHash: $managerPinHash, isActive: $isActive)';
+    return 'User(id: $id, email: $email, tenantId: $tenantId, organizationId: $organizationId, role: $role, name: $name, image: $image, emailVerified: $emailVerified, branchId: $branchId, managerPinHash: $managerPinHash, isActive: $isActive)';
   }
 
   @override
@@ -272,6 +288,8 @@ class _$UserImpl implements _User {
             (identical(other.image, image) || other.image == image) &&
             (identical(other.emailVerified, emailVerified) ||
                 other.emailVerified == emailVerified) &&
+            (identical(other.branchId, branchId) ||
+                other.branchId == branchId) &&
             (identical(other.managerPinHash, managerPinHash) ||
                 other.managerPinHash == managerPinHash) &&
             (identical(other.isActive, isActive) ||
@@ -290,6 +308,7 @@ class _$UserImpl implements _User {
       name,
       image,
       emailVerified,
+      branchId,
       managerPinHash,
       isActive);
 
@@ -317,6 +336,7 @@ abstract class _User implements User {
       final String? name,
       final String? image,
       final bool? emailVerified,
+      final String? branchId,
       final String? managerPinHash,
       final bool isActive}) = _$UserImpl;
 
@@ -339,6 +359,8 @@ abstract class _User implements User {
   String? get image;
   @override
   bool? get emailVerified;
+  @override
+  String? get branchId;
   @override
   String? get managerPinHash;
   @override

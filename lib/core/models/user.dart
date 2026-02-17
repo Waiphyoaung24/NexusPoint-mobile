@@ -23,6 +23,7 @@ class User with _$User {
     String? name,
     String? image,
     bool? emailVerified,
+    String? branchId,
     String? managerPinHash,
     @Default(true) bool isActive,
   }) = _User;
