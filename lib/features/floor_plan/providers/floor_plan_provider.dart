@@ -50,6 +50,7 @@ final floorPlanPollingProvider = Provider.autoDispose<void>((ref) {
   );
 
   if (orgId.isEmpty) return;
+  if (branchId.isEmpty) return;
 
   // Poll every 2 seconds
   final timer = Timer.periodic(const Duration(seconds: 2), (_) {

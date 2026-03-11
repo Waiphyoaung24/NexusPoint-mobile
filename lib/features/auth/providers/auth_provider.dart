@@ -169,10 +169,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
         debugPrint('⚠️  No branches found for switch');
         return;
       }
+      // Cache fresh branch list
+      final prefs = await SharedPreferences.getInstance();
+      await _cacheBranches(prefs, branches);
+
       if (branches.length == 1) {
         // Only one branch, just re-select it directly
         final user = current.user.copyWith(branchId: branches.first.id);
-        final prefs = await SharedPreferences.getInstance();
         await prefs.setString('current_user', jsonEncode(user.toJson()));
         state = AuthState.authenticated(user: user);
         return;
@@ -386,6 +389,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('current_user');
+    await prefs.remove('cached_branches');
 
     state = const AuthState.unauthenticated();
   }

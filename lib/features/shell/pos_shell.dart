@@ -258,7 +258,9 @@ class PosShell extends ConsumerWidget {
               try {
                 final db = ref.read(appDatabaseProvider);
                 await db.floorPlanDao.deleteAll();
-              } catch (_) {}
+              } catch (e) {
+                debugPrint('⚠️ Failed to clear floor plan cache: $e');
+              }
 
               await ref.read(authProvider.notifier).switchBranch();
             }
