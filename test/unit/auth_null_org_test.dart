@@ -13,6 +13,7 @@ void main() {
       const state = AuthState.authenticated(user: user);
       state.when(
         unauthenticated: () => fail('Should be authenticated'),
+        branchPending: (_, __) => fail('Should be authenticated'),
         authenticated: (u, _) {
           expect(u.tenantId, isNull);
         },
@@ -28,6 +29,7 @@ void main() {
       const state = AuthState.authenticated(user: user);
       state.when(
         unauthenticated: () => fail('Should be authenticated'),
+        branchPending: (_, __) => fail('Should be authenticated'),
         authenticated: (u, _) {
           expect(u.tenantId, 'org-123');
         },
