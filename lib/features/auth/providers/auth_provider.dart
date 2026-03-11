@@ -4,8 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
+import '../../../core/models/branch_dto.dart';
 import '../../../core/models/user.dart';
 import '../../../core/models/api_models.dart';
+import '../../../core/api/api_service.dart';
 import '../../../core/providers/dio_provider.dart';
 import '../../../core/providers/auth_token_provider.dart';
 
@@ -14,6 +16,10 @@ part 'auth_provider.freezed.dart';
 @freezed
 class AuthState with _$AuthState {
   const factory AuthState.unauthenticated() = Unauthenticated;
+  const factory AuthState.branchPending({
+    required User user,
+    required List<BranchDto> branches,
+  }) = BranchPending;
   const factory AuthState.authenticated({
     required User user,
     @Default(0) int failedPinAttempts,
@@ -58,9 +64,43 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final token = prefs.getString('auth_token');
 
     if (userJson != null && token != null) {
-      final user = User.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
-      state = AuthState.authenticated(user: user);
+      var user = User.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
+
+      // If branchId is missing from cache, try fetching it in the background.
+      // This covers the case where the user was cached before branch support was added.
+      if (user.branchId == null && user.tenantId != null) {
+        state = AuthState.authenticated(user: user);
+        try {
+          final api = ref.read(posApiServiceProvider);
+          user = await _fetchAndSetBranch(api, user);
+          await prefs.setString('current_user', jsonEncode(user.toJson()));
+          state = AuthState.authenticated(user: user);
+        } catch (e) {
+          print('⚠️  Branch fetch on cached auth failed (will retry on next open): $e');
+        }
+      } else {
+        state = AuthState.authenticated(user: user);
+      }
     }
+  }
+
+  /// Fetches the first active branch for the user's organization and sets
+  /// [User.branchId]. Returns the updated user. If no branches are found
+  /// or the call fails, the user is returned unchanged.
+  Future<User> _fetchAndSetBranch(PosApiService api, User user) async {
+    try {
+      final branches = await api.getBranches();
+      if (branches.isNotEmpty) {
+        final branchId = branches.first.id;
+        print('🏪 Auto-selected branch: ${branches.first.name} ($branchId)');
+        return user.copyWith(branchId: branchId);
+      } else {
+        print('⚠️  No active branches found for organization');
+      }
+    } catch (e) {
+      print('⚠️  Failed to fetch branches: $e');
+    }
+    return user;
   }
 
   Future<void> requestOtp(String email) async {
@@ -98,7 +138,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
             if (activeOrgId != null && activeOrgId.isNotEmpty) {
               print('✅ Found activeOrganizationId in session: $activeOrgId');
-              final userWithOrg = response.user.copyWith(tenantId: activeOrgId);
+              var userWithOrg = response.user.copyWith(tenantId: activeOrgId);
+              userWithOrg = await _fetchAndSetBranch(api, userWithOrg);
 
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('current_user', jsonEncode(userWithOrg.toJson()));
@@ -158,7 +199,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
           if (activeOrgId != null && activeOrgId.isNotEmpty) {
             print('✅ Active Organization ID set: $activeOrgId');
-            final userWithOrg = response.user.copyWith(tenantId: activeOrgId);
+            var userWithOrg = response.user.copyWith(tenantId: activeOrgId);
+            userWithOrg = await _fetchAndSetBranch(api, userWithOrg);
 
             // Save user with organization
             final prefs = await SharedPreferences.getInstance();
@@ -181,9 +223,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else {
         // ✅ User already has active organization
         print('✅ Active Organization ID: ${response.activeOrganizationId}');
-        final userWithOrg = response.user.copyWith(
+        var userWithOrg = response.user.copyWith(
           tenantId: response.activeOrganizationId,
         );
+        userWithOrg = await _fetchAndSetBranch(api, userWithOrg);
 
         // Save user with organization
         final prefs = await SharedPreferences.getInstance();

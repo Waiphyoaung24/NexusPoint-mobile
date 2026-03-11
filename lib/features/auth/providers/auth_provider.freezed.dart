@@ -19,18 +19,22 @@ mixin _$AuthState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() unauthenticated,
+    required TResult Function(User user, List<BranchDto> branches)
+        branchPending,
     required TResult Function(User user, int failedPinAttempts) authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? unauthenticated,
+    TResult? Function(User user, List<BranchDto> branches)? branchPending,
     TResult? Function(User user, int failedPinAttempts)? authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? unauthenticated,
+    TResult Function(User user, List<BranchDto> branches)? branchPending,
     TResult Function(User user, int failedPinAttempts)? authenticated,
     required TResult orElse(),
   }) =>
@@ -38,18 +42,21 @@ mixin _$AuthState {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Unauthenticated value) unauthenticated,
+    required TResult Function(BranchPending value) branchPending,
     required TResult Function(Authenticated value) authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Unauthenticated value)? unauthenticated,
+    TResult? Function(BranchPending value)? branchPending,
     TResult? Function(Authenticated value)? authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Unauthenticated value)? unauthenticated,
+    TResult Function(BranchPending value)? branchPending,
     TResult Function(Authenticated value)? authenticated,
     required TResult orElse(),
   }) =>
@@ -112,6 +119,8 @@ class _$UnauthenticatedImpl implements Unauthenticated {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() unauthenticated,
+    required TResult Function(User user, List<BranchDto> branches)
+        branchPending,
     required TResult Function(User user, int failedPinAttempts) authenticated,
   }) {
     return unauthenticated();
@@ -121,6 +130,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? unauthenticated,
+    TResult? Function(User user, List<BranchDto> branches)? branchPending,
     TResult? Function(User user, int failedPinAttempts)? authenticated,
   }) {
     return unauthenticated?.call();
@@ -130,6 +140,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? unauthenticated,
+    TResult Function(User user, List<BranchDto> branches)? branchPending,
     TResult Function(User user, int failedPinAttempts)? authenticated,
     required TResult orElse(),
   }) {
@@ -143,6 +154,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Unauthenticated value) unauthenticated,
+    required TResult Function(BranchPending value) branchPending,
     required TResult Function(Authenticated value) authenticated,
   }) {
     return unauthenticated(this);
@@ -152,6 +164,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Unauthenticated value)? unauthenticated,
+    TResult? Function(BranchPending value)? branchPending,
     TResult? Function(Authenticated value)? authenticated,
   }) {
     return unauthenticated?.call(this);
@@ -161,6 +174,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Unauthenticated value)? unauthenticated,
+    TResult Function(BranchPending value)? branchPending,
     TResult Function(Authenticated value)? authenticated,
     required TResult orElse(),
   }) {
@@ -173,6 +187,175 @@ class _$UnauthenticatedImpl implements Unauthenticated {
 
 abstract class Unauthenticated implements AuthState {
   const factory Unauthenticated() = _$UnauthenticatedImpl;
+}
+
+/// @nodoc
+abstract class _$$BranchPendingImplCopyWith<$Res> {
+  factory _$$BranchPendingImplCopyWith(
+          _$BranchPendingImpl value, $Res Function(_$BranchPendingImpl) then) =
+      __$$BranchPendingImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({User user, List<BranchDto> branches});
+
+  $UserCopyWith<$Res> get user;
+}
+
+/// @nodoc
+class __$$BranchPendingImplCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$BranchPendingImpl>
+    implements _$$BranchPendingImplCopyWith<$Res> {
+  __$$BranchPendingImplCopyWithImpl(
+      _$BranchPendingImpl _value, $Res Function(_$BranchPendingImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? user = null,
+    Object? branches = null,
+  }) {
+    return _then(_$BranchPendingImpl(
+      user: null == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User,
+      branches: null == branches
+          ? _value._branches
+          : branches // ignore: cast_nullable_to_non_nullable
+              as List<BranchDto>,
+    ));
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $UserCopyWith<$Res> get user {
+    return $UserCopyWith<$Res>(_value.user, (value) {
+      return _then(_value.copyWith(user: value));
+    });
+  }
+}
+
+/// @nodoc
+
+class _$BranchPendingImpl implements BranchPending {
+  const _$BranchPendingImpl(
+      {required this.user, required final List<BranchDto> branches})
+      : _branches = branches;
+
+  @override
+  final User user;
+  final List<BranchDto> _branches;
+  @override
+  List<BranchDto> get branches {
+    if (_branches is EqualUnmodifiableListView) return _branches;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_branches);
+  }
+
+  @override
+  String toString() {
+    return 'AuthState.branchPending(user: $user, branches: $branches)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BranchPendingImpl &&
+            (identical(other.user, user) || other.user == user) &&
+            const DeepCollectionEquality().equals(other._branches, _branches));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, user, const DeepCollectionEquality().hash(_branches));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BranchPendingImplCopyWith<_$BranchPendingImpl> get copyWith =>
+      __$$BranchPendingImplCopyWithImpl<_$BranchPendingImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() unauthenticated,
+    required TResult Function(User user, List<BranchDto> branches)
+        branchPending,
+    required TResult Function(User user, int failedPinAttempts) authenticated,
+  }) {
+    return branchPending(user, branches);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? unauthenticated,
+    TResult? Function(User user, List<BranchDto> branches)? branchPending,
+    TResult? Function(User user, int failedPinAttempts)? authenticated,
+  }) {
+    return branchPending?.call(user, branches);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? unauthenticated,
+    TResult Function(User user, List<BranchDto> branches)? branchPending,
+    TResult Function(User user, int failedPinAttempts)? authenticated,
+    required TResult orElse(),
+  }) {
+    if (branchPending != null) {
+      return branchPending(user, branches);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Unauthenticated value) unauthenticated,
+    required TResult Function(BranchPending value) branchPending,
+    required TResult Function(Authenticated value) authenticated,
+  }) {
+    return branchPending(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Unauthenticated value)? unauthenticated,
+    TResult? Function(BranchPending value)? branchPending,
+    TResult? Function(Authenticated value)? authenticated,
+  }) {
+    return branchPending?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Unauthenticated value)? unauthenticated,
+    TResult Function(BranchPending value)? branchPending,
+    TResult Function(Authenticated value)? authenticated,
+    required TResult orElse(),
+  }) {
+    if (branchPending != null) {
+      return branchPending(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class BranchPending implements AuthState {
+  const factory BranchPending(
+      {required final User user,
+      required final List<BranchDto> branches}) = _$BranchPendingImpl;
+
+  User get user;
+  List<BranchDto> get branches;
+  @JsonKey(ignore: true)
+  _$$BranchPendingImplCopyWith<_$BranchPendingImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -260,6 +443,8 @@ class _$AuthenticatedImpl implements Authenticated {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() unauthenticated,
+    required TResult Function(User user, List<BranchDto> branches)
+        branchPending,
     required TResult Function(User user, int failedPinAttempts) authenticated,
   }) {
     return authenticated(user, failedPinAttempts);
@@ -269,6 +454,7 @@ class _$AuthenticatedImpl implements Authenticated {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? unauthenticated,
+    TResult? Function(User user, List<BranchDto> branches)? branchPending,
     TResult? Function(User user, int failedPinAttempts)? authenticated,
   }) {
     return authenticated?.call(user, failedPinAttempts);
@@ -278,6 +464,7 @@ class _$AuthenticatedImpl implements Authenticated {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? unauthenticated,
+    TResult Function(User user, List<BranchDto> branches)? branchPending,
     TResult Function(User user, int failedPinAttempts)? authenticated,
     required TResult orElse(),
   }) {
@@ -291,6 +478,7 @@ class _$AuthenticatedImpl implements Authenticated {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(Unauthenticated value) unauthenticated,
+    required TResult Function(BranchPending value) branchPending,
     required TResult Function(Authenticated value) authenticated,
   }) {
     return authenticated(this);
@@ -300,6 +488,7 @@ class _$AuthenticatedImpl implements Authenticated {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Unauthenticated value)? unauthenticated,
+    TResult? Function(BranchPending value)? branchPending,
     TResult? Function(Authenticated value)? authenticated,
   }) {
     return authenticated?.call(this);
@@ -309,6 +498,7 @@ class _$AuthenticatedImpl implements Authenticated {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Unauthenticated value)? unauthenticated,
+    TResult Function(BranchPending value)? branchPending,
     TResult Function(Authenticated value)? authenticated,
     required TResult orElse(),
   }) {
