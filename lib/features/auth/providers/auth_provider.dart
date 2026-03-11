@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,7 +92,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         } on _MultipleBranchesResult catch (result) {
           state = AuthState.branchPending(user: user, branches: result.branches);
         } catch (e) {
-          print('⚠️  Branch fetch on cached auth failed: $e');
+          debugPrint('⚠️  Branch fetch on cached auth failed: $e');
           // Still authenticate with null branchId — floor plan will show error
           state = AuthState.authenticated(user: user);
         }
@@ -106,20 +107,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final branches = await api.getBranches();
       if (branches.isEmpty) {
-        print('⚠️  No active branches found for organization');
+        debugPrint('⚠️  No active branches found for organization');
         return _BranchFetchResult(user, []);
       }
       if (branches.length == 1) {
         final branchId = branches.first.id;
-        print('🏪 Auto-selected branch: ${branches.first.name} ($branchId)');
+        debugPrint('🏪 Auto-selected branch: ${branches.first.name} ($branchId)');
         return _BranchFetchResult(user.copyWith(branchId: branchId), branches);
       }
       // Multiple branches — caller must handle branchPending state
-      print('🏪 ${branches.length} branches found — user must select');
+      debugPrint('🏪 ${branches.length} branches found — user must select');
       throw _MultipleBranchesResult(branches);
     } catch (e) {
       if (e is _MultipleBranchesResult) rethrow;
-      print('⚠️  Failed to fetch branches: $e');
+      debugPrint('⚠️  Failed to fetch branches: $e');
       return _BranchFetchResult(user, []);
     }
   }
@@ -151,7 +152,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // Also persist the branch list for potential re-use on switch
     await _cacheBranches(prefs, current.branches);
 
-    print('🏪 Branch selected: $branchId');
+    debugPrint('🏪 Branch selected: $branchId');
     state = AuthState.authenticated(user: user);
   }
 
@@ -165,7 +166,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final branches = await api.getBranches();
       if (branches.isEmpty) {
-        print('⚠️  No branches found for switch');
+        debugPrint('⚠️  No branches found for switch');
         return;
       }
       if (branches.length == 1) {
@@ -180,7 +181,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = current.user.copyWith(branchId: null);
       state = AuthState.branchPending(user: user, branches: branches);
     } catch (e) {
-      print('❌ Branch switch failed: $e');
+      debugPrint('❌ Branch switch failed: $e');
     }
   }
 
@@ -197,13 +198,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Save token first
       await ref.read(authTokenProvider.notifier).setToken(response.token);
 
-      print('📧 Email: ${response.user.email}');
-      print('🏢 Active Organization ID: ${response.activeOrganizationId}');
+      debugPrint('📧 Email: ${response.user.email}');
+      debugPrint('🏢 Active Organization ID: ${response.activeOrganizationId}');
 
       // Check if user has active organization
       if (response.activeOrganizationId == null ||
           response.activeOrganizationId!.isEmpty) {
-        print('⚠️  No active organization - checking initial response, session and organizations...');
+        debugPrint('⚠️  No active organization - checking initial response, session and organizations...');
 
         // 1. Check if organizations were already in the auth response
         List<Organization> organizations = response.organizations ?? [];
@@ -212,13 +213,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
           // 2. Try to get session data
           try {
             final sessionData = await api.getSession();
-            print('📦 Session data: $sessionData');
+            debugPrint('📦 Session data: $sessionData');
 
             final session = sessionData['session'] as Map<String, dynamic>?;
             final activeOrgId = session?['activeOrganizationId'] as String?;
 
             if (activeOrgId != null && activeOrgId.isNotEmpty) {
-              print('✅ Found activeOrganizationId in session: $activeOrgId');
+              debugPrint('✅ Found activeOrganizationId in session: $activeOrgId');
               var userWithOrg = response.user.copyWith(tenantId: activeOrgId);
               try {
                 final result = await _fetchAndSetBranch(api, userWithOrg);
@@ -236,40 +237,40 @@ class AuthNotifier extends StateNotifier<AuthState> {
               }
             }
           } catch (e) {
-            print('⚠️  Session check failed: $e');
+            debugPrint('⚠️  Session check failed: $e');
           }
 
           // 3. Fetch user's organizations from multiple possible endpoints
           try {
             organizations = await api.getUserOrganizations();
           } catch (e) {
-            print('❌ Failed to fetch organizations: $e');
+            debugPrint('❌ Failed to fetch organizations: $e');
           }
         }
 
-        print('🏢 Found ${organizations.length} organizations');
+        debugPrint('🏢 Found ${organizations.length} organizations');
 
         if (organizations.isEmpty) {
           // ❌ User has no organizations
-          print('❌ User has no organizations');
-          print('');
-          print('═══════════════════════════════════════════════════════════════');
-          print('  🏢 NO ORGANIZATIONS FOUND');
-          print('═══════════════════════════════════════════════════════════════');
-          print('');
-          print('This user account is not associated with any organization.');
-          print('');
-          print('To fix this:');
-          print('1. Create an organization in your backend database');
-          print('2. Assign this user (${response.user.id}) to the organization');
-          print('3. Set the organization as active for the user');
-          print('');
-          print('See: scripts/seed_organization.sql for SQL commands');
-          print('Or:  scripts/create_test_organization.sh for API method');
-          print('');
-          print('User ID: ${response.user.id}');
-          print('Email:   ${response.user.email}');
-          print('═══════════════════════════════════════════════════════════════');
+          debugPrint('❌ User has no organizations');
+          debugPrint('');
+          debugPrint('═══════════════════════════════════════════════════════════════');
+          debugPrint('  🏢 NO ORGANIZATIONS FOUND');
+          debugPrint('═══════════════════════════════════════════════════════════════');
+          debugPrint('');
+          debugPrint('This user account is not associated with any organization.');
+          debugPrint('');
+          debugPrint('To fix this:');
+          debugPrint('1. Create an organization in your backend database');
+          debugPrint('2. Assign this user (${response.user.id}) to the organization');
+          debugPrint('3. Set the organization as active for the user');
+          debugPrint('');
+          debugPrint('See: scripts/seed_organization.sql for SQL commands');
+          debugPrint('Or:  scripts/create_test_organization.sh for API method');
+          debugPrint('');
+          debugPrint('User ID: ${response.user.id}');
+          debugPrint('Email:   ${response.user.email}');
+          debugPrint('═══════════════════════════════════════════════════════════════');
           throw Exception(
             'No organizations found.\n\n'
             'Your account needs to be added to an organization.\n'
@@ -277,7 +278,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           );
         } else if (organizations.length == 1) {
           // ✅ Auto-select single organization
-          print('✅ Auto-selecting single organization: ${organizations.first.name}');
+          debugPrint('✅ Auto-selecting single organization: ${organizations.first.name}');
           await api.setActiveOrganization(organizations.first.id);
 
           // Refresh session to get updated activeOrganizationId
@@ -286,7 +287,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           final activeOrgId = session['activeOrganizationId'] as String?;
 
           if (activeOrgId != null && activeOrgId.isNotEmpty) {
-            print('✅ Active Organization ID set: $activeOrgId');
+            debugPrint('✅ Active Organization ID set: $activeOrgId');
             var userWithOrg = response.user.copyWith(tenantId: activeOrgId);
             try {
               final result = await _fetchAndSetBranch(api, userWithOrg);
@@ -307,7 +308,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           }
         } else {
           // 🎯 Multiple organizations - need user to choose
-          print('🎯 Multiple organizations found: ${organizations.length}');
+          debugPrint('🎯 Multiple organizations found: ${organizations.length}');
           // TODO: Show organization picker UI
           throw MultipleOrganizationsException(
             'Please select an organization',
@@ -316,7 +317,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         }
       } else {
         // ✅ User already has active organization
-        print('✅ Active Organization ID: ${response.activeOrganizationId}');
+        debugPrint('✅ Active Organization ID: ${response.activeOrganizationId}');
         var userWithOrg = response.user.copyWith(
           tenantId: response.activeOrganizationId,
         );
@@ -336,8 +337,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         }
       }
     } catch (e, stack) {
-      print('❌ Verify OTP Exception: $e');
-      print('Stack trace: $stack');
+      debugPrint('❌ Verify OTP Exception: $e');
+      debugPrint('Stack trace: $stack');
       return false;
     }
   }
