@@ -13,6 +13,7 @@ import '../printer/providers/printer_provider.dart';
 import '../printer/widgets/printer_settings_screen.dart';
 import '../floor_plan/floor_plan_screen.dart';
 import '../../core/providers/current_branch_provider.dart';
+import '../../core/providers/database_provider.dart';
 
 // Shell Navigation State
 final shellNavigationProvider = StateProvider<int>((ref) => 0);
@@ -224,6 +225,45 @@ class PosShell extends ConsumerWidget {
             );
           },
           tooltip: 'Printer Settings',
+        ),
+
+        const SizedBox(height: 8),
+
+        // Switch Branch Button
+        IconButton(
+          icon: const Icon(Icons.swap_horiz_rounded),
+          onPressed: () async {
+            final confirmed = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text('Switch Branch?'),
+                content: const Text(
+                  'Cart and floor plan data will reload for the new branch.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                    child: const Text('Switch'),
+                  ),
+                ],
+              ),
+            );
+
+            if (confirmed == true) {
+              // Clear floor plan cache
+              try {
+                final db = ref.read(appDatabaseProvider);
+                await db.floorPlanDao.deleteAll();
+              } catch (_) {}
+
+              await ref.read(authProvider.notifier).switchBranch();
+            }
+          },
+          tooltip: 'Switch Branch',
         ),
 
         const SizedBox(height: 8),
