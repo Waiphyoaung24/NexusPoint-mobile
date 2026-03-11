@@ -47,6 +47,12 @@ class _MultipleBranchesResult implements Exception {
   _MultipleBranchesResult(this.branches);
 }
 
+class _BranchFetchResult {
+  final User user;
+  final List<BranchDto> branches;
+  _BranchFetchResult(this.user, this.branches);
+}
+
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(ref);
 });
@@ -77,7 +83,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (user.branchId == null && user.tenantId != null) {
         try {
           final api = ref.read(posApiServiceProvider);
-          user = await _fetchAndSetBranch(api, user);
+          final result = await _fetchAndSetBranch(api, user);
+          user = result.user;
+          await _cacheBranches(prefs, result.branches);
           await prefs.setString('current_user', jsonEncode(user.toJson()));
           state = AuthState.authenticated(user: user);
         } on _MultipleBranchesResult catch (result) {
@@ -94,17 +102,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Fetches branches. If single, auto-selects. If multiple, throws _MultipleBranchesResult.
-  Future<User> _fetchAndSetBranch(PosApiService api, User user) async {
+  Future<_BranchFetchResult> _fetchAndSetBranch(PosApiService api, User user) async {
     try {
       final branches = await api.getBranches();
       if (branches.isEmpty) {
         print('⚠️  No active branches found for organization');
-        return user;
+        return _BranchFetchResult(user, []);
       }
       if (branches.length == 1) {
         final branchId = branches.first.id;
         print('🏪 Auto-selected branch: ${branches.first.name} ($branchId)');
-        return user.copyWith(branchId: branchId);
+        return _BranchFetchResult(user.copyWith(branchId: branchId), branches);
       }
       // Multiple branches — caller must handle branchPending state
       print('🏪 ${branches.length} branches found — user must select');
@@ -112,7 +120,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       if (e is _MultipleBranchesResult) rethrow;
       print('⚠️  Failed to fetch branches: $e');
-      return user;
+      return _BranchFetchResult(user, []);
+    }
+  }
+
+  /// Persists branch list to SharedPreferences for branch name display.
+  Future<void> _cacheBranches(SharedPreferences prefs, List<BranchDto> branches) async {
+    if (branches.isNotEmpty) {
+      final branchListJson = branches.map((b) => {
+        'id': b.id,
+        'organizationId': b.organizationId,
+        'name': b.name,
+        'address': b.address,
+        'isActive': b.isActive,
+      }).toList();
+      await prefs.setString('cached_branches', jsonEncode(branchListJson));
     }
   }
 
@@ -127,14 +149,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await prefs.setString('current_user', jsonEncode(user.toJson()));
 
     // Also persist the branch list for potential re-use on switch
-    final branchListJson = current.branches.map((b) => {
-      'id': b.id,
-      'organizationId': b.organizationId,
-      'name': b.name,
-      'address': b.address,
-      'isActive': b.isActive,
-    }).toList();
-    await prefs.setString('cached_branches', jsonEncode(branchListJson));
+    await _cacheBranches(prefs, current.branches);
 
     print('🏪 Branch selected: $branchId');
     state = AuthState.authenticated(user: user);
@@ -206,8 +221,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
               print('✅ Found activeOrganizationId in session: $activeOrgId');
               var userWithOrg = response.user.copyWith(tenantId: activeOrgId);
               try {
-                userWithOrg = await _fetchAndSetBranch(api, userWithOrg);
+                final result = await _fetchAndSetBranch(api, userWithOrg);
+                userWithOrg = result.user;
                 final prefs = await SharedPreferences.getInstance();
+                await _cacheBranches(prefs, result.branches);
                 await prefs.setString('current_user', jsonEncode(userWithOrg.toJson()));
                 state = AuthState.authenticated(user: userWithOrg);
                 return true;
@@ -272,8 +289,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
             print('✅ Active Organization ID set: $activeOrgId');
             var userWithOrg = response.user.copyWith(tenantId: activeOrgId);
             try {
-              userWithOrg = await _fetchAndSetBranch(api, userWithOrg);
+              final result = await _fetchAndSetBranch(api, userWithOrg);
+              userWithOrg = result.user;
               final prefs = await SharedPreferences.getInstance();
+              await _cacheBranches(prefs, result.branches);
               await prefs.setString('current_user', jsonEncode(userWithOrg.toJson()));
               state = AuthState.authenticated(user: userWithOrg);
               return true;
@@ -302,8 +321,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
           tenantId: response.activeOrganizationId,
         );
         try {
-          userWithOrg = await _fetchAndSetBranch(api, userWithOrg);
+          final result = await _fetchAndSetBranch(api, userWithOrg);
+          userWithOrg = result.user;
           final prefs = await SharedPreferences.getInstance();
+          await _cacheBranches(prefs, result.branches);
           await prefs.setString('current_user', jsonEncode(userWithOrg.toJson()));
           state = AuthState.authenticated(user: userWithOrg);
           return true;
