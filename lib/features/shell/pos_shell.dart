@@ -11,6 +11,8 @@ import '../orders/services/sync_service.dart';
 import '../orders/services/order_polling_service.dart';
 import '../printer/providers/printer_provider.dart';
 import '../printer/widgets/printer_settings_screen.dart';
+import '../floor_plan/floor_plan_screen.dart';
+import '../../core/providers/current_branch_provider.dart';
 
 // Shell Navigation State
 final shellNavigationProvider = StateProvider<int>((ref) => 0);
@@ -145,6 +147,10 @@ class PosShell extends ConsumerWidget {
           status: ConnectionStatus.online,
         ),
 
+        // Branch Name Badge
+        const SizedBox(height: 8),
+        _BranchBadge(),
+
         const SizedBox(height: 24),
         const Divider(),
         const SizedBox(height: 8),
@@ -242,7 +248,7 @@ class PosShell extends ConsumerWidget {
       case 0:
         return const BridgeDashboardScreen();
       case 1:
-        return _buildFloorPlanPlaceholder();
+        return const FloorPlanScreen();
       case 2:
         return const SpeedRegisterScreen();
       case 3:
@@ -254,38 +260,47 @@ class PosShell extends ConsumerWidget {
     }
   }
 
-  Widget _buildFloorPlanPlaceholder() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.table_restaurant,
-            size: 64,
-            color: PosTheme.textSecondary.withValues(alpha: 0.5),
+}
+
+class _BranchBadge extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final branchName = ref.watch(currentBranchNameProvider);
+
+    return branchName.when(
+      data: (name) {
+        if (name == null) return const SizedBox.shrink();
+        final display = name.length > 12 ? '${name.substring(0, 12)}...' : name;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: PosTheme.primaryBlue.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(6),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Interactive Floor Plan',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: PosTheme.textSecondary.withValues(alpha: 0.7),
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.store_rounded,
+                size: 12,
+                color: PosTheme.primaryBlue,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                display,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: PosTheme.primaryBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Pan/zoom table layout coming soon',
-            style: TextStyle(
-              fontSize: 14,
-              color: PosTheme.textSecondary.withValues(alpha: 0.5),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
-
 }
 
 /// Small printer connection indicator for the navigation rail.
