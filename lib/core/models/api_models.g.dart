@@ -153,6 +153,110 @@ Map<String, dynamic> _$$OrderResponseImplToJson(_$OrderResponseImpl instance) =>
       'items': instance.items,
     };
 
+_$ModifierOptionDtoImpl _$$ModifierOptionDtoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ModifierOptionDtoImpl(
+      id: json['id'] as String,
+      modifierGroupId: json['modifierGroupId'] as String,
+      organizationId: json['organizationId'] as String?,
+      name: json['name'] as String,
+      nameTh: json['nameTh'] as String?,
+      priceAdjustment: json['priceAdjustment'] == null
+          ? 0.0
+          : _parsePrice(json['priceAdjustment']),
+      isDefault: json['isDefault'] as bool? ?? false,
+      isActive: json['isActive'] as bool? ?? true,
+      sortOrder: (json['sortOrder'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$$ModifierOptionDtoImplToJson(
+        _$ModifierOptionDtoImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'modifierGroupId': instance.modifierGroupId,
+      'organizationId': instance.organizationId,
+      'name': instance.name,
+      'nameTh': instance.nameTh,
+      'priceAdjustment': instance.priceAdjustment,
+      'isDefault': instance.isDefault,
+      'isActive': instance.isActive,
+      'sortOrder': instance.sortOrder,
+    };
+
+_$ModifierGroupDtoImpl _$$ModifierGroupDtoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ModifierGroupDtoImpl(
+      id: json['id'] as String,
+      organizationId: json['organizationId'] as String?,
+      name: json['name'] as String,
+      nameTh: json['nameTh'] as String?,
+      isRequired: json['isRequired'] as bool? ?? false,
+      minSelections: (json['minSelections'] as num?)?.toInt(),
+      maxSelections: (json['maxSelections'] as num?)?.toInt(),
+      sortOrder: (json['sortOrder'] as num?)?.toInt(),
+      isActive: json['isActive'] as bool? ?? true,
+      options: (json['options'] as List<dynamic>?)
+              ?.map(
+                  (e) => ModifierOptionDto.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$$ModifierGroupDtoImplToJson(
+        _$ModifierGroupDtoImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'organizationId': instance.organizationId,
+      'name': instance.name,
+      'nameTh': instance.nameTh,
+      'isRequired': instance.isRequired,
+      'minSelections': instance.minSelections,
+      'maxSelections': instance.maxSelections,
+      'sortOrder': instance.sortOrder,
+      'isActive': instance.isActive,
+      'options': instance.options,
+    };
+
+_$ItemModifierLinkDtoImpl _$$ItemModifierLinkDtoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ItemModifierLinkDtoImpl(
+      id: json['id'] as String,
+      menuItemId: json['menuItemId'] as String,
+      modifierGroupId: json['modifierGroupId'] as String,
+      sortOrder: (json['sortOrder'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$$ItemModifierLinkDtoImplToJson(
+        _$ItemModifierLinkDtoImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'menuItemId': instance.menuItemId,
+      'modifierGroupId': instance.modifierGroupId,
+      'sortOrder': instance.sortOrder,
+    };
+
+_$MenuWithModifiersDtoImpl _$$MenuWithModifiersDtoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$MenuWithModifiersDtoImpl(
+      items: (json['items'] as List<dynamic>)
+          .map((e) => MenuItemDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      modifierGroups: (json['modifierGroups'] as List<dynamic>)
+          .map((e) => ModifierGroupDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      itemModifierLinks: (json['itemModifierLinks'] as List<dynamic>)
+          .map((e) => ItemModifierLinkDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$$MenuWithModifiersDtoImplToJson(
+        _$MenuWithModifiersDtoImpl instance) =>
+    <String, dynamic>{
+      'items': instance.items,
+      'modifierGroups': instance.modifierGroups,
+      'itemModifierLinks': instance.itemModifierLinks,
+    };
+
 _$MenuItemDtoImpl _$$MenuItemDtoImplFromJson(Map<String, dynamic> json) =>
     _$MenuItemDtoImpl(
       id: json['id'] as String,

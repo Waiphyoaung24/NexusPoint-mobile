@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/models/order.dart';
 import '../../../core/models/cart_item.dart';
+// SelectedModifierOption is defined in cart_item.dart
 import '../../../core/models/menu_item.dart';
 import '../../../core/models/api_models.dart';
 import '../../../core/database/app_database.dart';
@@ -41,6 +42,7 @@ class OrderRepository {
     required double totalAmount,
     required PaymentMethod paymentMethod,
     String? tableNumber,
+    List<List<SelectedModifierOption>>? modifiersPerItem,
   }) async {
     final authState = _ref.read(authProvider);
     if (authState is! Authenticated) {
@@ -72,20 +74,26 @@ class OrderRepository {
     // PHASE 2: Attempt server sync (if online)
     // For MVP, we'll implement sync in background service
     // Queue for sync
+    // Build backend items — include structured modifier data when available
+    final backendItemsJson = items.asMap().entries.map((entry) {
+      final mods = modifiersPerItem?[entry.key] ?? [];
+      if (mods.isEmpty) {
+        return BackendOrderItemDto.fromOrderItemDto(entry.value).toJson();
+      }
+      return BackendOrderItemDto.toJsonWithModifiers(entry.value, mods);
+    }).toList();
+
     await _syncQueue.enqueue(
       entityType: 'order',
       entityId: localOrder.id,
       action: 'create',
-      payloadJson: jsonEncode(OrderRequest(
-        branchId: user.branchId ?? user.tenantId!,
-        // Map Flutter enum to backend DB enum value (dinein → pos)
-        source: source.backendValue,
-        items: items
-            .map(BackendOrderItemDto.fromOrderItemDto)
-            .toList(),
-        subtotal: totalAmount.toStringAsFixed(2),
-        total: totalAmount.toStringAsFixed(2),
-      ).toJson()),
+      payloadJson: jsonEncode({
+        'branchId': user.branchId ?? user.tenantId!,
+        'source': source.backendValue,
+        'items': backendItemsJson,
+        'subtotal': totalAmount.toStringAsFixed(2),
+        'total': totalAmount.toStringAsFixed(2),
+      }),
       priority: 1,
     );
 

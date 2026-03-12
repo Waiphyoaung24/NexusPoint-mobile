@@ -201,21 +201,37 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
     try {
       final cartState = ref.read(cartProvider);
       final checkout = ref.read(checkoutProvider);
-      final orderItems = cartState.items
-          .map((item) => OrderItemDto(
-                skuId: item.menuItem.id,
-                name: item.menuItem.name,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                notes: item.notes,
-              ))
-          .toList();
+      final cartItems = cartState.items.toList();
+
+      final orderItems = cartItems.map((item) {
+        // Build modifier summary string e.g. "Size: Large" for receipt notes
+        final modifierSummary = item.selectedModifiers.isNotEmpty
+            ? item.selectedModifiers.map((m) => '${m.groupName}: ${m.name}').join(', ')
+            : null;
+        final combinedNotes = [
+          if (item.notes?.isNotEmpty == true) item.notes!,
+          if (modifierSummary != null) modifierSummary,
+        ].join(' | ');
+
+        return OrderItemDto(
+          skuId: item.menuItem.id,
+          name: item.menuItem.name,
+          quantity: item.quantity,
+          // Modifier price baked in so local totals are correct
+          unitPrice: item.unitPrice + item.modifierTotal,
+          notes: combinedNotes.isNotEmpty ? combinedNotes : null,
+        );
+      }).toList();
+
+      // Pass structured modifier data so the API can write order_item_modifier rows
+      final modifiersPerItem = cartItems.map((item) => item.selectedModifiers).toList();
 
       final order = await ref.read(orderRepositoryProvider).createOrder(
             source: OrderSource.dinein,
             items: orderItems,
             totalAmount: widget.total,
             paymentMethod: checkout.paymentMethod,
+            modifiersPerItem: modifiersPerItem,
           );
 
       // Clear cart and mark success

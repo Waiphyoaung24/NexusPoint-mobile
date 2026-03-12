@@ -8,6 +8,8 @@ import 'dart:async' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:nexuspoint_pos/core/api/api_service.dart' as _i3;
 import 'package:nexuspoint_pos/core/models/api_models.dart' as _i2;
+import 'package:nexuspoint_pos/core/models/branch_dto.dart' as _i5;
+import 'package:nexuspoint_pos/core/models/table_dto.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -44,6 +46,17 @@ class _FakeOrderResponse_1 extends _i1.SmartFake implements _i2.OrderResponse {
 
 class _FakeOrganization_2 extends _i1.SmartFake implements _i2.Organization {
   _FakeOrganization_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeMenuWithModifiersDto_3 extends _i1.SmartFake
+    implements _i2.MenuWithModifiersDto {
+  _FakeMenuWithModifiersDto_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -223,6 +236,23 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
       ) as _i4.Future<List<_i2.MenuItemDto>>);
 
   @override
+  _i4.Future<_i2.MenuWithModifiersDto> getMenuItemsWithModifiers() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getMenuItemsWithModifiers,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.MenuWithModifiersDto>.value(
+            _FakeMenuWithModifiersDto_3(
+          this,
+          Invocation.method(
+            #getMenuItemsWithModifiers,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.MenuWithModifiersDto>);
+
+  @override
   _i4.Future<void> updateMenuItem(
     String? id,
     Map<String, dynamic>? updates,
@@ -238,4 +268,46 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<List<_i5.BranchDto>> getBranches() => (super.noSuchMethod(
+        Invocation.method(
+          #getBranches,
+          [],
+        ),
+        returnValue: _i4.Future<List<_i5.BranchDto>>.value(<_i5.BranchDto>[]),
+      ) as _i4.Future<List<_i5.BranchDto>>);
+
+  @override
+  _i4.Future<List<_i6.TableDto>> getFloorPlanTables(
+    String? orgId,
+    String? branchId,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getFloorPlanTables,
+          [
+            orgId,
+            branchId,
+          ],
+        ),
+        returnValue: _i4.Future<List<_i6.TableDto>>.value(<_i6.TableDto>[]),
+      ) as _i4.Future<List<_i6.TableDto>>);
+
+  @override
+  _i4.Future<List<_i6.TableStatusDto>> getTableStatuses(
+    String? orgId,
+    String? branchId,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getTableStatuses,
+          [
+            orgId,
+            branchId,
+          ],
+        ),
+        returnValue:
+            _i4.Future<List<_i6.TableStatusDto>>.value(<_i6.TableStatusDto>[]),
+      ) as _i4.Future<List<_i6.TableStatusDto>>);
 }

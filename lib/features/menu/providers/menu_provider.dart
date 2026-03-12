@@ -21,10 +21,9 @@ final menuProvider = FutureProvider.autoDispose<List<MenuItem>>((ref) async {
       print('Fetching menu items for organization: $orgId');
 
       try {
-        // Try API first
-        
+        // fetchFromApi already writes items + modifiers to the local DB.
+        // Calling cacheLocally here would wipe modifier link data, so we don't.
         final items = await repo.fetchFromApi(orgId);
-        await repo.cacheLocally(items);
         return items;
       } catch (e) {
         print('API fetch failed: $e');

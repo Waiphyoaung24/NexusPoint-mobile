@@ -1690,18 +1690,1905 @@ class SyncQueueCompanion extends UpdateCompanion<SyncQueueItem> {
   }
 }
 
+class $ModifierGroupsTable extends ModifierGroups
+    with TableInfo<$ModifierGroupsTable, LocalModifierGroup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ModifierGroupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _organizationIdMeta =
+      const VerificationMeta('organizationId');
+  @override
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+      'organization_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameThMeta = const VerificationMeta('nameTh');
+  @override
+  late final GeneratedColumn<String> nameTh = GeneratedColumn<String>(
+      'name_th', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isRequiredMeta =
+      const VerificationMeta('isRequired');
+  @override
+  late final GeneratedColumn<bool> isRequired = GeneratedColumn<bool>(
+      'is_required', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_required" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _minSelectionsMeta =
+      const VerificationMeta('minSelections');
+  @override
+  late final GeneratedColumn<int> minSelections = GeneratedColumn<int>(
+      'min_selections', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _maxSelectionsMeta =
+      const VerificationMeta('maxSelections');
+  @override
+  late final GeneratedColumn<int> maxSelections = GeneratedColumn<int>(
+      'max_selections', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _cachedAtMeta =
+      const VerificationMeta('cachedAt');
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+      'cached_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        organizationId,
+        name,
+        nameTh,
+        isRequired,
+        minSelections,
+        maxSelections,
+        sortOrder,
+        isActive,
+        cachedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'modifier_groups';
+  @override
+  VerificationContext validateIntegrity(Insertable<LocalModifierGroup> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('organization_id')) {
+      context.handle(
+          _organizationIdMeta,
+          organizationId.isAcceptableOrUnknown(
+              data['organization_id']!, _organizationIdMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_th')) {
+      context.handle(_nameThMeta,
+          nameTh.isAcceptableOrUnknown(data['name_th']!, _nameThMeta));
+    }
+    if (data.containsKey('is_required')) {
+      context.handle(
+          _isRequiredMeta,
+          isRequired.isAcceptableOrUnknown(
+              data['is_required']!, _isRequiredMeta));
+    }
+    if (data.containsKey('min_selections')) {
+      context.handle(
+          _minSelectionsMeta,
+          minSelections.isAcceptableOrUnknown(
+              data['min_selections']!, _minSelectionsMeta));
+    }
+    if (data.containsKey('max_selections')) {
+      context.handle(
+          _maxSelectionsMeta,
+          maxSelections.isAcceptableOrUnknown(
+              data['max_selections']!, _maxSelectionsMeta));
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(_cachedAtMeta,
+          cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta));
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalModifierGroup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalModifierGroup(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      organizationId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}organization_id']),
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      nameTh: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name_th']),
+      isRequired: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_required'])!,
+      minSelections: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}min_selections']),
+      maxSelections: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}max_selections']),
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order']),
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      cachedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}cached_at'])!,
+    );
+  }
+
+  @override
+  $ModifierGroupsTable createAlias(String alias) {
+    return $ModifierGroupsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalModifierGroup extends DataClass
+    implements Insertable<LocalModifierGroup> {
+  final String id;
+  final String? organizationId;
+  final String name;
+  final String? nameTh;
+  final bool isRequired;
+  final int? minSelections;
+  final int? maxSelections;
+  final int? sortOrder;
+  final bool isActive;
+  final DateTime cachedAt;
+  const LocalModifierGroup(
+      {required this.id,
+      this.organizationId,
+      required this.name,
+      this.nameTh,
+      required this.isRequired,
+      this.minSelections,
+      this.maxSelections,
+      this.sortOrder,
+      required this.isActive,
+      required this.cachedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || organizationId != null) {
+      map['organization_id'] = Variable<String>(organizationId);
+    }
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || nameTh != null) {
+      map['name_th'] = Variable<String>(nameTh);
+    }
+    map['is_required'] = Variable<bool>(isRequired);
+    if (!nullToAbsent || minSelections != null) {
+      map['min_selections'] = Variable<int>(minSelections);
+    }
+    if (!nullToAbsent || maxSelections != null) {
+      map['max_selections'] = Variable<int>(maxSelections);
+    }
+    if (!nullToAbsent || sortOrder != null) {
+      map['sort_order'] = Variable<int>(sortOrder);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    return map;
+  }
+
+  ModifierGroupsCompanion toCompanion(bool nullToAbsent) {
+    return ModifierGroupsCompanion(
+      id: Value(id),
+      organizationId: organizationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(organizationId),
+      name: Value(name),
+      nameTh:
+          nameTh == null && nullToAbsent ? const Value.absent() : Value(nameTh),
+      isRequired: Value(isRequired),
+      minSelections: minSelections == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minSelections),
+      maxSelections: maxSelections == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maxSelections),
+      sortOrder: sortOrder == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sortOrder),
+      isActive: Value(isActive),
+      cachedAt: Value(cachedAt),
+    );
+  }
+
+  factory LocalModifierGroup.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalModifierGroup(
+      id: serializer.fromJson<String>(json['id']),
+      organizationId: serializer.fromJson<String?>(json['organizationId']),
+      name: serializer.fromJson<String>(json['name']),
+      nameTh: serializer.fromJson<String?>(json['nameTh']),
+      isRequired: serializer.fromJson<bool>(json['isRequired']),
+      minSelections: serializer.fromJson<int?>(json['minSelections']),
+      maxSelections: serializer.fromJson<int?>(json['maxSelections']),
+      sortOrder: serializer.fromJson<int?>(json['sortOrder']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'organizationId': serializer.toJson<String?>(organizationId),
+      'name': serializer.toJson<String>(name),
+      'nameTh': serializer.toJson<String?>(nameTh),
+      'isRequired': serializer.toJson<bool>(isRequired),
+      'minSelections': serializer.toJson<int?>(minSelections),
+      'maxSelections': serializer.toJson<int?>(maxSelections),
+      'sortOrder': serializer.toJson<int?>(sortOrder),
+      'isActive': serializer.toJson<bool>(isActive),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+    };
+  }
+
+  LocalModifierGroup copyWith(
+          {String? id,
+          Value<String?> organizationId = const Value.absent(),
+          String? name,
+          Value<String?> nameTh = const Value.absent(),
+          bool? isRequired,
+          Value<int?> minSelections = const Value.absent(),
+          Value<int?> maxSelections = const Value.absent(),
+          Value<int?> sortOrder = const Value.absent(),
+          bool? isActive,
+          DateTime? cachedAt}) =>
+      LocalModifierGroup(
+        id: id ?? this.id,
+        organizationId:
+            organizationId.present ? organizationId.value : this.organizationId,
+        name: name ?? this.name,
+        nameTh: nameTh.present ? nameTh.value : this.nameTh,
+        isRequired: isRequired ?? this.isRequired,
+        minSelections:
+            minSelections.present ? minSelections.value : this.minSelections,
+        maxSelections:
+            maxSelections.present ? maxSelections.value : this.maxSelections,
+        sortOrder: sortOrder.present ? sortOrder.value : this.sortOrder,
+        isActive: isActive ?? this.isActive,
+        cachedAt: cachedAt ?? this.cachedAt,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LocalModifierGroup(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('name: $name, ')
+          ..write('nameTh: $nameTh, ')
+          ..write('isRequired: $isRequired, ')
+          ..write('minSelections: $minSelections, ')
+          ..write('maxSelections: $maxSelections, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('isActive: $isActive, ')
+          ..write('cachedAt: $cachedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, organizationId, name, nameTh, isRequired,
+      minSelections, maxSelections, sortOrder, isActive, cachedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalModifierGroup &&
+          other.id == this.id &&
+          other.organizationId == this.organizationId &&
+          other.name == this.name &&
+          other.nameTh == this.nameTh &&
+          other.isRequired == this.isRequired &&
+          other.minSelections == this.minSelections &&
+          other.maxSelections == this.maxSelections &&
+          other.sortOrder == this.sortOrder &&
+          other.isActive == this.isActive &&
+          other.cachedAt == this.cachedAt);
+}
+
+class ModifierGroupsCompanion extends UpdateCompanion<LocalModifierGroup> {
+  final Value<String> id;
+  final Value<String?> organizationId;
+  final Value<String> name;
+  final Value<String?> nameTh;
+  final Value<bool> isRequired;
+  final Value<int?> minSelections;
+  final Value<int?> maxSelections;
+  final Value<int?> sortOrder;
+  final Value<bool> isActive;
+  final Value<DateTime> cachedAt;
+  final Value<int> rowid;
+  const ModifierGroupsCompanion({
+    this.id = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.nameTh = const Value.absent(),
+    this.isRequired = const Value.absent(),
+    this.minSelections = const Value.absent(),
+    this.maxSelections = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ModifierGroupsCompanion.insert({
+    required String id,
+    this.organizationId = const Value.absent(),
+    required String name,
+    this.nameTh = const Value.absent(),
+    this.isRequired = const Value.absent(),
+    this.minSelections = const Value.absent(),
+    this.maxSelections = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required DateTime cachedAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        cachedAt = Value(cachedAt);
+  static Insertable<LocalModifierGroup> custom({
+    Expression<String>? id,
+    Expression<String>? organizationId,
+    Expression<String>? name,
+    Expression<String>? nameTh,
+    Expression<bool>? isRequired,
+    Expression<int>? minSelections,
+    Expression<int>? maxSelections,
+    Expression<int>? sortOrder,
+    Expression<bool>? isActive,
+    Expression<DateTime>? cachedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (name != null) 'name': name,
+      if (nameTh != null) 'name_th': nameTh,
+      if (isRequired != null) 'is_required': isRequired,
+      if (minSelections != null) 'min_selections': minSelections,
+      if (maxSelections != null) 'max_selections': maxSelections,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (isActive != null) 'is_active': isActive,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ModifierGroupsCompanion copyWith(
+      {Value<String>? id,
+      Value<String?>? organizationId,
+      Value<String>? name,
+      Value<String?>? nameTh,
+      Value<bool>? isRequired,
+      Value<int?>? minSelections,
+      Value<int?>? maxSelections,
+      Value<int?>? sortOrder,
+      Value<bool>? isActive,
+      Value<DateTime>? cachedAt,
+      Value<int>? rowid}) {
+    return ModifierGroupsCompanion(
+      id: id ?? this.id,
+      organizationId: organizationId ?? this.organizationId,
+      name: name ?? this.name,
+      nameTh: nameTh ?? this.nameTh,
+      isRequired: isRequired ?? this.isRequired,
+      minSelections: minSelections ?? this.minSelections,
+      maxSelections: maxSelections ?? this.maxSelections,
+      sortOrder: sortOrder ?? this.sortOrder,
+      isActive: isActive ?? this.isActive,
+      cachedAt: cachedAt ?? this.cachedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (nameTh.present) {
+      map['name_th'] = Variable<String>(nameTh.value);
+    }
+    if (isRequired.present) {
+      map['is_required'] = Variable<bool>(isRequired.value);
+    }
+    if (minSelections.present) {
+      map['min_selections'] = Variable<int>(minSelections.value);
+    }
+    if (maxSelections.present) {
+      map['max_selections'] = Variable<int>(maxSelections.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ModifierGroupsCompanion(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('name: $name, ')
+          ..write('nameTh: $nameTh, ')
+          ..write('isRequired: $isRequired, ')
+          ..write('minSelections: $minSelections, ')
+          ..write('maxSelections: $maxSelections, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('isActive: $isActive, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ModifierOptionsTable extends ModifierOptions
+    with TableInfo<$ModifierOptionsTable, LocalModifierOption> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ModifierOptionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _modifierGroupIdMeta =
+      const VerificationMeta('modifierGroupId');
+  @override
+  late final GeneratedColumn<String> modifierGroupId = GeneratedColumn<String>(
+      'modifier_group_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _organizationIdMeta =
+      const VerificationMeta('organizationId');
+  @override
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+      'organization_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameThMeta = const VerificationMeta('nameTh');
+  @override
+  late final GeneratedColumn<String> nameTh = GeneratedColumn<String>(
+      'name_th', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _priceAdjustmentMeta =
+      const VerificationMeta('priceAdjustment');
+  @override
+  late final GeneratedColumn<double> priceAdjustment = GeneratedColumn<double>(
+      'price_adjustment', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0.0));
+  static const VerificationMeta _isDefaultMeta =
+      const VerificationMeta('isDefault');
+  @override
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+      'is_default', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_default" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _cachedAtMeta =
+      const VerificationMeta('cachedAt');
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+      'cached_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        modifierGroupId,
+        organizationId,
+        name,
+        nameTh,
+        priceAdjustment,
+        isDefault,
+        isActive,
+        sortOrder,
+        cachedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'modifier_options';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<LocalModifierOption> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('modifier_group_id')) {
+      context.handle(
+          _modifierGroupIdMeta,
+          modifierGroupId.isAcceptableOrUnknown(
+              data['modifier_group_id']!, _modifierGroupIdMeta));
+    } else if (isInserting) {
+      context.missing(_modifierGroupIdMeta);
+    }
+    if (data.containsKey('organization_id')) {
+      context.handle(
+          _organizationIdMeta,
+          organizationId.isAcceptableOrUnknown(
+              data['organization_id']!, _organizationIdMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_th')) {
+      context.handle(_nameThMeta,
+          nameTh.isAcceptableOrUnknown(data['name_th']!, _nameThMeta));
+    }
+    if (data.containsKey('price_adjustment')) {
+      context.handle(
+          _priceAdjustmentMeta,
+          priceAdjustment.isAcceptableOrUnknown(
+              data['price_adjustment']!, _priceAdjustmentMeta));
+    }
+    if (data.containsKey('is_default')) {
+      context.handle(_isDefaultMeta,
+          isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta));
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(_cachedAtMeta,
+          cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta));
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalModifierOption map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalModifierOption(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      modifierGroupId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}modifier_group_id'])!,
+      organizationId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}organization_id']),
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      nameTh: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name_th']),
+      priceAdjustment: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}price_adjustment'])!,
+      isDefault: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_default'])!,
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order']),
+      cachedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}cached_at'])!,
+    );
+  }
+
+  @override
+  $ModifierOptionsTable createAlias(String alias) {
+    return $ModifierOptionsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalModifierOption extends DataClass
+    implements Insertable<LocalModifierOption> {
+  final String id;
+  final String modifierGroupId;
+  final String? organizationId;
+  final String name;
+  final String? nameTh;
+  final double priceAdjustment;
+  final bool isDefault;
+  final bool isActive;
+  final int? sortOrder;
+  final DateTime cachedAt;
+  const LocalModifierOption(
+      {required this.id,
+      required this.modifierGroupId,
+      this.organizationId,
+      required this.name,
+      this.nameTh,
+      required this.priceAdjustment,
+      required this.isDefault,
+      required this.isActive,
+      this.sortOrder,
+      required this.cachedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['modifier_group_id'] = Variable<String>(modifierGroupId);
+    if (!nullToAbsent || organizationId != null) {
+      map['organization_id'] = Variable<String>(organizationId);
+    }
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || nameTh != null) {
+      map['name_th'] = Variable<String>(nameTh);
+    }
+    map['price_adjustment'] = Variable<double>(priceAdjustment);
+    map['is_default'] = Variable<bool>(isDefault);
+    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || sortOrder != null) {
+      map['sort_order'] = Variable<int>(sortOrder);
+    }
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    return map;
+  }
+
+  ModifierOptionsCompanion toCompanion(bool nullToAbsent) {
+    return ModifierOptionsCompanion(
+      id: Value(id),
+      modifierGroupId: Value(modifierGroupId),
+      organizationId: organizationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(organizationId),
+      name: Value(name),
+      nameTh:
+          nameTh == null && nullToAbsent ? const Value.absent() : Value(nameTh),
+      priceAdjustment: Value(priceAdjustment),
+      isDefault: Value(isDefault),
+      isActive: Value(isActive),
+      sortOrder: sortOrder == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sortOrder),
+      cachedAt: Value(cachedAt),
+    );
+  }
+
+  factory LocalModifierOption.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalModifierOption(
+      id: serializer.fromJson<String>(json['id']),
+      modifierGroupId: serializer.fromJson<String>(json['modifierGroupId']),
+      organizationId: serializer.fromJson<String?>(json['organizationId']),
+      name: serializer.fromJson<String>(json['name']),
+      nameTh: serializer.fromJson<String?>(json['nameTh']),
+      priceAdjustment: serializer.fromJson<double>(json['priceAdjustment']),
+      isDefault: serializer.fromJson<bool>(json['isDefault']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      sortOrder: serializer.fromJson<int?>(json['sortOrder']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'modifierGroupId': serializer.toJson<String>(modifierGroupId),
+      'organizationId': serializer.toJson<String?>(organizationId),
+      'name': serializer.toJson<String>(name),
+      'nameTh': serializer.toJson<String?>(nameTh),
+      'priceAdjustment': serializer.toJson<double>(priceAdjustment),
+      'isDefault': serializer.toJson<bool>(isDefault),
+      'isActive': serializer.toJson<bool>(isActive),
+      'sortOrder': serializer.toJson<int?>(sortOrder),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+    };
+  }
+
+  LocalModifierOption copyWith(
+          {String? id,
+          String? modifierGroupId,
+          Value<String?> organizationId = const Value.absent(),
+          String? name,
+          Value<String?> nameTh = const Value.absent(),
+          double? priceAdjustment,
+          bool? isDefault,
+          bool? isActive,
+          Value<int?> sortOrder = const Value.absent(),
+          DateTime? cachedAt}) =>
+      LocalModifierOption(
+        id: id ?? this.id,
+        modifierGroupId: modifierGroupId ?? this.modifierGroupId,
+        organizationId:
+            organizationId.present ? organizationId.value : this.organizationId,
+        name: name ?? this.name,
+        nameTh: nameTh.present ? nameTh.value : this.nameTh,
+        priceAdjustment: priceAdjustment ?? this.priceAdjustment,
+        isDefault: isDefault ?? this.isDefault,
+        isActive: isActive ?? this.isActive,
+        sortOrder: sortOrder.present ? sortOrder.value : this.sortOrder,
+        cachedAt: cachedAt ?? this.cachedAt,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LocalModifierOption(')
+          ..write('id: $id, ')
+          ..write('modifierGroupId: $modifierGroupId, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('name: $name, ')
+          ..write('nameTh: $nameTh, ')
+          ..write('priceAdjustment: $priceAdjustment, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('isActive: $isActive, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('cachedAt: $cachedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, modifierGroupId, organizationId, name,
+      nameTh, priceAdjustment, isDefault, isActive, sortOrder, cachedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalModifierOption &&
+          other.id == this.id &&
+          other.modifierGroupId == this.modifierGroupId &&
+          other.organizationId == this.organizationId &&
+          other.name == this.name &&
+          other.nameTh == this.nameTh &&
+          other.priceAdjustment == this.priceAdjustment &&
+          other.isDefault == this.isDefault &&
+          other.isActive == this.isActive &&
+          other.sortOrder == this.sortOrder &&
+          other.cachedAt == this.cachedAt);
+}
+
+class ModifierOptionsCompanion extends UpdateCompanion<LocalModifierOption> {
+  final Value<String> id;
+  final Value<String> modifierGroupId;
+  final Value<String?> organizationId;
+  final Value<String> name;
+  final Value<String?> nameTh;
+  final Value<double> priceAdjustment;
+  final Value<bool> isDefault;
+  final Value<bool> isActive;
+  final Value<int?> sortOrder;
+  final Value<DateTime> cachedAt;
+  final Value<int> rowid;
+  const ModifierOptionsCompanion({
+    this.id = const Value.absent(),
+    this.modifierGroupId = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.nameTh = const Value.absent(),
+    this.priceAdjustment = const Value.absent(),
+    this.isDefault = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ModifierOptionsCompanion.insert({
+    required String id,
+    required String modifierGroupId,
+    this.organizationId = const Value.absent(),
+    required String name,
+    this.nameTh = const Value.absent(),
+    this.priceAdjustment = const Value.absent(),
+    this.isDefault = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    required DateTime cachedAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        modifierGroupId = Value(modifierGroupId),
+        name = Value(name),
+        cachedAt = Value(cachedAt);
+  static Insertable<LocalModifierOption> custom({
+    Expression<String>? id,
+    Expression<String>? modifierGroupId,
+    Expression<String>? organizationId,
+    Expression<String>? name,
+    Expression<String>? nameTh,
+    Expression<double>? priceAdjustment,
+    Expression<bool>? isDefault,
+    Expression<bool>? isActive,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? cachedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (modifierGroupId != null) 'modifier_group_id': modifierGroupId,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (name != null) 'name': name,
+      if (nameTh != null) 'name_th': nameTh,
+      if (priceAdjustment != null) 'price_adjustment': priceAdjustment,
+      if (isDefault != null) 'is_default': isDefault,
+      if (isActive != null) 'is_active': isActive,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ModifierOptionsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? modifierGroupId,
+      Value<String?>? organizationId,
+      Value<String>? name,
+      Value<String?>? nameTh,
+      Value<double>? priceAdjustment,
+      Value<bool>? isDefault,
+      Value<bool>? isActive,
+      Value<int?>? sortOrder,
+      Value<DateTime>? cachedAt,
+      Value<int>? rowid}) {
+    return ModifierOptionsCompanion(
+      id: id ?? this.id,
+      modifierGroupId: modifierGroupId ?? this.modifierGroupId,
+      organizationId: organizationId ?? this.organizationId,
+      name: name ?? this.name,
+      nameTh: nameTh ?? this.nameTh,
+      priceAdjustment: priceAdjustment ?? this.priceAdjustment,
+      isDefault: isDefault ?? this.isDefault,
+      isActive: isActive ?? this.isActive,
+      sortOrder: sortOrder ?? this.sortOrder,
+      cachedAt: cachedAt ?? this.cachedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (modifierGroupId.present) {
+      map['modifier_group_id'] = Variable<String>(modifierGroupId.value);
+    }
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (nameTh.present) {
+      map['name_th'] = Variable<String>(nameTh.value);
+    }
+    if (priceAdjustment.present) {
+      map['price_adjustment'] = Variable<double>(priceAdjustment.value);
+    }
+    if (isDefault.present) {
+      map['is_default'] = Variable<bool>(isDefault.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ModifierOptionsCompanion(')
+          ..write('id: $id, ')
+          ..write('modifierGroupId: $modifierGroupId, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('name: $name, ')
+          ..write('nameTh: $nameTh, ')
+          ..write('priceAdjustment: $priceAdjustment, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('isActive: $isActive, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MenuItemModifierGroupsTable extends MenuItemModifierGroups
+    with TableInfo<$MenuItemModifierGroupsTable, LocalMenuItemModifierGroup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MenuItemModifierGroupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _menuItemIdMeta =
+      const VerificationMeta('menuItemId');
+  @override
+  late final GeneratedColumn<String> menuItemId = GeneratedColumn<String>(
+      'menu_item_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _modifierGroupIdMeta =
+      const VerificationMeta('modifierGroupId');
+  @override
+  late final GeneratedColumn<String> modifierGroupId = GeneratedColumn<String>(
+      'modifier_group_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _cachedAtMeta =
+      const VerificationMeta('cachedAt');
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+      'cached_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, menuItemId, modifierGroupId, sortOrder, cachedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'menu_item_modifier_groups';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<LocalMenuItemModifierGroup> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('menu_item_id')) {
+      context.handle(
+          _menuItemIdMeta,
+          menuItemId.isAcceptableOrUnknown(
+              data['menu_item_id']!, _menuItemIdMeta));
+    } else if (isInserting) {
+      context.missing(_menuItemIdMeta);
+    }
+    if (data.containsKey('modifier_group_id')) {
+      context.handle(
+          _modifierGroupIdMeta,
+          modifierGroupId.isAcceptableOrUnknown(
+              data['modifier_group_id']!, _modifierGroupIdMeta));
+    } else if (isInserting) {
+      context.missing(_modifierGroupIdMeta);
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(_cachedAtMeta,
+          cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta));
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalMenuItemModifierGroup map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalMenuItemModifierGroup(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      menuItemId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}menu_item_id'])!,
+      modifierGroupId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}modifier_group_id'])!,
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order']),
+      cachedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}cached_at'])!,
+    );
+  }
+
+  @override
+  $MenuItemModifierGroupsTable createAlias(String alias) {
+    return $MenuItemModifierGroupsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalMenuItemModifierGroup extends DataClass
+    implements Insertable<LocalMenuItemModifierGroup> {
+  final String id;
+  final String menuItemId;
+  final String modifierGroupId;
+  final int? sortOrder;
+  final DateTime cachedAt;
+  const LocalMenuItemModifierGroup(
+      {required this.id,
+      required this.menuItemId,
+      required this.modifierGroupId,
+      this.sortOrder,
+      required this.cachedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['menu_item_id'] = Variable<String>(menuItemId);
+    map['modifier_group_id'] = Variable<String>(modifierGroupId);
+    if (!nullToAbsent || sortOrder != null) {
+      map['sort_order'] = Variable<int>(sortOrder);
+    }
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    return map;
+  }
+
+  MenuItemModifierGroupsCompanion toCompanion(bool nullToAbsent) {
+    return MenuItemModifierGroupsCompanion(
+      id: Value(id),
+      menuItemId: Value(menuItemId),
+      modifierGroupId: Value(modifierGroupId),
+      sortOrder: sortOrder == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sortOrder),
+      cachedAt: Value(cachedAt),
+    );
+  }
+
+  factory LocalMenuItemModifierGroup.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalMenuItemModifierGroup(
+      id: serializer.fromJson<String>(json['id']),
+      menuItemId: serializer.fromJson<String>(json['menuItemId']),
+      modifierGroupId: serializer.fromJson<String>(json['modifierGroupId']),
+      sortOrder: serializer.fromJson<int?>(json['sortOrder']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'menuItemId': serializer.toJson<String>(menuItemId),
+      'modifierGroupId': serializer.toJson<String>(modifierGroupId),
+      'sortOrder': serializer.toJson<int?>(sortOrder),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+    };
+  }
+
+  LocalMenuItemModifierGroup copyWith(
+          {String? id,
+          String? menuItemId,
+          String? modifierGroupId,
+          Value<int?> sortOrder = const Value.absent(),
+          DateTime? cachedAt}) =>
+      LocalMenuItemModifierGroup(
+        id: id ?? this.id,
+        menuItemId: menuItemId ?? this.menuItemId,
+        modifierGroupId: modifierGroupId ?? this.modifierGroupId,
+        sortOrder: sortOrder.present ? sortOrder.value : this.sortOrder,
+        cachedAt: cachedAt ?? this.cachedAt,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LocalMenuItemModifierGroup(')
+          ..write('id: $id, ')
+          ..write('menuItemId: $menuItemId, ')
+          ..write('modifierGroupId: $modifierGroupId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('cachedAt: $cachedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, menuItemId, modifierGroupId, sortOrder, cachedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalMenuItemModifierGroup &&
+          other.id == this.id &&
+          other.menuItemId == this.menuItemId &&
+          other.modifierGroupId == this.modifierGroupId &&
+          other.sortOrder == this.sortOrder &&
+          other.cachedAt == this.cachedAt);
+}
+
+class MenuItemModifierGroupsCompanion
+    extends UpdateCompanion<LocalMenuItemModifierGroup> {
+  final Value<String> id;
+  final Value<String> menuItemId;
+  final Value<String> modifierGroupId;
+  final Value<int?> sortOrder;
+  final Value<DateTime> cachedAt;
+  final Value<int> rowid;
+  const MenuItemModifierGroupsCompanion({
+    this.id = const Value.absent(),
+    this.menuItemId = const Value.absent(),
+    this.modifierGroupId = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MenuItemModifierGroupsCompanion.insert({
+    required String id,
+    required String menuItemId,
+    required String modifierGroupId,
+    this.sortOrder = const Value.absent(),
+    required DateTime cachedAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        menuItemId = Value(menuItemId),
+        modifierGroupId = Value(modifierGroupId),
+        cachedAt = Value(cachedAt);
+  static Insertable<LocalMenuItemModifierGroup> custom({
+    Expression<String>? id,
+    Expression<String>? menuItemId,
+    Expression<String>? modifierGroupId,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? cachedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (menuItemId != null) 'menu_item_id': menuItemId,
+      if (modifierGroupId != null) 'modifier_group_id': modifierGroupId,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MenuItemModifierGroupsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? menuItemId,
+      Value<String>? modifierGroupId,
+      Value<int?>? sortOrder,
+      Value<DateTime>? cachedAt,
+      Value<int>? rowid}) {
+    return MenuItemModifierGroupsCompanion(
+      id: id ?? this.id,
+      menuItemId: menuItemId ?? this.menuItemId,
+      modifierGroupId: modifierGroupId ?? this.modifierGroupId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      cachedAt: cachedAt ?? this.cachedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (menuItemId.present) {
+      map['menu_item_id'] = Variable<String>(menuItemId.value);
+    }
+    if (modifierGroupId.present) {
+      map['modifier_group_id'] = Variable<String>(modifierGroupId.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MenuItemModifierGroupsCompanion(')
+          ..write('id: $id, ')
+          ..write('menuItemId: $menuItemId, ')
+          ..write('modifierGroupId: $modifierGroupId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FloorPlanTablesTable extends FloorPlanTables
+    with TableInfo<$FloorPlanTablesTable, LocalTable> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FloorPlanTablesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _organizationIdMeta =
+      const VerificationMeta('organizationId');
+  @override
+  late final GeneratedColumn<String> organizationId = GeneratedColumn<String>(
+      'organization_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _branchIdMeta =
+      const VerificationMeta('branchId');
+  @override
+  late final GeneratedColumn<String> branchId = GeneratedColumn<String>(
+      'branch_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _numberMeta = const VerificationMeta('number');
+  @override
+  late final GeneratedColumn<int> number = GeneratedColumn<int>(
+      'number', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+      'label', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _seatsMeta = const VerificationMeta('seats');
+  @override
+  late final GeneratedColumn<int> seats = GeneratedColumn<int>(
+      'seats', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(4));
+  static const VerificationMeta _shapeMeta = const VerificationMeta('shape');
+  @override
+  late final GeneratedColumn<String> shape = GeneratedColumn<String>(
+      'shape', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('rectangle'));
+  static const VerificationMeta _positionXMeta =
+      const VerificationMeta('positionX');
+  @override
+  late final GeneratedColumn<int> positionX = GeneratedColumn<int>(
+      'position_x', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _positionYMeta =
+      const VerificationMeta('positionY');
+  @override
+  late final GeneratedColumn<int> positionY = GeneratedColumn<int>(
+      'position_y', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('available'));
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _cachedAtMeta =
+      const VerificationMeta('cachedAt');
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+      'cached_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        organizationId,
+        branchId,
+        number,
+        label,
+        seats,
+        shape,
+        positionX,
+        positionY,
+        status,
+        updatedAt,
+        cachedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'floor_plan_tables';
+  @override
+  VerificationContext validateIntegrity(Insertable<LocalTable> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('organization_id')) {
+      context.handle(
+          _organizationIdMeta,
+          organizationId.isAcceptableOrUnknown(
+              data['organization_id']!, _organizationIdMeta));
+    } else if (isInserting) {
+      context.missing(_organizationIdMeta);
+    }
+    if (data.containsKey('branch_id')) {
+      context.handle(_branchIdMeta,
+          branchId.isAcceptableOrUnknown(data['branch_id']!, _branchIdMeta));
+    } else if (isInserting) {
+      context.missing(_branchIdMeta);
+    }
+    if (data.containsKey('number')) {
+      context.handle(_numberMeta,
+          number.isAcceptableOrUnknown(data['number']!, _numberMeta));
+    } else if (isInserting) {
+      context.missing(_numberMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+          _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
+    }
+    if (data.containsKey('seats')) {
+      context.handle(
+          _seatsMeta, seats.isAcceptableOrUnknown(data['seats']!, _seatsMeta));
+    }
+    if (data.containsKey('shape')) {
+      context.handle(
+          _shapeMeta, shape.isAcceptableOrUnknown(data['shape']!, _shapeMeta));
+    }
+    if (data.containsKey('position_x')) {
+      context.handle(_positionXMeta,
+          positionX.isAcceptableOrUnknown(data['position_x']!, _positionXMeta));
+    }
+    if (data.containsKey('position_y')) {
+      context.handle(_positionYMeta,
+          positionY.isAcceptableOrUnknown(data['position_y']!, _positionYMeta));
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(_cachedAtMeta,
+          cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta));
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalTable map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalTable(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      organizationId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}organization_id'])!,
+      branchId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}branch_id'])!,
+      number: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}number'])!,
+      label: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}label']),
+      seats: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}seats'])!,
+      shape: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}shape'])!,
+      positionX: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position_x'])!,
+      positionY: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position_y'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      cachedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}cached_at'])!,
+    );
+  }
+
+  @override
+  $FloorPlanTablesTable createAlias(String alias) {
+    return $FloorPlanTablesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalTable extends DataClass implements Insertable<LocalTable> {
+  final String id;
+  final String organizationId;
+  final String branchId;
+  final int number;
+  final String? label;
+  final int seats;
+  final String shape;
+  final int positionX;
+  final int positionY;
+  final String status;
+  final DateTime updatedAt;
+  final DateTime cachedAt;
+  const LocalTable(
+      {required this.id,
+      required this.organizationId,
+      required this.branchId,
+      required this.number,
+      this.label,
+      required this.seats,
+      required this.shape,
+      required this.positionX,
+      required this.positionY,
+      required this.status,
+      required this.updatedAt,
+      required this.cachedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['organization_id'] = Variable<String>(organizationId);
+    map['branch_id'] = Variable<String>(branchId);
+    map['number'] = Variable<int>(number);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    map['seats'] = Variable<int>(seats);
+    map['shape'] = Variable<String>(shape);
+    map['position_x'] = Variable<int>(positionX);
+    map['position_y'] = Variable<int>(positionY);
+    map['status'] = Variable<String>(status);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    return map;
+  }
+
+  FloorPlanTablesCompanion toCompanion(bool nullToAbsent) {
+    return FloorPlanTablesCompanion(
+      id: Value(id),
+      organizationId: Value(organizationId),
+      branchId: Value(branchId),
+      number: Value(number),
+      label:
+          label == null && nullToAbsent ? const Value.absent() : Value(label),
+      seats: Value(seats),
+      shape: Value(shape),
+      positionX: Value(positionX),
+      positionY: Value(positionY),
+      status: Value(status),
+      updatedAt: Value(updatedAt),
+      cachedAt: Value(cachedAt),
+    );
+  }
+
+  factory LocalTable.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalTable(
+      id: serializer.fromJson<String>(json['id']),
+      organizationId: serializer.fromJson<String>(json['organizationId']),
+      branchId: serializer.fromJson<String>(json['branchId']),
+      number: serializer.fromJson<int>(json['number']),
+      label: serializer.fromJson<String?>(json['label']),
+      seats: serializer.fromJson<int>(json['seats']),
+      shape: serializer.fromJson<String>(json['shape']),
+      positionX: serializer.fromJson<int>(json['positionX']),
+      positionY: serializer.fromJson<int>(json['positionY']),
+      status: serializer.fromJson<String>(json['status']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'organizationId': serializer.toJson<String>(organizationId),
+      'branchId': serializer.toJson<String>(branchId),
+      'number': serializer.toJson<int>(number),
+      'label': serializer.toJson<String?>(label),
+      'seats': serializer.toJson<int>(seats),
+      'shape': serializer.toJson<String>(shape),
+      'positionX': serializer.toJson<int>(positionX),
+      'positionY': serializer.toJson<int>(positionY),
+      'status': serializer.toJson<String>(status),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+    };
+  }
+
+  LocalTable copyWith(
+          {String? id,
+          String? organizationId,
+          String? branchId,
+          int? number,
+          Value<String?> label = const Value.absent(),
+          int? seats,
+          String? shape,
+          int? positionX,
+          int? positionY,
+          String? status,
+          DateTime? updatedAt,
+          DateTime? cachedAt}) =>
+      LocalTable(
+        id: id ?? this.id,
+        organizationId: organizationId ?? this.organizationId,
+        branchId: branchId ?? this.branchId,
+        number: number ?? this.number,
+        label: label.present ? label.value : this.label,
+        seats: seats ?? this.seats,
+        shape: shape ?? this.shape,
+        positionX: positionX ?? this.positionX,
+        positionY: positionY ?? this.positionY,
+        status: status ?? this.status,
+        updatedAt: updatedAt ?? this.updatedAt,
+        cachedAt: cachedAt ?? this.cachedAt,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LocalTable(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('branchId: $branchId, ')
+          ..write('number: $number, ')
+          ..write('label: $label, ')
+          ..write('seats: $seats, ')
+          ..write('shape: $shape, ')
+          ..write('positionX: $positionX, ')
+          ..write('positionY: $positionY, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('cachedAt: $cachedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, organizationId, branchId, number, label,
+      seats, shape, positionX, positionY, status, updatedAt, cachedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalTable &&
+          other.id == this.id &&
+          other.organizationId == this.organizationId &&
+          other.branchId == this.branchId &&
+          other.number == this.number &&
+          other.label == this.label &&
+          other.seats == this.seats &&
+          other.shape == this.shape &&
+          other.positionX == this.positionX &&
+          other.positionY == this.positionY &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt &&
+          other.cachedAt == this.cachedAt);
+}
+
+class FloorPlanTablesCompanion extends UpdateCompanion<LocalTable> {
+  final Value<String> id;
+  final Value<String> organizationId;
+  final Value<String> branchId;
+  final Value<int> number;
+  final Value<String?> label;
+  final Value<int> seats;
+  final Value<String> shape;
+  final Value<int> positionX;
+  final Value<int> positionY;
+  final Value<String> status;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime> cachedAt;
+  final Value<int> rowid;
+  const FloorPlanTablesCompanion({
+    this.id = const Value.absent(),
+    this.organizationId = const Value.absent(),
+    this.branchId = const Value.absent(),
+    this.number = const Value.absent(),
+    this.label = const Value.absent(),
+    this.seats = const Value.absent(),
+    this.shape = const Value.absent(),
+    this.positionX = const Value.absent(),
+    this.positionY = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FloorPlanTablesCompanion.insert({
+    required String id,
+    required String organizationId,
+    required String branchId,
+    required int number,
+    this.label = const Value.absent(),
+    this.seats = const Value.absent(),
+    this.shape = const Value.absent(),
+    this.positionX = const Value.absent(),
+    this.positionY = const Value.absent(),
+    this.status = const Value.absent(),
+    required DateTime updatedAt,
+    required DateTime cachedAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        organizationId = Value(organizationId),
+        branchId = Value(branchId),
+        number = Value(number),
+        updatedAt = Value(updatedAt),
+        cachedAt = Value(cachedAt);
+  static Insertable<LocalTable> custom({
+    Expression<String>? id,
+    Expression<String>? organizationId,
+    Expression<String>? branchId,
+    Expression<int>? number,
+    Expression<String>? label,
+    Expression<int>? seats,
+    Expression<String>? shape,
+    Expression<int>? positionX,
+    Expression<int>? positionY,
+    Expression<String>? status,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? cachedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (organizationId != null) 'organization_id': organizationId,
+      if (branchId != null) 'branch_id': branchId,
+      if (number != null) 'number': number,
+      if (label != null) 'label': label,
+      if (seats != null) 'seats': seats,
+      if (shape != null) 'shape': shape,
+      if (positionX != null) 'position_x': positionX,
+      if (positionY != null) 'position_y': positionY,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (cachedAt != null) 'cached_at': cachedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FloorPlanTablesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? organizationId,
+      Value<String>? branchId,
+      Value<int>? number,
+      Value<String?>? label,
+      Value<int>? seats,
+      Value<String>? shape,
+      Value<int>? positionX,
+      Value<int>? positionY,
+      Value<String>? status,
+      Value<DateTime>? updatedAt,
+      Value<DateTime>? cachedAt,
+      Value<int>? rowid}) {
+    return FloorPlanTablesCompanion(
+      id: id ?? this.id,
+      organizationId: organizationId ?? this.organizationId,
+      branchId: branchId ?? this.branchId,
+      number: number ?? this.number,
+      label: label ?? this.label,
+      seats: seats ?? this.seats,
+      shape: shape ?? this.shape,
+      positionX: positionX ?? this.positionX,
+      positionY: positionY ?? this.positionY,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      cachedAt: cachedAt ?? this.cachedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (organizationId.present) {
+      map['organization_id'] = Variable<String>(organizationId.value);
+    }
+    if (branchId.present) {
+      map['branch_id'] = Variable<String>(branchId.value);
+    }
+    if (number.present) {
+      map['number'] = Variable<int>(number.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (seats.present) {
+      map['seats'] = Variable<int>(seats.value);
+    }
+    if (shape.present) {
+      map['shape'] = Variable<String>(shape.value);
+    }
+    if (positionX.present) {
+      map['position_x'] = Variable<int>(positionX.value);
+    }
+    if (positionY.present) {
+      map['position_y'] = Variable<int>(positionY.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FloorPlanTablesCompanion(')
+          ..write('id: $id, ')
+          ..write('organizationId: $organizationId, ')
+          ..write('branchId: $branchId, ')
+          ..write('number: $number, ')
+          ..write('label: $label, ')
+          ..write('seats: $seats, ')
+          ..write('shape: $shape, ')
+          ..write('positionX: $positionX, ')
+          ..write('positionY: $positionY, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('cachedAt: $cachedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $OrdersTable orders = $OrdersTable(this);
   late final $MenuItemsTable menuItems = $MenuItemsTable(this);
   late final $SyncQueueTable syncQueue = $SyncQueueTable(this);
+  late final $ModifierGroupsTable modifierGroups = $ModifierGroupsTable(this);
+  late final $ModifierOptionsTable modifierOptions =
+      $ModifierOptionsTable(this);
+  late final $MenuItemModifierGroupsTable menuItemModifierGroups =
+      $MenuItemModifierGroupsTable(this);
+  late final $FloorPlanTablesTable floorPlanTables =
+      $FloorPlanTablesTable(this);
   late final OrderDao orderDao = OrderDao(this as AppDatabase);
   late final MenuDao menuDao = MenuDao(this as AppDatabase);
   late final SyncQueueDao syncQueueDao = SyncQueueDao(this as AppDatabase);
+  late final ModifierDao modifierDao = ModifierDao(this as AppDatabase);
+  late final FloorPlanDao floorPlanDao = FloorPlanDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [orders, menuItems, syncQueue];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        orders,
+        menuItems,
+        syncQueue,
+        modifierGroups,
+        modifierOptions,
+        menuItemModifierGroups,
+        floorPlanTables
+      ];
 }

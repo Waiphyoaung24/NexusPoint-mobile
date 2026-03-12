@@ -25,6 +25,9 @@ mixin _$CartItem {
   @JsonKey(fromJson: _parsePrice)
   double get unitPrice => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseModifiers, toJson: _modifiersToJson)
+  List<SelectedModifierOption> get selectedModifiers =>
+      throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -41,7 +44,9 @@ abstract class $CartItemCopyWith<$Res> {
       {MenuItem menuItem,
       int quantity,
       @JsonKey(fromJson: _parsePrice) double unitPrice,
-      String? notes});
+      String? notes,
+      @JsonKey(fromJson: _parseModifiers, toJson: _modifiersToJson)
+      List<SelectedModifierOption> selectedModifiers});
 
   $MenuItemCopyWith<$Res> get menuItem;
 }
@@ -63,6 +68,7 @@ class _$CartItemCopyWithImpl<$Res, $Val extends CartItem>
     Object? quantity = null,
     Object? unitPrice = null,
     Object? notes = freezed,
+    Object? selectedModifiers = null,
   }) {
     return _then(_value.copyWith(
       menuItem: null == menuItem
@@ -81,6 +87,10 @@ class _$CartItemCopyWithImpl<$Res, $Val extends CartItem>
           ? _value.notes
           : notes // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedModifiers: null == selectedModifiers
+          ? _value.selectedModifiers
+          : selectedModifiers // ignore: cast_nullable_to_non_nullable
+              as List<SelectedModifierOption>,
     ) as $Val);
   }
 
@@ -105,7 +115,9 @@ abstract class _$$CartItemImplCopyWith<$Res>
       {MenuItem menuItem,
       int quantity,
       @JsonKey(fromJson: _parsePrice) double unitPrice,
-      String? notes});
+      String? notes,
+      @JsonKey(fromJson: _parseModifiers, toJson: _modifiersToJson)
+      List<SelectedModifierOption> selectedModifiers});
 
   @override
   $MenuItemCopyWith<$Res> get menuItem;
@@ -126,6 +138,7 @@ class __$$CartItemImplCopyWithImpl<$Res>
     Object? quantity = null,
     Object? unitPrice = null,
     Object? notes = freezed,
+    Object? selectedModifiers = null,
   }) {
     return _then(_$CartItemImpl(
       menuItem: null == menuItem
@@ -144,6 +157,10 @@ class __$$CartItemImplCopyWithImpl<$Res>
           ? _value.notes
           : notes // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedModifiers: null == selectedModifiers
+          ? _value._selectedModifiers
+          : selectedModifiers // ignore: cast_nullable_to_non_nullable
+              as List<SelectedModifierOption>,
     ));
   }
 }
@@ -155,8 +172,11 @@ class _$CartItemImpl extends _CartItem {
       {required this.menuItem,
       required this.quantity,
       @JsonKey(fromJson: _parsePrice) required this.unitPrice,
-      this.notes})
-      : super._();
+      this.notes,
+      @JsonKey(fromJson: _parseModifiers, toJson: _modifiersToJson)
+      final List<SelectedModifierOption> selectedModifiers = const []})
+      : _selectedModifiers = selectedModifiers,
+        super._();
 
   factory _$CartItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$CartItemImplFromJson(json);
@@ -170,10 +190,19 @@ class _$CartItemImpl extends _CartItem {
   final double unitPrice;
   @override
   final String? notes;
+  final List<SelectedModifierOption> _selectedModifiers;
+  @override
+  @JsonKey(fromJson: _parseModifiers, toJson: _modifiersToJson)
+  List<SelectedModifierOption> get selectedModifiers {
+    if (_selectedModifiers is EqualUnmodifiableListView)
+      return _selectedModifiers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedModifiers);
+  }
 
   @override
   String toString() {
-    return 'CartItem(menuItem: $menuItem, quantity: $quantity, unitPrice: $unitPrice, notes: $notes)';
+    return 'CartItem(menuItem: $menuItem, quantity: $quantity, unitPrice: $unitPrice, notes: $notes, selectedModifiers: $selectedModifiers)';
   }
 
   @override
@@ -187,13 +216,15 @@ class _$CartItemImpl extends _CartItem {
                 other.quantity == quantity) &&
             (identical(other.unitPrice, unitPrice) ||
                 other.unitPrice == unitPrice) &&
-            (identical(other.notes, notes) || other.notes == notes));
+            (identical(other.notes, notes) || other.notes == notes) &&
+            const DeepCollectionEquality()
+                .equals(other._selectedModifiers, _selectedModifiers));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, menuItem, quantity, unitPrice, notes);
+  int get hashCode => Object.hash(runtimeType, menuItem, quantity, unitPrice,
+      notes, const DeepCollectionEquality().hash(_selectedModifiers));
 
   @JsonKey(ignore: true)
   @override
@@ -214,7 +245,9 @@ abstract class _CartItem extends CartItem {
       {required final MenuItem menuItem,
       required final int quantity,
       @JsonKey(fromJson: _parsePrice) required final double unitPrice,
-      final String? notes}) = _$CartItemImpl;
+      final String? notes,
+      @JsonKey(fromJson: _parseModifiers, toJson: _modifiersToJson)
+      final List<SelectedModifierOption> selectedModifiers}) = _$CartItemImpl;
   const _CartItem._() : super._();
 
   factory _CartItem.fromJson(Map<String, dynamic> json) =
@@ -229,6 +262,9 @@ abstract class _CartItem extends CartItem {
   double get unitPrice;
   @override
   String? get notes;
+  @override
+  @JsonKey(fromJson: _parseModifiers, toJson: _modifiersToJson)
+  List<SelectedModifierOption> get selectedModifiers;
   @override
   @JsonKey(ignore: true)
   _$$CartItemImplCopyWith<_$CartItemImpl> get copyWith =>

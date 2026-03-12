@@ -38,7 +38,14 @@ class PosShell extends ConsumerWidget {
           NavigationRail(
             extended: MediaQuery.of(context).size.width >= 1024,
             leading: _buildLeadingSection(context, authState),
-            trailing: _buildTrailingSection(context, ref),
+            trailing: Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SingleChildScrollView(
+                  child: _buildTrailingSection(context, ref),
+                ),
+              ),
+            ),
             selectedIndex: selectedIndex,
             onDestinationSelected: (index) {
               ref.read(shellNavigationProvider.notifier).state = index;
@@ -205,14 +212,15 @@ class PosShell extends ConsumerWidget {
 
   Widget _buildTrailingSection(BuildContext context, WidgetRef ref) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const Divider(),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
 
         // Printer Status
         _PrinterIndicator(),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
 
         // Settings Button (opens Printer Settings)
         IconButton(
@@ -227,7 +235,7 @@ class PosShell extends ConsumerWidget {
           tooltip: 'Printer Settings',
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
 
         // Switch Branch Button
         IconButton(
@@ -268,7 +276,7 @@ class PosShell extends ConsumerWidget {
           tooltip: 'Switch Branch',
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
 
         // Logout Button
         IconButton(
@@ -280,7 +288,7 @@ class PosShell extends ConsumerWidget {
           color: PosTheme.dangerRed,
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
       ],
     );
   }

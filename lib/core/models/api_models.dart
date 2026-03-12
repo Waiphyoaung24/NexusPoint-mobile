@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'cart_item.dart';
 import 'user.dart';
 
 part 'api_models.freezed.dart';
@@ -101,6 +102,29 @@ class BackendOrderItemDto with _$BackendOrderItemDto {
         price: dto.unitPrice.toStringAsFixed(2),
         notes: dto.notes,
       );
+
+  /// Build a raw JSON map that includes structured modifier data.
+  /// Used by [OrderRepository] when the caller provides selected modifiers.
+  static Map<String, dynamic> toJsonWithModifiers(
+    OrderItemDto dto,
+    List<SelectedModifierOption> modifiers,
+  ) {
+    return {
+      'menuItemId': dto.skuId,
+      'name': dto.name ?? dto.skuId,
+      'quantity': dto.quantity,
+      'price': dto.unitPrice.toStringAsFixed(2),
+      if (dto.notes != null) 'notes': dto.notes,
+      if (modifiers.isNotEmpty)
+        'modifiers': modifiers
+            .map((m) => {
+                  'modifierOptionId': m.optionId,
+                  'name': m.name,
+                  'priceAdjustment': m.priceAdjustment.toStringAsFixed(2),
+                })
+            .toList(),
+    };
+  }
 }
 
 /// Normalizes old-format items stored in the sync queue (skuId/unitPrice)
@@ -187,6 +211,69 @@ Map<String, dynamic> _normalizeOrderResponse(Map<String, dynamic> json) {
     // items from backend response
     if (json['items'] != null) 'items': json['items'],
   };
+}
+
+// Modifiers
+@freezed
+class ModifierOptionDto with _$ModifierOptionDto {
+  const factory ModifierOptionDto({
+    required String id,
+    required String modifierGroupId,
+    String? organizationId,
+    required String name,
+    String? nameTh,
+    @JsonKey(fromJson: _parsePrice) @Default(0.0) double priceAdjustment,
+    @Default(false) bool isDefault,
+    @Default(true) bool isActive,
+    int? sortOrder,
+  }) = _ModifierOptionDto;
+
+  factory ModifierOptionDto.fromJson(Map<String, dynamic> json) =>
+      _$ModifierOptionDtoFromJson(json);
+}
+
+@freezed
+class ModifierGroupDto with _$ModifierGroupDto {
+  const factory ModifierGroupDto({
+    required String id,
+    String? organizationId,
+    required String name,
+    String? nameTh,
+    @Default(false) bool isRequired,
+    int? minSelections,
+    int? maxSelections,
+    int? sortOrder,
+    @Default(true) bool isActive,
+    @Default([]) List<ModifierOptionDto> options,
+  }) = _ModifierGroupDto;
+
+  factory ModifierGroupDto.fromJson(Map<String, dynamic> json) =>
+      _$ModifierGroupDtoFromJson(json);
+}
+
+@freezed
+class ItemModifierLinkDto with _$ItemModifierLinkDto {
+  const factory ItemModifierLinkDto({
+    required String id,
+    required String menuItemId,
+    required String modifierGroupId,
+    int? sortOrder,
+  }) = _ItemModifierLinkDto;
+
+  factory ItemModifierLinkDto.fromJson(Map<String, dynamic> json) =>
+      _$ItemModifierLinkDtoFromJson(json);
+}
+
+@freezed
+class MenuWithModifiersDto with _$MenuWithModifiersDto {
+  const factory MenuWithModifiersDto({
+    required List<MenuItemDto> items,
+    required List<ModifierGroupDto> modifierGroups,
+    required List<ItemModifierLinkDto> itemModifierLinks,
+  }) = _MenuWithModifiersDto;
+
+  factory MenuWithModifiersDto.fromJson(Map<String, dynamic> json) =>
+      _$MenuWithModifiersDtoFromJson(json);
 }
 
 // Menu

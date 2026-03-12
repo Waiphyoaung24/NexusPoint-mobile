@@ -1766,6 +1766,1087 @@ abstract class _OrderResponse implements OrderResponse {
       throw _privateConstructorUsedError;
 }
 
+ModifierOptionDto _$ModifierOptionDtoFromJson(Map<String, dynamic> json) {
+  return _ModifierOptionDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ModifierOptionDto {
+  String get id => throw _privateConstructorUsedError;
+  String get modifierGroupId => throw _privateConstructorUsedError;
+  String? get organizationId => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String? get nameTh => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePrice)
+  double get priceAdjustment => throw _privateConstructorUsedError;
+  bool get isDefault => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+  int? get sortOrder => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ModifierOptionDtoCopyWith<ModifierOptionDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ModifierOptionDtoCopyWith<$Res> {
+  factory $ModifierOptionDtoCopyWith(
+          ModifierOptionDto value, $Res Function(ModifierOptionDto) then) =
+      _$ModifierOptionDtoCopyWithImpl<$Res, ModifierOptionDto>;
+  @useResult
+  $Res call(
+      {String id,
+      String modifierGroupId,
+      String? organizationId,
+      String name,
+      String? nameTh,
+      @JsonKey(fromJson: _parsePrice) double priceAdjustment,
+      bool isDefault,
+      bool isActive,
+      int? sortOrder});
+}
+
+/// @nodoc
+class _$ModifierOptionDtoCopyWithImpl<$Res, $Val extends ModifierOptionDto>
+    implements $ModifierOptionDtoCopyWith<$Res> {
+  _$ModifierOptionDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? modifierGroupId = null,
+    Object? organizationId = freezed,
+    Object? name = null,
+    Object? nameTh = freezed,
+    Object? priceAdjustment = null,
+    Object? isDefault = null,
+    Object? isActive = null,
+    Object? sortOrder = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      modifierGroupId: null == modifierGroupId
+          ? _value.modifierGroupId
+          : modifierGroupId // ignore: cast_nullable_to_non_nullable
+              as String,
+      organizationId: freezed == organizationId
+          ? _value.organizationId
+          : organizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameTh: freezed == nameTh
+          ? _value.nameTh
+          : nameTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      priceAdjustment: null == priceAdjustment
+          ? _value.priceAdjustment
+          : priceAdjustment // ignore: cast_nullable_to_non_nullable
+              as double,
+      isDefault: null == isDefault
+          ? _value.isDefault
+          : isDefault // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ModifierOptionDtoImplCopyWith<$Res>
+    implements $ModifierOptionDtoCopyWith<$Res> {
+  factory _$$ModifierOptionDtoImplCopyWith(_$ModifierOptionDtoImpl value,
+          $Res Function(_$ModifierOptionDtoImpl) then) =
+      __$$ModifierOptionDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String modifierGroupId,
+      String? organizationId,
+      String name,
+      String? nameTh,
+      @JsonKey(fromJson: _parsePrice) double priceAdjustment,
+      bool isDefault,
+      bool isActive,
+      int? sortOrder});
+}
+
+/// @nodoc
+class __$$ModifierOptionDtoImplCopyWithImpl<$Res>
+    extends _$ModifierOptionDtoCopyWithImpl<$Res, _$ModifierOptionDtoImpl>
+    implements _$$ModifierOptionDtoImplCopyWith<$Res> {
+  __$$ModifierOptionDtoImplCopyWithImpl(_$ModifierOptionDtoImpl _value,
+      $Res Function(_$ModifierOptionDtoImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? modifierGroupId = null,
+    Object? organizationId = freezed,
+    Object? name = null,
+    Object? nameTh = freezed,
+    Object? priceAdjustment = null,
+    Object? isDefault = null,
+    Object? isActive = null,
+    Object? sortOrder = freezed,
+  }) {
+    return _then(_$ModifierOptionDtoImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      modifierGroupId: null == modifierGroupId
+          ? _value.modifierGroupId
+          : modifierGroupId // ignore: cast_nullable_to_non_nullable
+              as String,
+      organizationId: freezed == organizationId
+          ? _value.organizationId
+          : organizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameTh: freezed == nameTh
+          ? _value.nameTh
+          : nameTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      priceAdjustment: null == priceAdjustment
+          ? _value.priceAdjustment
+          : priceAdjustment // ignore: cast_nullable_to_non_nullable
+              as double,
+      isDefault: null == isDefault
+          ? _value.isDefault
+          : isDefault // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ModifierOptionDtoImpl implements _ModifierOptionDto {
+  const _$ModifierOptionDtoImpl(
+      {required this.id,
+      required this.modifierGroupId,
+      this.organizationId,
+      required this.name,
+      this.nameTh,
+      @JsonKey(fromJson: _parsePrice) this.priceAdjustment = 0.0,
+      this.isDefault = false,
+      this.isActive = true,
+      this.sortOrder});
+
+  factory _$ModifierOptionDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ModifierOptionDtoImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String modifierGroupId;
+  @override
+  final String? organizationId;
+  @override
+  final String name;
+  @override
+  final String? nameTh;
+  @override
+  @JsonKey(fromJson: _parsePrice)
+  final double priceAdjustment;
+  @override
+  @JsonKey()
+  final bool isDefault;
+  @override
+  @JsonKey()
+  final bool isActive;
+  @override
+  final int? sortOrder;
+
+  @override
+  String toString() {
+    return 'ModifierOptionDto(id: $id, modifierGroupId: $modifierGroupId, organizationId: $organizationId, name: $name, nameTh: $nameTh, priceAdjustment: $priceAdjustment, isDefault: $isDefault, isActive: $isActive, sortOrder: $sortOrder)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ModifierOptionDtoImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.modifierGroupId, modifierGroupId) ||
+                other.modifierGroupId == modifierGroupId) &&
+            (identical(other.organizationId, organizationId) ||
+                other.organizationId == organizationId) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.nameTh, nameTh) || other.nameTh == nameTh) &&
+            (identical(other.priceAdjustment, priceAdjustment) ||
+                other.priceAdjustment == priceAdjustment) &&
+            (identical(other.isDefault, isDefault) ||
+                other.isDefault == isDefault) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      modifierGroupId,
+      organizationId,
+      name,
+      nameTh,
+      priceAdjustment,
+      isDefault,
+      isActive,
+      sortOrder);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ModifierOptionDtoImplCopyWith<_$ModifierOptionDtoImpl> get copyWith =>
+      __$$ModifierOptionDtoImplCopyWithImpl<_$ModifierOptionDtoImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ModifierOptionDtoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ModifierOptionDto implements ModifierOptionDto {
+  const factory _ModifierOptionDto(
+      {required final String id,
+      required final String modifierGroupId,
+      final String? organizationId,
+      required final String name,
+      final String? nameTh,
+      @JsonKey(fromJson: _parsePrice) final double priceAdjustment,
+      final bool isDefault,
+      final bool isActive,
+      final int? sortOrder}) = _$ModifierOptionDtoImpl;
+
+  factory _ModifierOptionDto.fromJson(Map<String, dynamic> json) =
+      _$ModifierOptionDtoImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get modifierGroupId;
+  @override
+  String? get organizationId;
+  @override
+  String get name;
+  @override
+  String? get nameTh;
+  @override
+  @JsonKey(fromJson: _parsePrice)
+  double get priceAdjustment;
+  @override
+  bool get isDefault;
+  @override
+  bool get isActive;
+  @override
+  int? get sortOrder;
+  @override
+  @JsonKey(ignore: true)
+  _$$ModifierOptionDtoImplCopyWith<_$ModifierOptionDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ModifierGroupDto _$ModifierGroupDtoFromJson(Map<String, dynamic> json) {
+  return _ModifierGroupDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ModifierGroupDto {
+  String get id => throw _privateConstructorUsedError;
+  String? get organizationId => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String? get nameTh => throw _privateConstructorUsedError;
+  bool get isRequired => throw _privateConstructorUsedError;
+  int? get minSelections => throw _privateConstructorUsedError;
+  int? get maxSelections => throw _privateConstructorUsedError;
+  int? get sortOrder => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+  List<ModifierOptionDto> get options => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ModifierGroupDtoCopyWith<ModifierGroupDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ModifierGroupDtoCopyWith<$Res> {
+  factory $ModifierGroupDtoCopyWith(
+          ModifierGroupDto value, $Res Function(ModifierGroupDto) then) =
+      _$ModifierGroupDtoCopyWithImpl<$Res, ModifierGroupDto>;
+  @useResult
+  $Res call(
+      {String id,
+      String? organizationId,
+      String name,
+      String? nameTh,
+      bool isRequired,
+      int? minSelections,
+      int? maxSelections,
+      int? sortOrder,
+      bool isActive,
+      List<ModifierOptionDto> options});
+}
+
+/// @nodoc
+class _$ModifierGroupDtoCopyWithImpl<$Res, $Val extends ModifierGroupDto>
+    implements $ModifierGroupDtoCopyWith<$Res> {
+  _$ModifierGroupDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? organizationId = freezed,
+    Object? name = null,
+    Object? nameTh = freezed,
+    Object? isRequired = null,
+    Object? minSelections = freezed,
+    Object? maxSelections = freezed,
+    Object? sortOrder = freezed,
+    Object? isActive = null,
+    Object? options = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      organizationId: freezed == organizationId
+          ? _value.organizationId
+          : organizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameTh: freezed == nameTh
+          ? _value.nameTh
+          : nameTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isRequired: null == isRequired
+          ? _value.isRequired
+          : isRequired // ignore: cast_nullable_to_non_nullable
+              as bool,
+      minSelections: freezed == minSelections
+          ? _value.minSelections
+          : minSelections // ignore: cast_nullable_to_non_nullable
+              as int?,
+      maxSelections: freezed == maxSelections
+          ? _value.maxSelections
+          : maxSelections // ignore: cast_nullable_to_non_nullable
+              as int?,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      options: null == options
+          ? _value.options
+          : options // ignore: cast_nullable_to_non_nullable
+              as List<ModifierOptionDto>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ModifierGroupDtoImplCopyWith<$Res>
+    implements $ModifierGroupDtoCopyWith<$Res> {
+  factory _$$ModifierGroupDtoImplCopyWith(_$ModifierGroupDtoImpl value,
+          $Res Function(_$ModifierGroupDtoImpl) then) =
+      __$$ModifierGroupDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String? organizationId,
+      String name,
+      String? nameTh,
+      bool isRequired,
+      int? minSelections,
+      int? maxSelections,
+      int? sortOrder,
+      bool isActive,
+      List<ModifierOptionDto> options});
+}
+
+/// @nodoc
+class __$$ModifierGroupDtoImplCopyWithImpl<$Res>
+    extends _$ModifierGroupDtoCopyWithImpl<$Res, _$ModifierGroupDtoImpl>
+    implements _$$ModifierGroupDtoImplCopyWith<$Res> {
+  __$$ModifierGroupDtoImplCopyWithImpl(_$ModifierGroupDtoImpl _value,
+      $Res Function(_$ModifierGroupDtoImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? organizationId = freezed,
+    Object? name = null,
+    Object? nameTh = freezed,
+    Object? isRequired = null,
+    Object? minSelections = freezed,
+    Object? maxSelections = freezed,
+    Object? sortOrder = freezed,
+    Object? isActive = null,
+    Object? options = null,
+  }) {
+    return _then(_$ModifierGroupDtoImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      organizationId: freezed == organizationId
+          ? _value.organizationId
+          : organizationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameTh: freezed == nameTh
+          ? _value.nameTh
+          : nameTh // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isRequired: null == isRequired
+          ? _value.isRequired
+          : isRequired // ignore: cast_nullable_to_non_nullable
+              as bool,
+      minSelections: freezed == minSelections
+          ? _value.minSelections
+          : minSelections // ignore: cast_nullable_to_non_nullable
+              as int?,
+      maxSelections: freezed == maxSelections
+          ? _value.maxSelections
+          : maxSelections // ignore: cast_nullable_to_non_nullable
+              as int?,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      options: null == options
+          ? _value._options
+          : options // ignore: cast_nullable_to_non_nullable
+              as List<ModifierOptionDto>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ModifierGroupDtoImpl implements _ModifierGroupDto {
+  const _$ModifierGroupDtoImpl(
+      {required this.id,
+      this.organizationId,
+      required this.name,
+      this.nameTh,
+      this.isRequired = false,
+      this.minSelections,
+      this.maxSelections,
+      this.sortOrder,
+      this.isActive = true,
+      final List<ModifierOptionDto> options = const []})
+      : _options = options;
+
+  factory _$ModifierGroupDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ModifierGroupDtoImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String? organizationId;
+  @override
+  final String name;
+  @override
+  final String? nameTh;
+  @override
+  @JsonKey()
+  final bool isRequired;
+  @override
+  final int? minSelections;
+  @override
+  final int? maxSelections;
+  @override
+  final int? sortOrder;
+  @override
+  @JsonKey()
+  final bool isActive;
+  final List<ModifierOptionDto> _options;
+  @override
+  @JsonKey()
+  List<ModifierOptionDto> get options {
+    if (_options is EqualUnmodifiableListView) return _options;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_options);
+  }
+
+  @override
+  String toString() {
+    return 'ModifierGroupDto(id: $id, organizationId: $organizationId, name: $name, nameTh: $nameTh, isRequired: $isRequired, minSelections: $minSelections, maxSelections: $maxSelections, sortOrder: $sortOrder, isActive: $isActive, options: $options)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ModifierGroupDtoImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.organizationId, organizationId) ||
+                other.organizationId == organizationId) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.nameTh, nameTh) || other.nameTh == nameTh) &&
+            (identical(other.isRequired, isRequired) ||
+                other.isRequired == isRequired) &&
+            (identical(other.minSelections, minSelections) ||
+                other.minSelections == minSelections) &&
+            (identical(other.maxSelections, maxSelections) ||
+                other.maxSelections == maxSelections) &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            const DeepCollectionEquality().equals(other._options, _options));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      organizationId,
+      name,
+      nameTh,
+      isRequired,
+      minSelections,
+      maxSelections,
+      sortOrder,
+      isActive,
+      const DeepCollectionEquality().hash(_options));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ModifierGroupDtoImplCopyWith<_$ModifierGroupDtoImpl> get copyWith =>
+      __$$ModifierGroupDtoImplCopyWithImpl<_$ModifierGroupDtoImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ModifierGroupDtoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ModifierGroupDto implements ModifierGroupDto {
+  const factory _ModifierGroupDto(
+      {required final String id,
+      final String? organizationId,
+      required final String name,
+      final String? nameTh,
+      final bool isRequired,
+      final int? minSelections,
+      final int? maxSelections,
+      final int? sortOrder,
+      final bool isActive,
+      final List<ModifierOptionDto> options}) = _$ModifierGroupDtoImpl;
+
+  factory _ModifierGroupDto.fromJson(Map<String, dynamic> json) =
+      _$ModifierGroupDtoImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String? get organizationId;
+  @override
+  String get name;
+  @override
+  String? get nameTh;
+  @override
+  bool get isRequired;
+  @override
+  int? get minSelections;
+  @override
+  int? get maxSelections;
+  @override
+  int? get sortOrder;
+  @override
+  bool get isActive;
+  @override
+  List<ModifierOptionDto> get options;
+  @override
+  @JsonKey(ignore: true)
+  _$$ModifierGroupDtoImplCopyWith<_$ModifierGroupDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ItemModifierLinkDto _$ItemModifierLinkDtoFromJson(Map<String, dynamic> json) {
+  return _ItemModifierLinkDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ItemModifierLinkDto {
+  String get id => throw _privateConstructorUsedError;
+  String get menuItemId => throw _privateConstructorUsedError;
+  String get modifierGroupId => throw _privateConstructorUsedError;
+  int? get sortOrder => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ItemModifierLinkDtoCopyWith<ItemModifierLinkDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ItemModifierLinkDtoCopyWith<$Res> {
+  factory $ItemModifierLinkDtoCopyWith(
+          ItemModifierLinkDto value, $Res Function(ItemModifierLinkDto) then) =
+      _$ItemModifierLinkDtoCopyWithImpl<$Res, ItemModifierLinkDto>;
+  @useResult
+  $Res call(
+      {String id, String menuItemId, String modifierGroupId, int? sortOrder});
+}
+
+/// @nodoc
+class _$ItemModifierLinkDtoCopyWithImpl<$Res, $Val extends ItemModifierLinkDto>
+    implements $ItemModifierLinkDtoCopyWith<$Res> {
+  _$ItemModifierLinkDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? menuItemId = null,
+    Object? modifierGroupId = null,
+    Object? sortOrder = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      menuItemId: null == menuItemId
+          ? _value.menuItemId
+          : menuItemId // ignore: cast_nullable_to_non_nullable
+              as String,
+      modifierGroupId: null == modifierGroupId
+          ? _value.modifierGroupId
+          : modifierGroupId // ignore: cast_nullable_to_non_nullable
+              as String,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ItemModifierLinkDtoImplCopyWith<$Res>
+    implements $ItemModifierLinkDtoCopyWith<$Res> {
+  factory _$$ItemModifierLinkDtoImplCopyWith(_$ItemModifierLinkDtoImpl value,
+          $Res Function(_$ItemModifierLinkDtoImpl) then) =
+      __$$ItemModifierLinkDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id, String menuItemId, String modifierGroupId, int? sortOrder});
+}
+
+/// @nodoc
+class __$$ItemModifierLinkDtoImplCopyWithImpl<$Res>
+    extends _$ItemModifierLinkDtoCopyWithImpl<$Res, _$ItemModifierLinkDtoImpl>
+    implements _$$ItemModifierLinkDtoImplCopyWith<$Res> {
+  __$$ItemModifierLinkDtoImplCopyWithImpl(_$ItemModifierLinkDtoImpl _value,
+      $Res Function(_$ItemModifierLinkDtoImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? menuItemId = null,
+    Object? modifierGroupId = null,
+    Object? sortOrder = freezed,
+  }) {
+    return _then(_$ItemModifierLinkDtoImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      menuItemId: null == menuItemId
+          ? _value.menuItemId
+          : menuItemId // ignore: cast_nullable_to_non_nullable
+              as String,
+      modifierGroupId: null == modifierGroupId
+          ? _value.modifierGroupId
+          : modifierGroupId // ignore: cast_nullable_to_non_nullable
+              as String,
+      sortOrder: freezed == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ItemModifierLinkDtoImpl implements _ItemModifierLinkDto {
+  const _$ItemModifierLinkDtoImpl(
+      {required this.id,
+      required this.menuItemId,
+      required this.modifierGroupId,
+      this.sortOrder});
+
+  factory _$ItemModifierLinkDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ItemModifierLinkDtoImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String menuItemId;
+  @override
+  final String modifierGroupId;
+  @override
+  final int? sortOrder;
+
+  @override
+  String toString() {
+    return 'ItemModifierLinkDto(id: $id, menuItemId: $menuItemId, modifierGroupId: $modifierGroupId, sortOrder: $sortOrder)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ItemModifierLinkDtoImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.menuItemId, menuItemId) ||
+                other.menuItemId == menuItemId) &&
+            (identical(other.modifierGroupId, modifierGroupId) ||
+                other.modifierGroupId == modifierGroupId) &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, id, menuItemId, modifierGroupId, sortOrder);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ItemModifierLinkDtoImplCopyWith<_$ItemModifierLinkDtoImpl> get copyWith =>
+      __$$ItemModifierLinkDtoImplCopyWithImpl<_$ItemModifierLinkDtoImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ItemModifierLinkDtoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ItemModifierLinkDto implements ItemModifierLinkDto {
+  const factory _ItemModifierLinkDto(
+      {required final String id,
+      required final String menuItemId,
+      required final String modifierGroupId,
+      final int? sortOrder}) = _$ItemModifierLinkDtoImpl;
+
+  factory _ItemModifierLinkDto.fromJson(Map<String, dynamic> json) =
+      _$ItemModifierLinkDtoImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get menuItemId;
+  @override
+  String get modifierGroupId;
+  @override
+  int? get sortOrder;
+  @override
+  @JsonKey(ignore: true)
+  _$$ItemModifierLinkDtoImplCopyWith<_$ItemModifierLinkDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+MenuWithModifiersDto _$MenuWithModifiersDtoFromJson(Map<String, dynamic> json) {
+  return _MenuWithModifiersDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$MenuWithModifiersDto {
+  List<MenuItemDto> get items => throw _privateConstructorUsedError;
+  List<ModifierGroupDto> get modifierGroups =>
+      throw _privateConstructorUsedError;
+  List<ItemModifierLinkDto> get itemModifierLinks =>
+      throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $MenuWithModifiersDtoCopyWith<MenuWithModifiersDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MenuWithModifiersDtoCopyWith<$Res> {
+  factory $MenuWithModifiersDtoCopyWith(MenuWithModifiersDto value,
+          $Res Function(MenuWithModifiersDto) then) =
+      _$MenuWithModifiersDtoCopyWithImpl<$Res, MenuWithModifiersDto>;
+  @useResult
+  $Res call(
+      {List<MenuItemDto> items,
+      List<ModifierGroupDto> modifierGroups,
+      List<ItemModifierLinkDto> itemModifierLinks});
+}
+
+/// @nodoc
+class _$MenuWithModifiersDtoCopyWithImpl<$Res,
+        $Val extends MenuWithModifiersDto>
+    implements $MenuWithModifiersDtoCopyWith<$Res> {
+  _$MenuWithModifiersDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? modifierGroups = null,
+    Object? itemModifierLinks = null,
+  }) {
+    return _then(_value.copyWith(
+      items: null == items
+          ? _value.items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<MenuItemDto>,
+      modifierGroups: null == modifierGroups
+          ? _value.modifierGroups
+          : modifierGroups // ignore: cast_nullable_to_non_nullable
+              as List<ModifierGroupDto>,
+      itemModifierLinks: null == itemModifierLinks
+          ? _value.itemModifierLinks
+          : itemModifierLinks // ignore: cast_nullable_to_non_nullable
+              as List<ItemModifierLinkDto>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$MenuWithModifiersDtoImplCopyWith<$Res>
+    implements $MenuWithModifiersDtoCopyWith<$Res> {
+  factory _$$MenuWithModifiersDtoImplCopyWith(_$MenuWithModifiersDtoImpl value,
+          $Res Function(_$MenuWithModifiersDtoImpl) then) =
+      __$$MenuWithModifiersDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {List<MenuItemDto> items,
+      List<ModifierGroupDto> modifierGroups,
+      List<ItemModifierLinkDto> itemModifierLinks});
+}
+
+/// @nodoc
+class __$$MenuWithModifiersDtoImplCopyWithImpl<$Res>
+    extends _$MenuWithModifiersDtoCopyWithImpl<$Res, _$MenuWithModifiersDtoImpl>
+    implements _$$MenuWithModifiersDtoImplCopyWith<$Res> {
+  __$$MenuWithModifiersDtoImplCopyWithImpl(_$MenuWithModifiersDtoImpl _value,
+      $Res Function(_$MenuWithModifiersDtoImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? modifierGroups = null,
+    Object? itemModifierLinks = null,
+  }) {
+    return _then(_$MenuWithModifiersDtoImpl(
+      items: null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<MenuItemDto>,
+      modifierGroups: null == modifierGroups
+          ? _value._modifierGroups
+          : modifierGroups // ignore: cast_nullable_to_non_nullable
+              as List<ModifierGroupDto>,
+      itemModifierLinks: null == itemModifierLinks
+          ? _value._itemModifierLinks
+          : itemModifierLinks // ignore: cast_nullable_to_non_nullable
+              as List<ItemModifierLinkDto>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MenuWithModifiersDtoImpl implements _MenuWithModifiersDto {
+  const _$MenuWithModifiersDtoImpl(
+      {required final List<MenuItemDto> items,
+      required final List<ModifierGroupDto> modifierGroups,
+      required final List<ItemModifierLinkDto> itemModifierLinks})
+      : _items = items,
+        _modifierGroups = modifierGroups,
+        _itemModifierLinks = itemModifierLinks;
+
+  factory _$MenuWithModifiersDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MenuWithModifiersDtoImplFromJson(json);
+
+  final List<MenuItemDto> _items;
+  @override
+  List<MenuItemDto> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  final List<ModifierGroupDto> _modifierGroups;
+  @override
+  List<ModifierGroupDto> get modifierGroups {
+    if (_modifierGroups is EqualUnmodifiableListView) return _modifierGroups;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_modifierGroups);
+  }
+
+  final List<ItemModifierLinkDto> _itemModifierLinks;
+  @override
+  List<ItemModifierLinkDto> get itemModifierLinks {
+    if (_itemModifierLinks is EqualUnmodifiableListView)
+      return _itemModifierLinks;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_itemModifierLinks);
+  }
+
+  @override
+  String toString() {
+    return 'MenuWithModifiersDto(items: $items, modifierGroups: $modifierGroups, itemModifierLinks: $itemModifierLinks)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MenuWithModifiersDtoImpl &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            const DeepCollectionEquality()
+                .equals(other._modifierGroups, _modifierGroups) &&
+            const DeepCollectionEquality()
+                .equals(other._itemModifierLinks, _itemModifierLinks));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_items),
+      const DeepCollectionEquality().hash(_modifierGroups),
+      const DeepCollectionEquality().hash(_itemModifierLinks));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MenuWithModifiersDtoImplCopyWith<_$MenuWithModifiersDtoImpl>
+      get copyWith =>
+          __$$MenuWithModifiersDtoImplCopyWithImpl<_$MenuWithModifiersDtoImpl>(
+              this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MenuWithModifiersDtoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _MenuWithModifiersDto implements MenuWithModifiersDto {
+  const factory _MenuWithModifiersDto(
+          {required final List<MenuItemDto> items,
+          required final List<ModifierGroupDto> modifierGroups,
+          required final List<ItemModifierLinkDto> itemModifierLinks}) =
+      _$MenuWithModifiersDtoImpl;
+
+  factory _MenuWithModifiersDto.fromJson(Map<String, dynamic> json) =
+      _$MenuWithModifiersDtoImpl.fromJson;
+
+  @override
+  List<MenuItemDto> get items;
+  @override
+  List<ModifierGroupDto> get modifierGroups;
+  @override
+  List<ItemModifierLinkDto> get itemModifierLinks;
+  @override
+  @JsonKey(ignore: true)
+  _$$MenuWithModifiersDtoImplCopyWith<_$MenuWithModifiersDtoImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
 MenuItemDto _$MenuItemDtoFromJson(Map<String, dynamic> json) {
   return _MenuItemDto.fromJson(json);
 }

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../models/api_models.dart';
+import '../models/branch_dto.dart';
+import '../models/table_dto.dart';
 import '../models/user.dart';
 import 'api_exception.dart';
 
@@ -780,6 +782,19 @@ class PosApiService {
 
   
 
+    /// Fetches the full menu payload including modifier groups, options, and
+    /// item↔modifier-group links in one round-trip. Used for offline sync.
+    Future<MenuWithModifiersDto> getMenuItemsWithModifiers() async {
+      try {
+        debugPrint('🍽️ Fetching menu+modifiers via tRPC: menu.listWithModifiers');
+        final data = await _trpcQuery('menu.listWithModifiers');
+        return MenuWithModifiersDto.fromJson(data as Map<String, dynamic>);
+      } catch (e) {
+        debugPrint('❌ menu.listWithModifiers failed: $e');
+        rethrow;
+      }
+    }
+
     Future<void> updateMenuItem(String id, Map<String, dynamic> updates) async {
 
       try {
@@ -802,6 +817,55 @@ class PosApiService {
 
       }
 
+    }
+
+    // Branches
+
+    /// Fetch active branches for the current organization (branch.list tRPC).
+    /// Requires an active organization to be set in the session.
+    Future<List<BranchDto>> getBranches() async {
+      try {
+        debugPrint('🏪 Fetching branches via tRPC: branch.list');
+        final data = await _trpcQuery('branch.list');
+        if (data is List) {
+          return data.map((b) => BranchDto.fromJson(b as Map<String, dynamic>)).toList();
+        }
+        return [];
+      } catch (e) {
+        debugPrint('❌ branch.list failed: $e');
+        rethrow;
+      }
+    }
+
+    // Floor Plan Tables
+
+    /// Full table list for initial sync (table.list tRPC)
+    Future<List<TableDto>> getFloorPlanTables(String orgId, String branchId) async {
+      try {
+        debugPrint('🪑 Fetching floor plan tables via tRPC: table.list');
+        final data = await _trpcQuery('table.list', input: {'branchId': branchId});
+        if (data is List) {
+          return data.map((t) => TableDto.fromJson(t)).toList();
+        }
+        return [];
+      } catch (e) {
+        debugPrint('❌ table.list failed: $e');
+        rethrow;
+      }
+    }
+
+    /// Lightweight status poll (table.listWithStatus tRPC)
+    Future<List<TableStatusDto>> getTableStatuses(String orgId, String branchId) async {
+      try {
+        final data = await _trpcQuery('table.listWithStatus', input: {'branchId': branchId});
+        if (data is List) {
+          return data.map((t) => TableStatusDto.fromJson(t)).toList();
+        }
+        return [];
+      } catch (e) {
+        debugPrint('❌ table.listWithStatus failed: $e');
+        rethrow;
+      }
     }
 
   /// Recursively removes entries whose value is null.

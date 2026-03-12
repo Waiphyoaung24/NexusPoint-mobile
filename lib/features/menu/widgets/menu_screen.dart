@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/menu_provider.dart';
+import '../providers/modifier_provider.dart';
+import '../widgets/modifier_picker_sheet.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 
@@ -253,15 +255,37 @@ class MenuScreen extends ConsumerWidget {
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        onTap: () {
-          ref.read(cartProvider.notifier).addItem(item);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Added ${item.name} to cart'),
-              duration: const Duration(seconds: 1),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+        onTap: () async {
+          final modifiers =
+              await ref.read(menuItemModifiersProvider(item.id).future);
+          if (modifiers.isEmpty) {
+            ref.read(cartProvider.notifier).addItem(item);
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Added ${item.name} to cart'),
+                  duration: const Duration(seconds: 1),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          } else {
+            if (context.mounted) {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (_) => ModifierPickerSheet(
+                  menuItem: item,
+                  modifierGroups: modifiers,
+                ),
+              );
+            }
+          }
         },
         borderRadius: BorderRadius.circular(16),
         child: Container(

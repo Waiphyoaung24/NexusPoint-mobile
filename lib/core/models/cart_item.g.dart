@@ -12,6 +12,9 @@ _$CartItemImpl _$$CartItemImplFromJson(Map<String, dynamic> json) =>
       quantity: (json['quantity'] as num).toInt(),
       unitPrice: _parsePrice(json['unitPrice']),
       notes: json['notes'] as String?,
+      selectedModifiers: json['selectedModifiers'] == null
+          ? const []
+          : _parseModifiers(json['selectedModifiers']),
     );
 
 Map<String, dynamic> _$$CartItemImplToJson(_$CartItemImpl instance) =>
@@ -20,4 +23,5 @@ Map<String, dynamic> _$$CartItemImplToJson(_$CartItemImpl instance) =>
       'quantity': instance.quantity,
       'unitPrice': instance.unitPrice,
       'notes': instance.notes,
+      'selectedModifiers': _modifiersToJson(instance.selectedModifiers),
     };

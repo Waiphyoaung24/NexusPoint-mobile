@@ -28,9 +28,20 @@ final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
 class CartNotifier extends StateNotifier<CartState> {
   CartNotifier() : super(const CartState());
 
-  void addItem(MenuItem item, {int quantity = 1, String? notes}) {
+  void addItem(
+    MenuItem item, {
+    int quantity = 1,
+    String? notes,
+    List<SelectedModifierOption> selectedModifiers = const [],
+  }) {
+    // Items with different modifier selections are treated as separate line items
+    final modifierKey = selectedModifiers.map((m) => m.optionId).join(',');
     final existingIndex = state.items.indexWhere(
-      (cartItem) => cartItem.menuItem.id == item.id && cartItem.notes == notes,
+      (cartItem) =>
+          cartItem.menuItem.id == item.id &&
+          cartItem.notes == notes &&
+          cartItem.selectedModifiers.map((m) => m.optionId).join(',') ==
+              modifierKey,
     );
 
     List<CartItem> updatedItems;
@@ -44,6 +55,7 @@ class CartNotifier extends StateNotifier<CartState> {
         quantity: existing.quantity + quantity,
         unitPrice: existing.unitPrice,
         notes: existing.notes,
+        selectedModifiers: existing.selectedModifiers,
       );
     } else {
       // Add new item
@@ -54,6 +66,7 @@ class CartNotifier extends StateNotifier<CartState> {
           quantity: quantity,
           unitPrice: item.price,
           notes: notes,
+          selectedModifiers: selectedModifiers,
         ),
       ];
     }
