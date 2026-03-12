@@ -18,7 +18,7 @@ This project uses **flavors** to manage different environments (local developmen
 | Flavor | Description | API Origin | App Name |
 |--------|-------------|------------|----------|
 | **local** | Development environment | Local API server | NexusPoint POS (Local) |
-| **prod** | Production environment | https://420man.store/api/ | NexusPoint POS |
+| **prod** | Production environment | https://nexuslab.asia/api/ | NexusPoint POS |
 
 ## How to Run
 
@@ -31,7 +31,7 @@ flutter run --flavor local --dart-define=APP_NAME="NexusPoint POS (Local)" --dar
 
 #### Production (Debug)
 ```bash
-flutter run --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://420man.store/api/" --dart-define=APP_ORIGIN="https://420man.store" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
+flutter run --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://nexuslab.asia/api/" --dart-define=APP_ORIGIN="https://nexuslab.asia" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
 ```
 
 ### Running from VS Code
@@ -65,8 +65,8 @@ Create a `.vscode/launch.json` file:
         "--flavor",
         "prod",
         "--dart-define=APP_NAME=NexusPoint POS",
-        "--dart-define=API_ORIGIN=https://420man.store/api/",
-        "--dart-define=APP_ORIGIN=https://420man.store",
+        "--dart-define=API_ORIGIN=https://nexuslab.asia/api/",
+        "--dart-define=APP_ORIGIN=https://nexuslab.asia",
         "--dart-define=GOOGLE_CLOUD_PROJECT=nexuspoint-prod"
       ]
     }
@@ -88,7 +88,7 @@ Create a `.vscode/launch.json` file:
      ```
    - **Additional run args** (Production):
      ```
-     --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://420man.store/api/" --dart-define=APP_ORIGIN="https://420man.store" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
+     --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://nexuslab.asia/api/" --dart-define=APP_ORIGIN="https://nexuslab.asia" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
      ```
 
 ### Building for Release
@@ -100,7 +100,7 @@ flutter build apk --flavor local --dart-define=APP_NAME="NexusPoint POS (Local)"
 
 #### Android APK (Production)
 ```bash
-flutter build apk --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://420man.store/api/" --dart-define=APP_ORIGIN="https://420man.store" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
+flutter build apk --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://nexuslab.asia/api/" --dart-define=APP_ORIGIN="https://nexuslab.asia" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
 ```
 
 #### iOS (Local)
@@ -110,7 +110,7 @@ flutter build ios --flavor local --dart-define=APP_NAME="NexusPoint POS (Local)"
 
 #### iOS (Production)
 ```bash
-flutter build ios --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://420man.store/api/" --dart-define=APP_ORIGIN="https://420man.store" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
+flutter build ios --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://nexuslab.asia/api/" --dart-define=APP_ORIGIN="https://nexuslab.asia" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"
 ```
 
 ## Environment Variables
@@ -133,7 +133,7 @@ Create shell aliases for quick access:
 # Add to ~/.zshrc or ~/.bashrc
 alias flutter-local='flutter run --flavor local --dart-define=APP_NAME="NexusPoint POS (Local)" --dart-define=API_ORIGIN="http://localhost:8080/api/" --dart-define=APP_ORIGIN="http://localhost:3000" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-local"'
 
-alias flutter-prod='flutter run --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://420man.store/api/" --dart-define=APP_ORIGIN="https://420man.store" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"'
+alias flutter-prod='flutter run --flavor prod --dart-define=APP_NAME="NexusPoint POS" --dart-define=API_ORIGIN="https://nexuslab.asia/api/" --dart-define=APP_ORIGIN="https://nexuslab.asia" --dart-define=GOOGLE_CLOUD_PROJECT="nexuspoint-prod"'
 ```
 
 Then run with:

@@ -5,7 +5,7 @@
 If you're seeing these errors:
 ```
 DioError Status: 404 Not Found
-https://420man.store/api/organization/list
+https://nexuslab.asia/api/organization/list
 
 🏢 Found 0 organizations
 ❌ User has no organizations
@@ -71,7 +71,7 @@ Use curl or Postman:
 
 #### 1. Login
 ```bash
-curl -X POST https://420man.store/api/auth/sign-in/email-otp \
+curl -X POST https://nexuslab.asia/api/auth/sign-in/email-otp \
   -H "Content-Type: application/json" \
   -d '{
     "email": "entertainmentkwg@gmail.com",
@@ -83,7 +83,7 @@ Save the token from the response.
 
 #### 2. Create Organization
 ```bash
-curl -X POST https://420man.store/api/organization/create \
+curl -X POST https://nexuslab.asia/api/organization/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -96,7 +96,7 @@ Save the organization ID from the response.
 
 #### 3. Set Active Organization
 ```bash
-curl -X POST https://420man.store/api/organization/setActive \
+curl -X POST https://nexuslab.asia/api/organization/setActive \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
@@ -106,7 +106,7 @@ curl -X POST https://420man.store/api/organization/setActive \
 
 #### 4. Verify
 ```bash
-curl -X GET https://420man.store/api/organization/list \
+curl -X GET https://nexuslab.asia/api/organization/list \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 

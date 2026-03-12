@@ -38,7 +38,7 @@ This document defines the technical design for the Flutter tablet POS applicatio
 
 ### Technology Stack Alignment
 
-The architecture mirrors the existing React/Astro web dashboard (420man.store):
+The architecture mirrors the existing React/Astro web dashboard (nexuslab.asia):
 
 | Web Dashboard | Flutter POS | Rationale |
 |---------------|-------------|-----------|
@@ -359,7 +359,7 @@ class SyncService extends _$SyncService {
 ### 1. Retrofit API Service
 
 ```dart
-@RestApi(baseUrl: 'https://api.420man.store')
+@RestApi(baseUrl: 'https://api.nexuslab.asia')
 abstract class PosApiService {
   factory PosApiService(Dio dio, {String baseUrl}) = _PosApiService;
 
@@ -401,7 +401,7 @@ abstract class PosApiService {
 @riverpod
 Dio dio(DioRef ref) {
   final dio = Dio(BaseOptions(
-    baseUrl: 'https://api.420man.store',
+    baseUrl: 'https://api.nexuslab.asia',
     connectTimeout: Duration(seconds: 10),
     receiveTimeout: Duration(seconds: 10),
     headers: {
@@ -802,7 +802,7 @@ class PrinterService {
 
     // Header
     bytes += generator.text(
-      '420man.store',
+      'nexuslab.asia',
       styles: PosStyles(
         align: PosAlign.center,
         height: PosTextSize.size2,

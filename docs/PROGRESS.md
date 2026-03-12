@@ -12,7 +12,7 @@
 - [x] Flutter project created (`store.nexuspoint`, android + ios)
 - [x] All dependencies configured (`pubspec.yaml`)
 - [x] Feature-first folder structure (`lib/core`, `lib/features`, `lib/shared`)
-- [x] App flavors: `local` (localhost) + `prod` (420man.store)
+- [x] App flavors: `local` (localhost) + `prod` (nexuslab.asia)
 - [x] `AppConfig` with dart-define environment vars
 - [x] `analysis_options.yaml`
 

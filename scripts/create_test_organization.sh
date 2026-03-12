@@ -3,7 +3,7 @@
 # Script to create a test organization for the user
 # Usage: ./create_test_organization.sh
 
-API_URL="https://420man.store"
+API_URL="https://nexuslab.asia"
 USER_EMAIL="entertainmentkwg@gmail.com"
 
 echo "🚀 Creating test organization for user: $USER_EMAIL"

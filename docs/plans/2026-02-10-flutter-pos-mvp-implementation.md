@@ -996,7 +996,7 @@ import '../models/api_models.dart';
 
 part 'api_service.g.dart';
 
-@RestApi(baseUrl: 'https://api.420man.store')
+@RestApi(baseUrl: 'https://api.nexuslab.asia')
 abstract class PosApiService {
   factory PosApiService(Dio dio, {String baseUrl}) = _PosApiService;
 
@@ -1109,7 +1109,7 @@ import 'auth_token_provider.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(
-    baseUrl: 'https://api.420man.store',
+    baseUrl: 'https://api.nexuslab.asia',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {
