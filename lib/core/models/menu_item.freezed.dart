@@ -241,7 +241,7 @@ class __$$MenuItemImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$MenuItemImpl implements _MenuItem {
+class _$MenuItemImpl extends _MenuItem {
   const _$MenuItemImpl(
       {required this.id,
       this.organizationId,
@@ -254,7 +254,8 @@ class _$MenuItemImpl implements _MenuItem {
       this.category,
       this.imageUrl,
       this.isAvailable = true,
-      this.sortOrder});
+      this.sortOrder})
+      : super._();
 
   factory _$MenuItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$MenuItemImplFromJson(json);
@@ -348,7 +349,7 @@ class _$MenuItemImpl implements _MenuItem {
   }
 }
 
-abstract class _MenuItem implements MenuItem {
+abstract class _MenuItem extends MenuItem {
   const factory _MenuItem(
       {required final String id,
       final String? organizationId,
@@ -362,6 +363,7 @@ abstract class _MenuItem implements MenuItem {
       final String? imageUrl,
       final bool isAvailable,
       final int? sortOrder}) = _$MenuItemImpl;
+  const _MenuItem._() : super._();
 
   factory _MenuItem.fromJson(Map<String, dynamic> json) =
       _$MenuItemImpl.fromJson;

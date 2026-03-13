@@ -147,6 +147,19 @@ void main() {
 
       expect(backend.name, 'SKU-UNNAMED');
     });
+
+    test('custom item uses empty menuItemId', () {
+      const dto = OrderItemDto(
+        skuId: 'custom_1234567890',
+        name: 'Special Plate',
+        quantity: 1,
+        unitPrice: 99.0,
+      );
+
+      final backend = BackendOrderItemDto.fromOrderItemDto(dto);
+      expect(backend.menuItemId, '');
+      expect(backend.name, 'Special Plate');
+    });
   });
 
   // -------------------------------------------------------------------------

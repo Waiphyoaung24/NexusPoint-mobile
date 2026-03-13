@@ -16,25 +16,46 @@ class PosApiService {
 
     Future<dynamic> _trpcQuery(String procedure, {Map<String, dynamic>? input}) async {
 
-      // Try multiple formats for queries
+      // For no-input procedures, omit the input query param entirely
+      if (input == null) {
+        try {
+          final response = await _dio.get(
+            'trpc/$procedure',
+            queryParameters: {'batch': '1', 'input': jsonEncode({"0": {}})},
+          );
+          return _parseTrpcResponse(response.data, isBatch: true);
+        } on DioException catch (e) {
+          // If empty object fails, try without input param at all
+          if (e.response?.statusCode == 400) {
+            try {
+              final response = await _dio.get('trpc/$procedure');
+              return _parseTrpcResponse(response.data, isBatch: false);
+            } on DioException catch (e2) {
+              throw _handleError(e2);
+            }
+          }
+          throw _handleError(e);
+        }
+      }
 
+      // Try multiple formats for queries with input
       final formats = [
 
-        // Format 1: Batched with JSON wrapper (tRPC 10+ with transformer)
-
-        {'batch': '1', 'input': jsonEncode({"0": {"json": input}})},
-
-        // Format 2: Batched without JSON wrapper (tRPC 10+ without transformer)
+        // Format 1: Batched without JSON wrapper (tRPC 11 without superjson — our API)
 
         {'batch': '1', 'input': jsonEncode({"0": input})},
 
-        // Format 3: Non-batched with JSON wrapper
+        // Format 2: Batched with JSON wrapper (tRPC 10+ with superjson transformer)
 
-        {'input': jsonEncode({"json": input})},
+        {'batch': '1', 'input': jsonEncode({"0": {"json": input}})},
 
-        // Format 4: Non-batched without JSON wrapper
+        // Format 3: Non-batched without JSON wrapper
 
         {'input': jsonEncode(input)},
+
+        // Format 4: Non-batched with JSON wrapper
+
+        {'input': jsonEncode({"json": input})},
 
       ];
 
@@ -874,6 +895,8 @@ class PosApiService {
     final result = <String, dynamic>{};
     for (final entry in map.entries) {
       if (entry.value == null) continue;
+      // Strip empty strings — Zod .optional() rejects "" for uuid/enum fields
+      if (entry.value is String && (entry.value as String).isEmpty) continue;
       if (entry.value is Map<String, dynamic>) {
         result[entry.key] = _stripNulls(entry.value as Map<String, dynamic>);
       } else if (entry.value is List) {

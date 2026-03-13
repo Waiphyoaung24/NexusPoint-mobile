@@ -103,7 +103,7 @@ class OrderRepository {
         'branchId': user.branchId ?? user.tenantId!,
         'source': source.backendValue,
         if (orderType != null) 'orderType': orderType,
-        if (tableId != null) 'tableId': tableId,
+        if (tableId != null && _isValidUuid(tableId)) 'tableId': tableId,
         if (createdBy != null) 'createdBy': createdBy,
         if (vatAmount != null) 'vatAmount': vatAmount.toStringAsFixed(2),
         if (vatRate != null) 'vatRate': vatRate.toStringAsFixed(2),
@@ -301,4 +301,10 @@ class OrderRepository {
       vatRate: local.vatRate,
     );
   }
+
+  static final _uuidRegex = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+  );
+
+  static bool _isValidUuid(String value) => _uuidRegex.hasMatch(value);
 }

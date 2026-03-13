@@ -8,6 +8,7 @@ import '../../../core/models/cart_item.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../checkout/widgets/checkout_modal.dart';
 import '../../../shared/widgets/loading_skeleton.dart';
+import 'open_item_dialog.dart';
 
 class SpeedRegisterScreen extends ConsumerWidget {
   const SpeedRegisterScreen({super.key});
@@ -18,6 +19,25 @@ class SpeedRegisterScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Speed Register'),
         actions: [
+          TextButton.icon(
+            onPressed: () async {
+              final customItem = await showOpenItemDialog(context);
+              if (customItem != null && context.mounted) {
+                ref.read(cartProvider.notifier).addItem(customItem);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Added "${customItem.name}" to cart'),
+                    duration: const Duration(seconds: 1),
+                    behavior: SnackBarBehavior.floating,
+                    width: 300,
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.edit_note_rounded, size: 20),
+            label: const Text('Open Item'),
+          ),
+          const SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {

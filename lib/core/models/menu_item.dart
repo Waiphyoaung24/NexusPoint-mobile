@@ -11,6 +11,8 @@ double _parsePrice(dynamic value) {
 
 @freezed
 class MenuItem with _$MenuItem {
+  const MenuItem._();
+
   const factory MenuItem({
     required String id,
     String? organizationId,
@@ -25,6 +27,25 @@ class MenuItem with _$MenuItem {
     @Default(true) bool isAvailable,
     int? sortOrder,
   }) = _MenuItem;
+
+  bool get isCustomItem => id.startsWith('custom_');
+
+  static MenuItem custom({required String name, required double price}) {
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Custom item name must not be empty');
+    }
+    if (price <= 0) {
+      throw ArgumentError('Custom item price must be positive');
+    }
+    return MenuItem(
+      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+      sku: 'CUSTOM',
+      name: name.trim(),
+      price: price,
+      category: 'Open Item',
+      isAvailable: true,
+    );
+  }
 
   factory MenuItem.fromJson(Map<String, dynamic> json) =>
       _$MenuItemFromJson(json);

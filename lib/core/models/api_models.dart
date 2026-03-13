@@ -94,14 +94,16 @@ class BackendOrderItemDto with _$BackendOrderItemDto {
       _$BackendOrderItemDtoFromJson(_normalizeBackendOrderItem(json));
 
   /// Convert a local [OrderItemDto] to the backend shape.
-  static BackendOrderItemDto fromOrderItemDto(OrderItemDto dto) =>
-      BackendOrderItemDto(
-        menuItemId: dto.skuId,
-        name: dto.name ?? dto.skuId,
-        quantity: dto.quantity,
-        price: dto.unitPrice.toStringAsFixed(2),
-        notes: dto.notes,
-      );
+  static BackendOrderItemDto fromOrderItemDto(OrderItemDto dto) {
+    final isCustom = dto.skuId.startsWith('custom_');
+    return BackendOrderItemDto(
+      menuItemId: isCustom ? '' : dto.skuId,
+      name: dto.name ?? dto.skuId,
+      quantity: dto.quantity,
+      price: dto.unitPrice.toStringAsFixed(2),
+      notes: dto.notes,
+    );
+  }
 
   /// Build a raw JSON map that includes structured modifier data.
   /// Used by [OrderRepository] when the caller provides selected modifiers.
@@ -109,8 +111,9 @@ class BackendOrderItemDto with _$BackendOrderItemDto {
     OrderItemDto dto,
     List<SelectedModifierOption> modifiers,
   ) {
+    final isCustom = dto.skuId.startsWith('custom_');
     return {
-      'menuItemId': dto.skuId,
+      if (!isCustom) 'menuItemId': dto.skuId,
       'name': dto.name ?? dto.skuId,
       'quantity': dto.quantity,
       'price': dto.unitPrice.toStringAsFixed(2),

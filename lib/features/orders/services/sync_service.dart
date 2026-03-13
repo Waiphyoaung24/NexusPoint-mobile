@@ -191,8 +191,18 @@ class SyncServiceNotifier extends StateNotifier<SyncState> {
     // Future: handle 'menu_update', 'order_update' etc.
   }
 
+  static final _uuidRegex = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+  );
+
   Future<void> _syncOrder(SyncQueueItem item) async {
     final payload = jsonDecode(item.payloadJson) as Map<String, dynamic>;
+    // Sanitize UUID fields — old queue items may have invalid values
+    for (final key in ['tableId', 'createdBy']) {
+      if (payload[key] is String && !_uuidRegex.hasMatch(payload[key] as String)) {
+        payload.remove(key);
+      }
+    }
     final request = OrderRequest.fromJson(payload);
 
     try {

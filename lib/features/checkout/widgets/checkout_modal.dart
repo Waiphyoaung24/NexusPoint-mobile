@@ -246,9 +246,17 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
         _ => OrderSource.dinein,
       };
 
+      // Convert Dart enum camelCase to API snake_case
+      final orderTypeStr = switch (orderCtx?.orderType) {
+        OrderType.dineIn => 'dine_in',
+        OrderType.takeaway => 'takeaway',
+        OrderType.delivery => 'delivery',
+        null => null,
+      };
+
       final order = await ref.read(orderRepositoryProvider).createOrder(
             source: source,
-            orderType: orderCtx?.orderType.name,
+            orderType: orderTypeStr,
             tableId: orderCtx?.tableId,
             tableNumber: orderCtx?.tableNumber?.toString(),
             createdBy: userId,
