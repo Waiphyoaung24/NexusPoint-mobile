@@ -80,6 +80,13 @@ double _parsePrice(dynamic value) {
   return 0.0;
 }
 
+double? _parsePriceNullable(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value);
+  return null;
+}
+
 @freezed
 class Order with _$Order {
   const factory Order({
@@ -95,6 +102,12 @@ class Order with _$Order {
     DateTime? syncedAt,
     @Default(false) bool isSynced,
     String? tableNumber,
+    String? tableId,
+    String? orderType,
+    String? createdBy,
+    @JsonKey(fromJson: _parsePriceNullable) double? subtotalAmount,
+    @JsonKey(fromJson: _parsePriceNullable) double? vatAmount,
+    @JsonKey(fromJson: _parsePriceNullable) double? vatRate,
   }) = _Order;
 
   factory Order.fromJson(Map<String, dynamic> json) =>

@@ -98,12 +98,20 @@ class __$$UnauthenticatedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UnauthenticatedImpl implements Unauthenticated {
+class _$UnauthenticatedImpl
+    with DiagnosticableTreeMixin
+    implements Unauthenticated {
   const _$UnauthenticatedImpl();
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'AuthState.unauthenticated()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty('type', 'AuthState.unauthenticated'));
   }
 
   @override
@@ -237,7 +245,9 @@ class __$$BranchPendingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$BranchPendingImpl implements BranchPending {
+class _$BranchPendingImpl
+    with DiagnosticableTreeMixin
+    implements BranchPending {
   const _$BranchPendingImpl(
       {required this.user, required final List<BranchDto> branches})
       : _branches = branches;
@@ -253,8 +263,17 @@ class _$BranchPendingImpl implements BranchPending {
   }
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'AuthState.branchPending(user: $user, branches: $branches)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'AuthState.branchPending'))
+      ..add(DiagnosticsProperty('user', user))
+      ..add(DiagnosticsProperty('branches', branches));
   }
 
   @override
@@ -406,7 +425,9 @@ class __$$AuthenticatedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$AuthenticatedImpl implements Authenticated {
+class _$AuthenticatedImpl
+    with DiagnosticableTreeMixin
+    implements Authenticated {
   const _$AuthenticatedImpl({required this.user, this.failedPinAttempts = 0});
 
   @override
@@ -416,8 +437,17 @@ class _$AuthenticatedImpl implements Authenticated {
   final int failedPinAttempts;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'AuthState.authenticated(user: $user, failedPinAttempts: $failedPinAttempts)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'AuthState.authenticated'))
+      ..add(DiagnosticsProperty('user', user))
+      ..add(DiagnosticsProperty('failedPinAttempts', failedPinAttempts));
   }
 
   @override

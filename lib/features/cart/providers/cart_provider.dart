@@ -17,8 +17,14 @@ class CartState with _$CartState {
 
   const CartState._();
 
+  static const double taxRate = 0.07;
+
   int get itemCount => items.fold(0, (sum, item) => sum + item.quantity);
   bool get isEmpty => items.isEmpty;
+
+  /// Alias for consistency with checkout UI labels
+  double get taxAmount => tax;
+  double get grandTotal => total;
 }
 
 final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
@@ -103,8 +109,7 @@ class CartNotifier extends StateNotifier<CartState> {
 
   CartState _recalculate(List<CartItem> items) {
     final subtotal = items.fold(0.0, (sum, item) => sum + item.lineTotal);
-    const taxRate = 0.07; // 7% VAT (Thailand)
-    final tax = subtotal * taxRate;
+    final tax = subtotal * CartState.taxRate;
     final total = subtotal + tax;
 
     return CartState(

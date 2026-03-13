@@ -150,6 +150,11 @@ class OrderRequest with _$OrderRequest {
   const factory OrderRequest({
     String? branchId,
     required String source,
+    String? orderType,
+    String? tableId,
+    String? createdBy,
+    String? vatAmount,
+    String? vatRate,
     required List<BackendOrderItemDto> items,
     required String subtotal, // decimal string e.g. "100.00"
     required String total, // decimal string e.g. "100.00"

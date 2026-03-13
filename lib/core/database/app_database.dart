@@ -25,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -45,6 +45,14 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 4) {
           await m.createTable(floorPlanTables);
+        }
+        if (from < 5) {
+          await m.addColumn(orders, orders.tableId);
+          await m.addColumn(orders, orders.orderType);
+          await m.addColumn(orders, orders.createdBy);
+          await m.addColumn(orders, orders.subtotalAmount);
+          await m.addColumn(orders, orders.vatAmount);
+          await m.addColumn(orders, orders.vatRate);
         }
       },
       beforeOpen: (details) async {

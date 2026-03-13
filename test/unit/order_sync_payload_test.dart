@@ -426,6 +426,88 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
+  // F-003: New fields in OrderRequest (orderType, tableId, createdBy, VAT)
+  // -------------------------------------------------------------------------
+  group('OrderRequest — F-003 new fields', () {
+    test('includes orderType, tableId, createdBy in toJson', () {
+      const req = OrderRequest(
+        branchId: 'branch-1',
+        source: 'pos',
+        orderType: 'dine_in',
+        tableId: 'table-uuid-123',
+        createdBy: 'staff-uuid-456',
+        items: [],
+        subtotal: '310.00',
+        total: '331.70',
+      );
+
+      final json = req.toJson();
+
+      expect(json['orderType'], 'dine_in');
+      expect(json['tableId'], 'table-uuid-123');
+      expect(json['createdBy'], 'staff-uuid-456');
+    });
+
+    test('includes vatAmount and vatRate in toJson', () {
+      const req = OrderRequest(
+        branchId: 'branch-1',
+        source: 'pos',
+        vatAmount: '21.70',
+        vatRate: '7.00',
+        items: [],
+        subtotal: '310.00',
+        total: '331.70',
+      );
+
+      final json = req.toJson();
+
+      expect(json['vatAmount'], '21.70');
+      expect(json['vatRate'], '7.00');
+    });
+
+    test('new fields are null when not provided', () {
+      const req = OrderRequest(
+        branchId: 'branch-1',
+        source: 'pos',
+        items: [],
+        subtotal: '100.00',
+        total: '100.00',
+      );
+
+      final json = req.toJson();
+
+      expect(json['orderType'], isNull);
+      expect(json['tableId'], isNull);
+      expect(json['createdBy'], isNull);
+      expect(json['vatAmount'], isNull);
+      expect(json['vatRate'], isNull);
+    });
+
+    test('new fields survive round-trip', () {
+      const req = OrderRequest(
+        branchId: 'branch-1',
+        source: 'pos',
+        orderType: 'takeaway',
+        createdBy: 'staff-1',
+        vatAmount: '7.00',
+        vatRate: '7.00',
+        items: [],
+        subtotal: '100.00',
+        total: '107.00',
+      );
+
+      final payloadJson = jsonEncode(req.toJson());
+      final decoded = jsonDecode(payloadJson) as Map<String, dynamic>;
+      final restored = OrderRequest.fromJson(decoded);
+
+      expect(restored.orderType, 'takeaway');
+      expect(restored.createdBy, 'staff-1');
+      expect(restored.vatAmount, '7.00');
+      expect(restored.vatRate, '7.00');
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // Null stripping simulation — verifies what _stripNulls does
   // -------------------------------------------------------------------------
   group('Null-stripping behavior (simulates API _stripNulls)', () {

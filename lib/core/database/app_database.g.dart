@@ -63,6 +63,42 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, LocalOrder> {
   late final GeneratedColumn<String> tableNumber = GeneratedColumn<String>(
       'table_number', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _tableIdMeta =
+      const VerificationMeta('tableId');
+  @override
+  late final GeneratedColumn<String> tableId = GeneratedColumn<String>(
+      'table_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _orderTypeMeta =
+      const VerificationMeta('orderType');
+  @override
+  late final GeneratedColumn<String> orderType = GeneratedColumn<String>(
+      'order_type', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _subtotalAmountMeta =
+      const VerificationMeta('subtotalAmount');
+  @override
+  late final GeneratedColumn<double> subtotalAmount = GeneratedColumn<double>(
+      'subtotal_amount', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _vatAmountMeta =
+      const VerificationMeta('vatAmount');
+  @override
+  late final GeneratedColumn<double> vatAmount = GeneratedColumn<double>(
+      'vat_amount', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _vatRateMeta =
+      const VerificationMeta('vatRate');
+  @override
+  late final GeneratedColumn<double> vatRate = GeneratedColumn<double>(
+      'vat_rate', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -96,6 +132,12 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, LocalOrder> {
         paymentMethod,
         itemsJson,
         tableNumber,
+        tableId,
+        orderType,
+        createdBy,
+        subtotalAmount,
+        vatAmount,
+        vatRate,
         createdAt,
         syncedAt,
         isSynced
@@ -165,6 +207,32 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, LocalOrder> {
           tableNumber.isAcceptableOrUnknown(
               data['table_number']!, _tableNumberMeta));
     }
+    if (data.containsKey('table_id')) {
+      context.handle(_tableIdMeta,
+          tableId.isAcceptableOrUnknown(data['table_id']!, _tableIdMeta));
+    }
+    if (data.containsKey('order_type')) {
+      context.handle(_orderTypeMeta,
+          orderType.isAcceptableOrUnknown(data['order_type']!, _orderTypeMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    }
+    if (data.containsKey('subtotal_amount')) {
+      context.handle(
+          _subtotalAmountMeta,
+          subtotalAmount.isAcceptableOrUnknown(
+              data['subtotal_amount']!, _subtotalAmountMeta));
+    }
+    if (data.containsKey('vat_amount')) {
+      context.handle(_vatAmountMeta,
+          vatAmount.isAcceptableOrUnknown(data['vat_amount']!, _vatAmountMeta));
+    }
+    if (data.containsKey('vat_rate')) {
+      context.handle(_vatRateMeta,
+          vatRate.isAcceptableOrUnknown(data['vat_rate']!, _vatRateMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -206,6 +274,18 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, LocalOrder> {
           .read(DriftSqlType.string, data['${effectivePrefix}items_json'])!,
       tableNumber: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}table_number']),
+      tableId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}table_id']),
+      orderType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}order_type']),
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by']),
+      subtotalAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}subtotal_amount']),
+      vatAmount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}vat_amount']),
+      vatRate: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}vat_rate']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       syncedAt: attachedDatabase.typeMapping
@@ -231,6 +311,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
   final String paymentMethod;
   final String itemsJson;
   final String? tableNumber;
+  final String? tableId;
+  final String? orderType;
+  final String? createdBy;
+  final double? subtotalAmount;
+  final double? vatAmount;
+  final double? vatRate;
   final DateTime createdAt;
   final DateTime? syncedAt;
   final bool isSynced;
@@ -244,6 +330,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
       required this.paymentMethod,
       required this.itemsJson,
       this.tableNumber,
+      this.tableId,
+      this.orderType,
+      this.createdBy,
+      this.subtotalAmount,
+      this.vatAmount,
+      this.vatRate,
       required this.createdAt,
       this.syncedAt,
       required this.isSynced});
@@ -262,6 +354,24 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
     map['items_json'] = Variable<String>(itemsJson);
     if (!nullToAbsent || tableNumber != null) {
       map['table_number'] = Variable<String>(tableNumber);
+    }
+    if (!nullToAbsent || tableId != null) {
+      map['table_id'] = Variable<String>(tableId);
+    }
+    if (!nullToAbsent || orderType != null) {
+      map['order_type'] = Variable<String>(orderType);
+    }
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<String>(createdBy);
+    }
+    if (!nullToAbsent || subtotalAmount != null) {
+      map['subtotal_amount'] = Variable<double>(subtotalAmount);
+    }
+    if (!nullToAbsent || vatAmount != null) {
+      map['vat_amount'] = Variable<double>(vatAmount);
+    }
+    if (!nullToAbsent || vatRate != null) {
+      map['vat_rate'] = Variable<double>(vatRate);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || syncedAt != null) {
@@ -286,6 +396,24 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
       tableNumber: tableNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(tableNumber),
+      tableId: tableId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tableId),
+      orderType: orderType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(orderType),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
+      subtotalAmount: subtotalAmount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(subtotalAmount),
+      vatAmount: vatAmount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(vatAmount),
+      vatRate: vatRate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(vatRate),
       createdAt: Value(createdAt),
       syncedAt: syncedAt == null && nullToAbsent
           ? const Value.absent()
@@ -307,6 +435,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
       itemsJson: serializer.fromJson<String>(json['itemsJson']),
       tableNumber: serializer.fromJson<String?>(json['tableNumber']),
+      tableId: serializer.fromJson<String?>(json['tableId']),
+      orderType: serializer.fromJson<String?>(json['orderType']),
+      createdBy: serializer.fromJson<String?>(json['createdBy']),
+      subtotalAmount: serializer.fromJson<double?>(json['subtotalAmount']),
+      vatAmount: serializer.fromJson<double?>(json['vatAmount']),
+      vatRate: serializer.fromJson<double?>(json['vatRate']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
       isSynced: serializer.fromJson<bool>(json['isSynced']),
@@ -325,6 +459,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
       'paymentMethod': serializer.toJson<String>(paymentMethod),
       'itemsJson': serializer.toJson<String>(itemsJson),
       'tableNumber': serializer.toJson<String?>(tableNumber),
+      'tableId': serializer.toJson<String?>(tableId),
+      'orderType': serializer.toJson<String?>(orderType),
+      'createdBy': serializer.toJson<String?>(createdBy),
+      'subtotalAmount': serializer.toJson<double?>(subtotalAmount),
+      'vatAmount': serializer.toJson<double?>(vatAmount),
+      'vatRate': serializer.toJson<double?>(vatRate),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
       'isSynced': serializer.toJson<bool>(isSynced),
@@ -341,6 +481,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
           String? paymentMethod,
           String? itemsJson,
           Value<String?> tableNumber = const Value.absent(),
+          Value<String?> tableId = const Value.absent(),
+          Value<String?> orderType = const Value.absent(),
+          Value<String?> createdBy = const Value.absent(),
+          Value<double?> subtotalAmount = const Value.absent(),
+          Value<double?> vatAmount = const Value.absent(),
+          Value<double?> vatRate = const Value.absent(),
           DateTime? createdAt,
           Value<DateTime?> syncedAt = const Value.absent(),
           bool? isSynced}) =>
@@ -354,6 +500,13 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
         paymentMethod: paymentMethod ?? this.paymentMethod,
         itemsJson: itemsJson ?? this.itemsJson,
         tableNumber: tableNumber.present ? tableNumber.value : this.tableNumber,
+        tableId: tableId.present ? tableId.value : this.tableId,
+        orderType: orderType.present ? orderType.value : this.orderType,
+        createdBy: createdBy.present ? createdBy.value : this.createdBy,
+        subtotalAmount:
+            subtotalAmount.present ? subtotalAmount.value : this.subtotalAmount,
+        vatAmount: vatAmount.present ? vatAmount.value : this.vatAmount,
+        vatRate: vatRate.present ? vatRate.value : this.vatRate,
         createdAt: createdAt ?? this.createdAt,
         syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
         isSynced: isSynced ?? this.isSynced,
@@ -370,6 +523,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
           ..write('paymentMethod: $paymentMethod, ')
           ..write('itemsJson: $itemsJson, ')
           ..write('tableNumber: $tableNumber, ')
+          ..write('tableId: $tableId, ')
+          ..write('orderType: $orderType, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('subtotalAmount: $subtotalAmount, ')
+          ..write('vatAmount: $vatAmount, ')
+          ..write('vatRate: $vatRate, ')
           ..write('createdAt: $createdAt, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('isSynced: $isSynced')
@@ -388,6 +547,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
       paymentMethod,
       itemsJson,
       tableNumber,
+      tableId,
+      orderType,
+      createdBy,
+      subtotalAmount,
+      vatAmount,
+      vatRate,
       createdAt,
       syncedAt,
       isSynced);
@@ -404,6 +569,12 @@ class LocalOrder extends DataClass implements Insertable<LocalOrder> {
           other.paymentMethod == this.paymentMethod &&
           other.itemsJson == this.itemsJson &&
           other.tableNumber == this.tableNumber &&
+          other.tableId == this.tableId &&
+          other.orderType == this.orderType &&
+          other.createdBy == this.createdBy &&
+          other.subtotalAmount == this.subtotalAmount &&
+          other.vatAmount == this.vatAmount &&
+          other.vatRate == this.vatRate &&
           other.createdAt == this.createdAt &&
           other.syncedAt == this.syncedAt &&
           other.isSynced == this.isSynced);
@@ -419,6 +590,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
   final Value<String> paymentMethod;
   final Value<String> itemsJson;
   final Value<String?> tableNumber;
+  final Value<String?> tableId;
+  final Value<String?> orderType;
+  final Value<String?> createdBy;
+  final Value<double?> subtotalAmount;
+  final Value<double?> vatAmount;
+  final Value<double?> vatRate;
   final Value<DateTime> createdAt;
   final Value<DateTime?> syncedAt;
   final Value<bool> isSynced;
@@ -432,6 +609,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
     this.paymentMethod = const Value.absent(),
     this.itemsJson = const Value.absent(),
     this.tableNumber = const Value.absent(),
+    this.tableId = const Value.absent(),
+    this.orderType = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.subtotalAmount = const Value.absent(),
+    this.vatAmount = const Value.absent(),
+    this.vatRate = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.isSynced = const Value.absent(),
@@ -446,6 +629,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
     required String paymentMethod,
     required String itemsJson,
     this.tableNumber = const Value.absent(),
+    this.tableId = const Value.absent(),
+    this.orderType = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.subtotalAmount = const Value.absent(),
+    this.vatAmount = const Value.absent(),
+    this.vatRate = const Value.absent(),
     required DateTime createdAt,
     this.syncedAt = const Value.absent(),
     this.isSynced = const Value.absent(),
@@ -466,6 +655,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
     Expression<String>? paymentMethod,
     Expression<String>? itemsJson,
     Expression<String>? tableNumber,
+    Expression<String>? tableId,
+    Expression<String>? orderType,
+    Expression<String>? createdBy,
+    Expression<double>? subtotalAmount,
+    Expression<double>? vatAmount,
+    Expression<double>? vatRate,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? syncedAt,
     Expression<bool>? isSynced,
@@ -480,6 +675,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
       if (paymentMethod != null) 'payment_method': paymentMethod,
       if (itemsJson != null) 'items_json': itemsJson,
       if (tableNumber != null) 'table_number': tableNumber,
+      if (tableId != null) 'table_id': tableId,
+      if (orderType != null) 'order_type': orderType,
+      if (createdBy != null) 'created_by': createdBy,
+      if (subtotalAmount != null) 'subtotal_amount': subtotalAmount,
+      if (vatAmount != null) 'vat_amount': vatAmount,
+      if (vatRate != null) 'vat_rate': vatRate,
       if (createdAt != null) 'created_at': createdAt,
       if (syncedAt != null) 'synced_at': syncedAt,
       if (isSynced != null) 'is_synced': isSynced,
@@ -496,6 +697,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
       Value<String>? paymentMethod,
       Value<String>? itemsJson,
       Value<String?>? tableNumber,
+      Value<String?>? tableId,
+      Value<String?>? orderType,
+      Value<String?>? createdBy,
+      Value<double?>? subtotalAmount,
+      Value<double?>? vatAmount,
+      Value<double?>? vatRate,
       Value<DateTime>? createdAt,
       Value<DateTime?>? syncedAt,
       Value<bool>? isSynced}) {
@@ -509,6 +716,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       itemsJson: itemsJson ?? this.itemsJson,
       tableNumber: tableNumber ?? this.tableNumber,
+      tableId: tableId ?? this.tableId,
+      orderType: orderType ?? this.orderType,
+      createdBy: createdBy ?? this.createdBy,
+      subtotalAmount: subtotalAmount ?? this.subtotalAmount,
+      vatAmount: vatAmount ?? this.vatAmount,
+      vatRate: vatRate ?? this.vatRate,
       createdAt: createdAt ?? this.createdAt,
       syncedAt: syncedAt ?? this.syncedAt,
       isSynced: isSynced ?? this.isSynced,
@@ -545,6 +758,24 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
     if (tableNumber.present) {
       map['table_number'] = Variable<String>(tableNumber.value);
     }
+    if (tableId.present) {
+      map['table_id'] = Variable<String>(tableId.value);
+    }
+    if (orderType.present) {
+      map['order_type'] = Variable<String>(orderType.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (subtotalAmount.present) {
+      map['subtotal_amount'] = Variable<double>(subtotalAmount.value);
+    }
+    if (vatAmount.present) {
+      map['vat_amount'] = Variable<double>(vatAmount.value);
+    }
+    if (vatRate.present) {
+      map['vat_rate'] = Variable<double>(vatRate.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -569,6 +800,12 @@ class OrdersCompanion extends UpdateCompanion<LocalOrder> {
           ..write('paymentMethod: $paymentMethod, ')
           ..write('itemsJson: $itemsJson, ')
           ..write('tableNumber: $tableNumber, ')
+          ..write('tableId: $tableId, ')
+          ..write('orderType: $orderType, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('subtotalAmount: $subtotalAmount, ')
+          ..write('vatAmount: $vatAmount, ')
+          ..write('vatRate: $vatRate, ')
           ..write('createdAt: $createdAt, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('isSynced: $isSynced')

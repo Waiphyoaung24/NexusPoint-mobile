@@ -11,6 +11,12 @@ class Orders extends Table {
   TextColumn get paymentMethod => text()();
   TextColumn get itemsJson => text()();
   TextColumn get tableNumber => text().nullable()();
+  TextColumn get tableId => text().nullable()();
+  TextColumn get orderType => text().nullable()();
+  TextColumn get createdBy => text().nullable()();
+  RealColumn get subtotalAmount => real().nullable()();
+  RealColumn get vatAmount => real().nullable()();
+  RealColumn get vatRate => real().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();

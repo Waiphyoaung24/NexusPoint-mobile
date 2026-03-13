@@ -23,6 +23,12 @@ _$OrderImpl _$$OrderImplFromJson(Map<String, dynamic> json) => _$OrderImpl(
           : DateTime.parse(json['syncedAt'] as String),
       isSynced: json['isSynced'] as bool? ?? false,
       tableNumber: json['tableNumber'] as String?,
+      tableId: json['tableId'] as String?,
+      orderType: json['orderType'] as String?,
+      createdBy: json['createdBy'] as String?,
+      subtotalAmount: _parsePriceNullable(json['subtotalAmount']),
+      vatAmount: _parsePriceNullable(json['vatAmount']),
+      vatRate: _parsePriceNullable(json['vatRate']),
     );
 
 Map<String, dynamic> _$$OrderImplToJson(_$OrderImpl instance) =>
@@ -39,6 +45,12 @@ Map<String, dynamic> _$$OrderImplToJson(_$OrderImpl instance) =>
       'syncedAt': instance.syncedAt?.toIso8601String(),
       'isSynced': instance.isSynced,
       'tableNumber': instance.tableNumber,
+      'tableId': instance.tableId,
+      'orderType': instance.orderType,
+      'createdBy': instance.createdBy,
+      'subtotalAmount': instance.subtotalAmount,
+      'vatAmount': instance.vatAmount,
+      'vatRate': instance.vatRate,
     };
 
 const _$OrderSourceEnumMap = {

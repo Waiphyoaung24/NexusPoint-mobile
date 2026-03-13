@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../repositories/floor_plan_repository.dart';
+import '../../orders/providers/order_context_provider.dart';
+import '../../shell/pos_shell.dart';
 
 class TableActionSheet extends ConsumerStatefulWidget {
   final LocalTable table;
@@ -243,8 +245,15 @@ class _TableActionSheetState extends ConsumerState<TableActionSheet> {
       widget.table.id,
       'occupied',
     );
+    // Set order context for dine-in with this table
+    ref.read(orderContextProvider.notifier).state = OrderContext(
+      orderType: OrderType.dineIn,
+      tableId: widget.table.id,
+      tableNumber: widget.table.number,
+    );
     Navigator.pop(context);
-    // F-003 will handle routing to order creation with tableId + guestCount
+    // Navigate to speed register
+    ref.read(shellNavigationProvider.notifier).state = 2;
   }
 
   void _onOpenOrder() {

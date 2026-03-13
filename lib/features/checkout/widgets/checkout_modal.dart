@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../../../core/models/order.dart';
 import '../../../core/models/api_models.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../orders/repositories/order_repository.dart';
+import '../../orders/providers/order_context_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../providers/checkout_provider.dart';
 import '../../printer/providers/printer_provider.dart';
 import '../../printer/services/printer_service.dart';
@@ -77,24 +80,27 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
           // Header
           Padding(
             padding: const EdgeInsets.all(24),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.payment, color: PosTheme.primaryBlue, size: 28),
-                const SizedBox(width: 12),
-                Text(
-                  'Checkout',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                Row(
+                  children: [
+                    const Icon(Icons.payment, color: PosTheme.primaryBlue, size: 28),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Checkout',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    // Source badge
+                    _buildSourceBadge(ref),
+                  ],
                 ),
-                const Spacer(),
-                Text(
-                  '฿${widget.total.toStringAsFixed(2)}',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: PosTheme.primaryBlue,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                const SizedBox(height: 16),
+                // VAT breakdown
+                _buildVatBreakdown(context, ref),
               ],
             ),
           ),
@@ -169,7 +175,7 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : Text(
-                        'Confirm Payment — ฿${widget.total.toStringAsFixed(2)}',
+                        'Confirm Payment — ฿${ref.read(cartProvider).grandTotal.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -226,16 +232,38 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
       // Pass structured modifier data so the API can write order_item_modifier rows
       final modifiersPerItem = cartItems.map((item) => item.selectedModifiers).toList();
 
+      // Read order context and auth for new fields
+      final orderCtx = ref.read(orderContextProvider);
+      final authState = ref.read(authProvider);
+      final userId = authState.maybeWhen(
+        authenticated: (user, _) => user.id,
+        orElse: () => null,
+      );
+
+      // Map OrderType to source enum
+      final source = switch (orderCtx?.orderType) {
+        OrderType.delivery => _deliverySource(orderCtx?.deliveryPlatform),
+        _ => OrderSource.dinein,
+      };
+
       final order = await ref.read(orderRepositoryProvider).createOrder(
-            source: OrderSource.dinein,
+            source: source,
+            orderType: orderCtx?.orderType.name,
+            tableId: orderCtx?.tableId,
+            tableNumber: orderCtx?.tableNumber?.toString(),
+            createdBy: userId,
+            subtotalAmount: cartState.subtotal,
+            vatAmount: cartState.taxAmount,
+            vatRate: CartState.taxRate * 100,
             items: orderItems,
-            totalAmount: widget.total,
+            totalAmount: cartState.grandTotal,
             paymentMethod: checkout.paymentMethod,
             modifiersPerItem: modifiersPerItem,
           );
 
-      // Clear cart and mark success
+      // Clear cart, order context, and mark success
       ref.read(cartProvider.notifier).clear();
+      ref.read(orderContextProvider.notifier).state = null;
       checkoutNotifier.setSuccess(order.orderNumber);
 
       // Trigger immediate poll so other devices see this order faster
@@ -256,6 +284,89 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
     } catch (e) {
       checkoutNotifier.setError('Failed to create order: $e');
     }
+  }
+
+  Widget _buildSourceBadge(WidgetRef ref) {
+    final orderCtx = ref.watch(orderContextProvider);
+    if (orderCtx == null) return const SizedBox.shrink();
+
+    final (label, color) = switch (orderCtx.orderType) {
+      OrderType.dineIn => ('Dine-in — Table ${orderCtx.tableNumber ?? ''}', PosTheme.primaryBlue),
+      OrderType.takeaway => ('Takeaway — ${orderCtx.ticketNumber ?? ''}', PosTheme.accentAmber),
+      OrderType.delivery => ('Delivery — ${orderCtx.deliveryPlatform ?? ''}', PosTheme.successGreen),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.openSans(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVatBreakdown(BuildContext context, WidgetRef ref) {
+    final cart = ref.watch(cartProvider);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: PosTheme.backgroundLight,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          _vatRow(context, 'Subtotal', cart.subtotal),
+          const SizedBox(height: 4),
+          _vatRow(context, 'VAT 7%', cart.taxAmount),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 6),
+            child: Divider(height: 1),
+          ),
+          _vatRow(context, 'Grand Total', cart.grandTotal, bold: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _vatRow(BuildContext context, String label, double amount, {bool bold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.openSans(
+            fontSize: bold ? 15 : 13,
+            fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+            color: bold ? PosTheme.textPrimary : PosTheme.textSecondary,
+          ),
+        ),
+        Text(
+          '฿${amount.toStringAsFixed(2)}',
+          style: GoogleFonts.openSans(
+            fontSize: bold ? 16 : 13,
+            fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+            color: bold ? PosTheme.primaryBlue : PosTheme.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  OrderSource _deliverySource(String? platform) {
+    return switch (platform) {
+      'grab' => OrderSource.grab,
+      'wongnai' => OrderSource.wongnai,
+      _ => OrderSource.dinein,
+    };
   }
 
   /// Queue receipt + kitchen ticket print jobs after successful checkout.

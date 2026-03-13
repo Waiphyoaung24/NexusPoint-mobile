@@ -1205,6 +1205,11 @@ OrderRequest _$OrderRequestFromJson(Map<String, dynamic> json) {
 mixin _$OrderRequest {
   String? get branchId => throw _privateConstructorUsedError;
   String get source => throw _privateConstructorUsedError;
+  String? get orderType => throw _privateConstructorUsedError;
+  String? get tableId => throw _privateConstructorUsedError;
+  String? get createdBy => throw _privateConstructorUsedError;
+  String? get vatAmount => throw _privateConstructorUsedError;
+  String? get vatRate => throw _privateConstructorUsedError;
   List<BackendOrderItemDto> get items => throw _privateConstructorUsedError;
   String get subtotal =>
       throw _privateConstructorUsedError; // decimal string e.g. "100.00"
@@ -1228,6 +1233,11 @@ abstract class $OrderRequestCopyWith<$Res> {
   $Res call(
       {String? branchId,
       String source,
+      String? orderType,
+      String? tableId,
+      String? createdBy,
+      String? vatAmount,
+      String? vatRate,
       List<BackendOrderItemDto> items,
       String subtotal,
       String total,
@@ -1250,6 +1260,11 @@ class _$OrderRequestCopyWithImpl<$Res, $Val extends OrderRequest>
   $Res call({
     Object? branchId = freezed,
     Object? source = null,
+    Object? orderType = freezed,
+    Object? tableId = freezed,
+    Object? createdBy = freezed,
+    Object? vatAmount = freezed,
+    Object? vatRate = freezed,
     Object? items = null,
     Object? subtotal = null,
     Object? total = null,
@@ -1265,6 +1280,26 @@ class _$OrderRequestCopyWithImpl<$Res, $Val extends OrderRequest>
           ? _value.source
           : source // ignore: cast_nullable_to_non_nullable
               as String,
+      orderType: freezed == orderType
+          ? _value.orderType
+          : orderType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      tableId: freezed == tableId
+          ? _value.tableId
+          : tableId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdBy: freezed == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      vatAmount: freezed == vatAmount
+          ? _value.vatAmount
+          : vatAmount // ignore: cast_nullable_to_non_nullable
+              as String?,
+      vatRate: freezed == vatRate
+          ? _value.vatRate
+          : vatRate // ignore: cast_nullable_to_non_nullable
+              as String?,
       items: null == items
           ? _value.items
           : items // ignore: cast_nullable_to_non_nullable
@@ -1300,6 +1335,11 @@ abstract class _$$OrderRequestImplCopyWith<$Res>
   $Res call(
       {String? branchId,
       String source,
+      String? orderType,
+      String? tableId,
+      String? createdBy,
+      String? vatAmount,
+      String? vatRate,
       List<BackendOrderItemDto> items,
       String subtotal,
       String total,
@@ -1320,6 +1360,11 @@ class __$$OrderRequestImplCopyWithImpl<$Res>
   $Res call({
     Object? branchId = freezed,
     Object? source = null,
+    Object? orderType = freezed,
+    Object? tableId = freezed,
+    Object? createdBy = freezed,
+    Object? vatAmount = freezed,
+    Object? vatRate = freezed,
     Object? items = null,
     Object? subtotal = null,
     Object? total = null,
@@ -1335,6 +1380,26 @@ class __$$OrderRequestImplCopyWithImpl<$Res>
           ? _value.source
           : source // ignore: cast_nullable_to_non_nullable
               as String,
+      orderType: freezed == orderType
+          ? _value.orderType
+          : orderType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      tableId: freezed == tableId
+          ? _value.tableId
+          : tableId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdBy: freezed == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      vatAmount: freezed == vatAmount
+          ? _value.vatAmount
+          : vatAmount // ignore: cast_nullable_to_non_nullable
+              as String?,
+      vatRate: freezed == vatRate
+          ? _value.vatRate
+          : vatRate // ignore: cast_nullable_to_non_nullable
+              as String?,
       items: null == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
@@ -1366,6 +1431,11 @@ class _$OrderRequestImpl implements _OrderRequest {
   const _$OrderRequestImpl(
       {this.branchId,
       required this.source,
+      this.orderType,
+      this.tableId,
+      this.createdBy,
+      this.vatAmount,
+      this.vatRate,
       required final List<BackendOrderItemDto> items,
       required this.subtotal,
       required this.total,
@@ -1380,6 +1450,16 @@ class _$OrderRequestImpl implements _OrderRequest {
   final String? branchId;
   @override
   final String source;
+  @override
+  final String? orderType;
+  @override
+  final String? tableId;
+  @override
+  final String? createdBy;
+  @override
+  final String? vatAmount;
+  @override
+  final String? vatRate;
   final List<BackendOrderItemDto> _items;
   @override
   List<BackendOrderItemDto> get items {
@@ -1401,7 +1481,7 @@ class _$OrderRequestImpl implements _OrderRequest {
 
   @override
   String toString() {
-    return 'OrderRequest(branchId: $branchId, source: $source, items: $items, subtotal: $subtotal, total: $total, discount: $discount, notes: $notes)';
+    return 'OrderRequest(branchId: $branchId, source: $source, orderType: $orderType, tableId: $tableId, createdBy: $createdBy, vatAmount: $vatAmount, vatRate: $vatRate, items: $items, subtotal: $subtotal, total: $total, discount: $discount, notes: $notes)';
   }
 
   @override
@@ -1412,6 +1492,14 @@ class _$OrderRequestImpl implements _OrderRequest {
             (identical(other.branchId, branchId) ||
                 other.branchId == branchId) &&
             (identical(other.source, source) || other.source == source) &&
+            (identical(other.orderType, orderType) ||
+                other.orderType == orderType) &&
+            (identical(other.tableId, tableId) || other.tableId == tableId) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.vatAmount, vatAmount) ||
+                other.vatAmount == vatAmount) &&
+            (identical(other.vatRate, vatRate) || other.vatRate == vatRate) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
             (identical(other.subtotal, subtotal) ||
                 other.subtotal == subtotal) &&
@@ -1427,6 +1515,11 @@ class _$OrderRequestImpl implements _OrderRequest {
       runtimeType,
       branchId,
       source,
+      orderType,
+      tableId,
+      createdBy,
+      vatAmount,
+      vatRate,
       const DeepCollectionEquality().hash(_items),
       subtotal,
       total,
@@ -1451,6 +1544,11 @@ abstract class _OrderRequest implements OrderRequest {
   const factory _OrderRequest(
       {final String? branchId,
       required final String source,
+      final String? orderType,
+      final String? tableId,
+      final String? createdBy,
+      final String? vatAmount,
+      final String? vatRate,
       required final List<BackendOrderItemDto> items,
       required final String subtotal,
       required final String total,
@@ -1464,6 +1562,16 @@ abstract class _OrderRequest implements OrderRequest {
   String? get branchId;
   @override
   String get source;
+  @override
+  String? get orderType;
+  @override
+  String? get tableId;
+  @override
+  String? get createdBy;
+  @override
+  String? get vatAmount;
+  @override
+  String? get vatRate;
   @override
   List<BackendOrderItemDto> get items;
   @override

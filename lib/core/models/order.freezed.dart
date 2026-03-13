@@ -33,6 +33,15 @@ mixin _$Order {
   DateTime? get syncedAt => throw _privateConstructorUsedError;
   bool get isSynced => throw _privateConstructorUsedError;
   String? get tableNumber => throw _privateConstructorUsedError;
+  String? get tableId => throw _privateConstructorUsedError;
+  String? get orderType => throw _privateConstructorUsedError;
+  String? get createdBy => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePriceNullable)
+  double? get subtotalAmount => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePriceNullable)
+  double? get vatAmount => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parsePriceNullable)
+  double? get vatRate => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -56,7 +65,13 @@ abstract class $OrderCopyWith<$Res> {
       DateTime createdAt,
       DateTime? syncedAt,
       bool isSynced,
-      String? tableNumber});
+      String? tableNumber,
+      String? tableId,
+      String? orderType,
+      String? createdBy,
+      @JsonKey(fromJson: _parsePriceNullable) double? subtotalAmount,
+      @JsonKey(fromJson: _parsePriceNullable) double? vatAmount,
+      @JsonKey(fromJson: _parsePriceNullable) double? vatRate});
 }
 
 /// @nodoc
@@ -84,6 +99,12 @@ class _$OrderCopyWithImpl<$Res, $Val extends Order>
     Object? syncedAt = freezed,
     Object? isSynced = null,
     Object? tableNumber = freezed,
+    Object? tableId = freezed,
+    Object? orderType = freezed,
+    Object? createdBy = freezed,
+    Object? subtotalAmount = freezed,
+    Object? vatAmount = freezed,
+    Object? vatRate = freezed,
   }) {
     return _then(_value.copyWith(
       localId: freezed == localId
@@ -134,6 +155,30 @@ class _$OrderCopyWithImpl<$Res, $Val extends Order>
           ? _value.tableNumber
           : tableNumber // ignore: cast_nullable_to_non_nullable
               as String?,
+      tableId: freezed == tableId
+          ? _value.tableId
+          : tableId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      orderType: freezed == orderType
+          ? _value.orderType
+          : orderType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdBy: freezed == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      subtotalAmount: freezed == subtotalAmount
+          ? _value.subtotalAmount
+          : subtotalAmount // ignore: cast_nullable_to_non_nullable
+              as double?,
+      vatAmount: freezed == vatAmount
+          ? _value.vatAmount
+          : vatAmount // ignore: cast_nullable_to_non_nullable
+              as double?,
+      vatRate: freezed == vatRate
+          ? _value.vatRate
+          : vatRate // ignore: cast_nullable_to_non_nullable
+              as double?,
     ) as $Val);
   }
 }
@@ -157,7 +202,13 @@ abstract class _$$OrderImplCopyWith<$Res> implements $OrderCopyWith<$Res> {
       DateTime createdAt,
       DateTime? syncedAt,
       bool isSynced,
-      String? tableNumber});
+      String? tableNumber,
+      String? tableId,
+      String? orderType,
+      String? createdBy,
+      @JsonKey(fromJson: _parsePriceNullable) double? subtotalAmount,
+      @JsonKey(fromJson: _parsePriceNullable) double? vatAmount,
+      @JsonKey(fromJson: _parsePriceNullable) double? vatRate});
 }
 
 /// @nodoc
@@ -183,6 +234,12 @@ class __$$OrderImplCopyWithImpl<$Res>
     Object? syncedAt = freezed,
     Object? isSynced = null,
     Object? tableNumber = freezed,
+    Object? tableId = freezed,
+    Object? orderType = freezed,
+    Object? createdBy = freezed,
+    Object? subtotalAmount = freezed,
+    Object? vatAmount = freezed,
+    Object? vatRate = freezed,
   }) {
     return _then(_$OrderImpl(
       localId: freezed == localId
@@ -233,6 +290,30 @@ class __$$OrderImplCopyWithImpl<$Res>
           ? _value.tableNumber
           : tableNumber // ignore: cast_nullable_to_non_nullable
               as String?,
+      tableId: freezed == tableId
+          ? _value.tableId
+          : tableId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      orderType: freezed == orderType
+          ? _value.orderType
+          : orderType // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdBy: freezed == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+      subtotalAmount: freezed == subtotalAmount
+          ? _value.subtotalAmount
+          : subtotalAmount // ignore: cast_nullable_to_non_nullable
+              as double?,
+      vatAmount: freezed == vatAmount
+          ? _value.vatAmount
+          : vatAmount // ignore: cast_nullable_to_non_nullable
+              as double?,
+      vatRate: freezed == vatRate
+          ? _value.vatRate
+          : vatRate // ignore: cast_nullable_to_non_nullable
+              as double?,
     ));
   }
 }
@@ -252,7 +333,13 @@ class _$OrderImpl implements _Order {
       required this.createdAt,
       this.syncedAt,
       this.isSynced = false,
-      this.tableNumber})
+      this.tableNumber,
+      this.tableId,
+      this.orderType,
+      this.createdBy,
+      @JsonKey(fromJson: _parsePriceNullable) this.subtotalAmount,
+      @JsonKey(fromJson: _parsePriceNullable) this.vatAmount,
+      @JsonKey(fromJson: _parsePriceNullable) this.vatRate})
       : _items = items;
 
   factory _$OrderImpl.fromJson(Map<String, dynamic> json) =>
@@ -290,10 +377,25 @@ class _$OrderImpl implements _Order {
   final bool isSynced;
   @override
   final String? tableNumber;
+  @override
+  final String? tableId;
+  @override
+  final String? orderType;
+  @override
+  final String? createdBy;
+  @override
+  @JsonKey(fromJson: _parsePriceNullable)
+  final double? subtotalAmount;
+  @override
+  @JsonKey(fromJson: _parsePriceNullable)
+  final double? vatAmount;
+  @override
+  @JsonKey(fromJson: _parsePriceNullable)
+  final double? vatRate;
 
   @override
   String toString() {
-    return 'Order(localId: $localId, orderId: $orderId, orderNumber: $orderNumber, source: $source, status: $status, items: $items, totalAmount: $totalAmount, paymentMethod: $paymentMethod, createdAt: $createdAt, syncedAt: $syncedAt, isSynced: $isSynced, tableNumber: $tableNumber)';
+    return 'Order(localId: $localId, orderId: $orderId, orderNumber: $orderNumber, source: $source, status: $status, items: $items, totalAmount: $totalAmount, paymentMethod: $paymentMethod, createdAt: $createdAt, syncedAt: $syncedAt, isSynced: $isSynced, tableNumber: $tableNumber, tableId: $tableId, orderType: $orderType, createdBy: $createdBy, subtotalAmount: $subtotalAmount, vatAmount: $vatAmount, vatRate: $vatRate)';
   }
 
   @override
@@ -319,7 +421,17 @@ class _$OrderImpl implements _Order {
             (identical(other.isSynced, isSynced) ||
                 other.isSynced == isSynced) &&
             (identical(other.tableNumber, tableNumber) ||
-                other.tableNumber == tableNumber));
+                other.tableNumber == tableNumber) &&
+            (identical(other.tableId, tableId) || other.tableId == tableId) &&
+            (identical(other.orderType, orderType) ||
+                other.orderType == orderType) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.subtotalAmount, subtotalAmount) ||
+                other.subtotalAmount == subtotalAmount) &&
+            (identical(other.vatAmount, vatAmount) ||
+                other.vatAmount == vatAmount) &&
+            (identical(other.vatRate, vatRate) || other.vatRate == vatRate));
   }
 
   @JsonKey(ignore: true)
@@ -337,7 +449,13 @@ class _$OrderImpl implements _Order {
       createdAt,
       syncedAt,
       isSynced,
-      tableNumber);
+      tableNumber,
+      tableId,
+      orderType,
+      createdBy,
+      subtotalAmount,
+      vatAmount,
+      vatRate);
 
   @JsonKey(ignore: true)
   @override
@@ -355,18 +473,25 @@ class _$OrderImpl implements _Order {
 
 abstract class _Order implements Order {
   const factory _Order(
-      {final int? localId,
-      final String? orderId,
-      required final String orderNumber,
-      required final OrderSource source,
-      required final OrderStatus status,
-      required final List<CartItem> items,
-      @JsonKey(fromJson: _parsePrice) required final double totalAmount,
-      required final PaymentMethod paymentMethod,
-      required final DateTime createdAt,
-      final DateTime? syncedAt,
-      final bool isSynced,
-      final String? tableNumber}) = _$OrderImpl;
+          {final int? localId,
+          final String? orderId,
+          required final String orderNumber,
+          required final OrderSource source,
+          required final OrderStatus status,
+          required final List<CartItem> items,
+          @JsonKey(fromJson: _parsePrice) required final double totalAmount,
+          required final PaymentMethod paymentMethod,
+          required final DateTime createdAt,
+          final DateTime? syncedAt,
+          final bool isSynced,
+          final String? tableNumber,
+          final String? tableId,
+          final String? orderType,
+          final String? createdBy,
+          @JsonKey(fromJson: _parsePriceNullable) final double? subtotalAmount,
+          @JsonKey(fromJson: _parsePriceNullable) final double? vatAmount,
+          @JsonKey(fromJson: _parsePriceNullable) final double? vatRate}) =
+      _$OrderImpl;
 
   factory _Order.fromJson(Map<String, dynamic> json) = _$OrderImpl.fromJson;
 
@@ -395,6 +520,21 @@ abstract class _Order implements Order {
   bool get isSynced;
   @override
   String? get tableNumber;
+  @override
+  String? get tableId;
+  @override
+  String? get orderType;
+  @override
+  String? get createdBy;
+  @override
+  @JsonKey(fromJson: _parsePriceNullable)
+  double? get subtotalAmount;
+  @override
+  @JsonKey(fromJson: _parsePriceNullable)
+  double? get vatAmount;
+  @override
+  @JsonKey(fromJson: _parsePriceNullable)
+  double? get vatRate;
   @override
   @JsonKey(ignore: true)
   _$$OrderImplCopyWith<_$OrderImpl> get copyWith =>

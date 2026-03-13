@@ -106,6 +106,11 @@ _$OrderRequestImpl _$$OrderRequestImplFromJson(Map<String, dynamic> json) =>
     _$OrderRequestImpl(
       branchId: json['branchId'] as String?,
       source: json['source'] as String,
+      orderType: json['orderType'] as String?,
+      tableId: json['tableId'] as String?,
+      createdBy: json['createdBy'] as String?,
+      vatAmount: json['vatAmount'] as String?,
+      vatRate: json['vatRate'] as String?,
       items: (json['items'] as List<dynamic>)
           .map((e) => BackendOrderItemDto.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -119,6 +124,11 @@ Map<String, dynamic> _$$OrderRequestImplToJson(_$OrderRequestImpl instance) =>
     <String, dynamic>{
       'branchId': instance.branchId,
       'source': instance.source,
+      'orderType': instance.orderType,
+      'tableId': instance.tableId,
+      'createdBy': instance.createdBy,
+      'vatAmount': instance.vatAmount,
+      'vatRate': instance.vatRate,
       'items': instance.items.map((e) => e.toJson()).toList(),
       'subtotal': instance.subtotal,
       'total': instance.total,

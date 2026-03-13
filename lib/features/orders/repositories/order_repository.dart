@@ -42,6 +42,12 @@ class OrderRepository {
     required double totalAmount,
     required PaymentMethod paymentMethod,
     String? tableNumber,
+    String? tableId,
+    String? orderType,
+    String? createdBy,
+    double? subtotalAmount,
+    double? vatAmount,
+    double? vatRate,
     List<List<SelectedModifierOption>>? modifiersPerItem,
   }) async {
     final authState = _ref.read(authProvider);
@@ -66,6 +72,12 @@ class OrderRepository {
         paymentMethod: drift.Value(paymentMethod.name),
         itemsJson: drift.Value(jsonEncode(items.map((e) => e.toJson()).toList())),
         tableNumber: drift.Value(tableNumber),
+        tableId: drift.Value(tableId),
+        orderType: drift.Value(orderType),
+        createdBy: drift.Value(createdBy),
+        subtotalAmount: drift.Value(subtotalAmount),
+        vatAmount: drift.Value(vatAmount),
+        vatRate: drift.Value(vatRate),
         createdAt: drift.Value(DateTime.now()),
         isSynced: const drift.Value(false),
       ),
@@ -90,8 +102,13 @@ class OrderRepository {
       payloadJson: jsonEncode({
         'branchId': user.branchId ?? user.tenantId!,
         'source': source.backendValue,
+        if (orderType != null) 'orderType': orderType,
+        if (tableId != null) 'tableId': tableId,
+        if (createdBy != null) 'createdBy': createdBy,
+        if (vatAmount != null) 'vatAmount': vatAmount.toStringAsFixed(2),
+        if (vatRate != null) 'vatRate': vatRate.toStringAsFixed(2),
         'items': backendItemsJson,
-        'subtotal': totalAmount.toStringAsFixed(2),
+        'subtotal': (subtotalAmount ?? totalAmount).toStringAsFixed(2),
         'total': totalAmount.toStringAsFixed(2),
       }),
       priority: 1,
@@ -276,6 +293,12 @@ class OrderRepository {
       syncedAt: local.syncedAt,
       isSynced: local.isSynced,
       tableNumber: local.tableNumber,
+      tableId: local.tableId,
+      orderType: local.orderType,
+      createdBy: local.createdBy,
+      subtotalAmount: local.subtotalAmount,
+      vatAmount: local.vatAmount,
+      vatRate: local.vatRate,
     );
   }
 }

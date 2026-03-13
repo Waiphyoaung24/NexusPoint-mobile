@@ -7,6 +7,8 @@ import '../menu/widgets/menu_screen.dart';
 import '../dashboard/widgets/bridge_dashboard_screen.dart';
 import '../register/widgets/speed_register_screen.dart';
 import '../orders/widgets/order_history_screen.dart';
+import '../orders/widgets/order_setup_screen.dart';
+import '../orders/providers/order_context_provider.dart';
 import '../orders/services/sync_service.dart';
 import '../orders/services/order_polling_service.dart';
 import '../printer/providers/printer_provider.dart';
@@ -48,6 +50,18 @@ class PosShell extends ConsumerWidget {
             ),
             selectedIndex: selectedIndex,
             onDestinationSelected: (index) {
+              if (index == 2) {
+                // Show order setup screen before speed register
+                final orderCtx = ref.read(orderContextProvider);
+                if (orderCtx == null) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const OrderSetupScreen(),
+                    ),
+                  );
+                  return;
+                }
+              }
               ref.read(shellNavigationProvider.notifier).state = index;
             },
             destinations: const [
