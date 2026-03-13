@@ -45,5 +45,10 @@ void main() {
         throwsA(isA<ArgumentError>()),
       );
     });
+
+    test('trims whitespace from name', () {
+      final item = MenuItem.custom(name: '  Extra Rice  ', price: 20.0);
+      expect(item.name, 'Extra Rice');
+    });
   });
 }
