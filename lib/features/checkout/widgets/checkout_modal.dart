@@ -274,6 +274,11 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
             items: orderItems,
             totalAmount: cartState.grandTotal,
             paymentMethod: checkout.paymentMethod,
+            tenderedAmount: checkout.tenderedAmount,
+            changeAmount: checkout.changeAmount > 0 ? checkout.changeAmount : null,
+            payments: [
+              {'method': checkout.paymentMethod.name, 'amount': cartState.grandTotal.toStringAsFixed(2)},
+            ],
             modifiersPerItem: modifiersPerItem,
           );
 

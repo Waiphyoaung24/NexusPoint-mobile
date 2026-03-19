@@ -52,6 +52,9 @@ class OrderRepository {
     double? discountAmount,
     String? discountApproverId,
     String? discountReason,
+    double? tenderedAmount,
+    double? changeAmount,
+    List<Map<String, String>>? payments,
     List<List<SelectedModifierOption>>? modifiersPerItem,
   }) async {
     final authState = _ref.read(authProvider);
@@ -113,6 +116,10 @@ class OrderRepository {
         if (vatRate != null) 'vatRate': vatRate.toStringAsFixed(2),
         if (discountPercent != null && discountPercent > 0) 'discount': discountPercent.toStringAsFixed(2),
         if (discountAmount != null && discountAmount > 0) 'discountAmount': discountAmount.toStringAsFixed(2),
+        'paymentMethod': paymentMethod.name,
+        if (payments != null && payments.isNotEmpty) 'payments': payments,
+        if (tenderedAmount != null) 'tenderedAmount': tenderedAmount.toStringAsFixed(2),
+        if (changeAmount != null && changeAmount > 0) 'changeAmount': changeAmount.toStringAsFixed(2),
         'items': backendItemsJson,
         'subtotal': (subtotalAmount ?? totalAmount).toStringAsFixed(2),
         'total': totalAmount.toStringAsFixed(2),
