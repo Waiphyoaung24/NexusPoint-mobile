@@ -18,8 +18,13 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CartState {
   List<CartItem> get items => throw _privateConstructorUsedError;
   double get subtotal => throw _privateConstructorUsedError;
+  double get discountPercent => throw _privateConstructorUsedError;
+  double get discountAmount => throw _privateConstructorUsedError;
   double get tax => throw _privateConstructorUsedError;
   double get total => throw _privateConstructorUsedError;
+  double get vatRate => throw _privateConstructorUsedError;
+  String? get discountApproverId => throw _privateConstructorUsedError;
+  String? get discountReason => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CartStateCopyWith<CartState> get copyWith =>
@@ -31,7 +36,16 @@ abstract class $CartStateCopyWith<$Res> {
   factory $CartStateCopyWith(CartState value, $Res Function(CartState) then) =
       _$CartStateCopyWithImpl<$Res, CartState>;
   @useResult
-  $Res call({List<CartItem> items, double subtotal, double tax, double total});
+  $Res call(
+      {List<CartItem> items,
+      double subtotal,
+      double discountPercent,
+      double discountAmount,
+      double tax,
+      double total,
+      double vatRate,
+      String? discountApproverId,
+      String? discountReason});
 }
 
 /// @nodoc
@@ -49,8 +63,13 @@ class _$CartStateCopyWithImpl<$Res, $Val extends CartState>
   $Res call({
     Object? items = null,
     Object? subtotal = null,
+    Object? discountPercent = null,
+    Object? discountAmount = null,
     Object? tax = null,
     Object? total = null,
+    Object? vatRate = null,
+    Object? discountApproverId = freezed,
+    Object? discountReason = freezed,
   }) {
     return _then(_value.copyWith(
       items: null == items
@@ -61,6 +80,14 @@ class _$CartStateCopyWithImpl<$Res, $Val extends CartState>
           ? _value.subtotal
           : subtotal // ignore: cast_nullable_to_non_nullable
               as double,
+      discountPercent: null == discountPercent
+          ? _value.discountPercent
+          : discountPercent // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountAmount: null == discountAmount
+          ? _value.discountAmount
+          : discountAmount // ignore: cast_nullable_to_non_nullable
+              as double,
       tax: null == tax
           ? _value.tax
           : tax // ignore: cast_nullable_to_non_nullable
@@ -69,6 +96,18 @@ class _$CartStateCopyWithImpl<$Res, $Val extends CartState>
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as double,
+      vatRate: null == vatRate
+          ? _value.vatRate
+          : vatRate // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountApproverId: freezed == discountApproverId
+          ? _value.discountApproverId
+          : discountApproverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      discountReason: freezed == discountReason
+          ? _value.discountReason
+          : discountReason // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -81,7 +120,16 @@ abstract class _$$CartStateImplCopyWith<$Res>
       __$$CartStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CartItem> items, double subtotal, double tax, double total});
+  $Res call(
+      {List<CartItem> items,
+      double subtotal,
+      double discountPercent,
+      double discountAmount,
+      double tax,
+      double total,
+      double vatRate,
+      String? discountApproverId,
+      String? discountReason});
 }
 
 /// @nodoc
@@ -97,8 +145,13 @@ class __$$CartStateImplCopyWithImpl<$Res>
   $Res call({
     Object? items = null,
     Object? subtotal = null,
+    Object? discountPercent = null,
+    Object? discountAmount = null,
     Object? tax = null,
     Object? total = null,
+    Object? vatRate = null,
+    Object? discountApproverId = freezed,
+    Object? discountReason = freezed,
   }) {
     return _then(_$CartStateImpl(
       items: null == items
@@ -109,6 +162,14 @@ class __$$CartStateImplCopyWithImpl<$Res>
           ? _value.subtotal
           : subtotal // ignore: cast_nullable_to_non_nullable
               as double,
+      discountPercent: null == discountPercent
+          ? _value.discountPercent
+          : discountPercent // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountAmount: null == discountAmount
+          ? _value.discountAmount
+          : discountAmount // ignore: cast_nullable_to_non_nullable
+              as double,
       tax: null == tax
           ? _value.tax
           : tax // ignore: cast_nullable_to_non_nullable
@@ -117,6 +178,18 @@ class __$$CartStateImplCopyWithImpl<$Res>
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as double,
+      vatRate: null == vatRate
+          ? _value.vatRate
+          : vatRate // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountApproverId: freezed == discountApproverId
+          ? _value.discountApproverId
+          : discountApproverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      discountReason: freezed == discountReason
+          ? _value.discountReason
+          : discountReason // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -127,8 +200,13 @@ class _$CartStateImpl extends _CartState {
   const _$CartStateImpl(
       {final List<CartItem> items = const [],
       this.subtotal = 0.0,
+      this.discountPercent = 0.0,
+      this.discountAmount = 0.0,
       this.tax = 0.0,
-      this.total = 0.0})
+      this.total = 0.0,
+      this.vatRate = 0.07,
+      this.discountApproverId,
+      this.discountReason})
       : _items = items,
         super._();
 
@@ -146,14 +224,27 @@ class _$CartStateImpl extends _CartState {
   final double subtotal;
   @override
   @JsonKey()
+  final double discountPercent;
+  @override
+  @JsonKey()
+  final double discountAmount;
+  @override
+  @JsonKey()
   final double tax;
   @override
   @JsonKey()
   final double total;
+  @override
+  @JsonKey()
+  final double vatRate;
+  @override
+  final String? discountApproverId;
+  @override
+  final String? discountReason;
 
   @override
   String toString() {
-    return 'CartState(items: $items, subtotal: $subtotal, tax: $tax, total: $total)';
+    return 'CartState(items: $items, subtotal: $subtotal, discountPercent: $discountPercent, discountAmount: $discountAmount, tax: $tax, total: $total, vatRate: $vatRate, discountApproverId: $discountApproverId, discountReason: $discountReason)';
   }
 
   @override
@@ -164,13 +255,31 @@ class _$CartStateImpl extends _CartState {
             const DeepCollectionEquality().equals(other._items, _items) &&
             (identical(other.subtotal, subtotal) ||
                 other.subtotal == subtotal) &&
+            (identical(other.discountPercent, discountPercent) ||
+                other.discountPercent == discountPercent) &&
+            (identical(other.discountAmount, discountAmount) ||
+                other.discountAmount == discountAmount) &&
             (identical(other.tax, tax) || other.tax == tax) &&
-            (identical(other.total, total) || other.total == total));
+            (identical(other.total, total) || other.total == total) &&
+            (identical(other.vatRate, vatRate) || other.vatRate == vatRate) &&
+            (identical(other.discountApproverId, discountApproverId) ||
+                other.discountApproverId == discountApproverId) &&
+            (identical(other.discountReason, discountReason) ||
+                other.discountReason == discountReason));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_items), subtotal, tax, total);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_items),
+      subtotal,
+      discountPercent,
+      discountAmount,
+      tax,
+      total,
+      vatRate,
+      discountApproverId,
+      discountReason);
 
   @JsonKey(ignore: true)
   @override
@@ -183,8 +292,13 @@ abstract class _CartState extends CartState {
   const factory _CartState(
       {final List<CartItem> items,
       final double subtotal,
+      final double discountPercent,
+      final double discountAmount,
       final double tax,
-      final double total}) = _$CartStateImpl;
+      final double total,
+      final double vatRate,
+      final String? discountApproverId,
+      final String? discountReason}) = _$CartStateImpl;
   const _CartState._() : super._();
 
   @override
@@ -192,9 +306,19 @@ abstract class _CartState extends CartState {
   @override
   double get subtotal;
   @override
+  double get discountPercent;
+  @override
+  double get discountAmount;
+  @override
   double get tax;
   @override
   double get total;
+  @override
+  double get vatRate;
+  @override
+  String? get discountApproverId;
+  @override
+  String? get discountReason;
   @override
   @JsonKey(ignore: true)
   _$$CartStateImplCopyWith<_$CartStateImpl> get copyWith =>

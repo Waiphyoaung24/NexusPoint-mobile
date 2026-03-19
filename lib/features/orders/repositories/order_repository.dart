@@ -48,6 +48,10 @@ class OrderRepository {
     double? subtotalAmount,
     double? vatAmount,
     double? vatRate,
+    double? discountPercent,
+    double? discountAmount,
+    String? discountApproverId,
+    String? discountReason,
     List<List<SelectedModifierOption>>? modifiersPerItem,
   }) async {
     final authState = _ref.read(authProvider);
@@ -107,6 +111,8 @@ class OrderRepository {
         if (createdBy != null) 'createdBy': createdBy,
         if (vatAmount != null) 'vatAmount': vatAmount.toStringAsFixed(2),
         if (vatRate != null) 'vatRate': vatRate.toStringAsFixed(2),
+        if (discountPercent != null && discountPercent > 0) 'discount': discountPercent.toStringAsFixed(2),
+        if (discountAmount != null && discountAmount > 0) 'discountAmount': discountAmount.toStringAsFixed(2),
         'items': backendItemsJson,
         'subtotal': (subtotalAmount ?? totalAmount).toStringAsFixed(2),
         'total': totalAmount.toStringAsFixed(2),

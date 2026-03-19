@@ -942,6 +942,21 @@ class PosApiService {
       }
     }
 
+    // Organization Settings
+
+    /// Fetch organization settings (including VAT rate).
+    Future<Map<String, dynamic>> getOrgSettings() async {
+      try {
+        debugPrint('⚙️ Fetching org settings via tRPC: organization.getSettings');
+        final data = await _trpcQuery('organization.getSettings');
+        if (data is Map<String, dynamic>) return data;
+        return {};
+      } catch (e) {
+        debugPrint('❌ organization.getSettings failed: $e');
+        rethrow;
+      }
+    }
+
     // Floor Plan Tables
 
     /// Full table list for initial sync (table.list tRPC)

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/models/menu_item.dart';
 import '../../../core/models/cart_item.dart';
@@ -11,28 +12,39 @@ class CartState with _$CartState {
   const factory CartState({
     @Default([]) List<CartItem> items,
     @Default(0.0) double subtotal,
+    @Default(0.0) double discountPercent,
+    @Default(0.0) double discountAmount,
     @Default(0.0) double tax,
     @Default(0.0) double total,
+    @Default(0.07) double vatRate,
+    String? discountApproverId,
+    String? discountReason,
   }) = _CartState;
 
   const CartState._();
 
-  static const double taxRate = 0.07;
-
   int get itemCount => items.fold(0, (sum, item) => sum + item.quantity);
   bool get isEmpty => items.isEmpty;
+  bool get hasDiscount => discountPercent > 0;
 
   /// Alias for consistency with checkout UI labels
   double get taxAmount => tax;
   double get grandTotal => total;
 }
 
+/// Reads the cached VAT rate from SharedPreferences, falling back to 0.07 (7%).
+final vatRateProvider = FutureProvider<double>((ref) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getDouble('org_vat_rate') ?? 0.07;
+});
+
 final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
-  return CartNotifier();
+  final vatRate = ref.watch(vatRateProvider).valueOrNull ?? 0.07;
+  return CartNotifier(vatRate: vatRate);
 });
 
 class CartNotifier extends StateNotifier<CartState> {
-  CartNotifier() : super(const CartState());
+  CartNotifier({double vatRate = 0.07}) : super(CartState(vatRate: vatRate));
 
   void addItem(
     MenuItem item, {
@@ -103,20 +115,54 @@ class CartNotifier extends StateNotifier<CartState> {
     state = _recalculate(updatedItems);
   }
 
-  void clear() {
-    state = const CartState();
+  /// Apply a percentage discount (F-008).
+  void applyDiscount({
+    required double percent,
+    required String approverId,
+    String? reason,
+  }) {
+    state = _recalculate(
+      state.items,
+      discountPercent: percent,
+      discountApproverId: approverId,
+      discountReason: reason,
+    );
   }
 
-  CartState _recalculate(List<CartItem> items) {
+  /// Remove any applied discount.
+  void removeDiscount() {
+    state = _recalculate(state.items);
+  }
+
+  void clear() {
+    state = CartState(vatRate: state.vatRate);
+  }
+
+  CartState _recalculate(
+    List<CartItem> items, {
+    double? discountPercent,
+    String? discountApproverId,
+    String? discountReason,
+  }) {
+    final pct = discountPercent ?? state.discountPercent;
     final subtotal = items.fold(0.0, (sum, item) => sum + item.lineTotal);
-    final tax = subtotal * CartState.taxRate;
-    final total = subtotal + tax;
+
+    // F-008: Discount applies to subtotal BEFORE VAT (Thai accounting)
+    final discount = subtotal * (pct / 100.0);
+    final taxableAmount = subtotal - discount;
+    final tax = taxableAmount * state.vatRate;
+    final total = taxableAmount + tax;
 
     return CartState(
       items: items,
       subtotal: subtotal,
+      discountPercent: pct,
+      discountAmount: discount,
       tax: tax,
       total: total,
+      vatRate: state.vatRate,
+      discountApproverId: discountApproverId ?? state.discountApproverId,
+      discountReason: discountReason ?? state.discountReason,
     );
   }
 }

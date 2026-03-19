@@ -190,6 +190,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
       debugPrint('⚠️ Manager list fetch failed: $e');
       // Non-fatal — manager approval dialog will show empty list
     }
+
+    // Fetch organization settings (VAT rate) — F-007
+    try {
+      final settings = await api.getOrgSettings();
+      final vatRateRaw = settings['vatRate'];
+      if (vatRateRaw != null) {
+        final vatPercent = (vatRateRaw is num)
+            ? vatRateRaw.toDouble()
+            : double.tryParse(vatRateRaw.toString()) ?? 7.0;
+        // Store as decimal (e.g. 0.07) for direct use in calculations
+        final vatDecimal = vatPercent / 100.0;
+        await prefs.setDouble('org_vat_rate', vatDecimal);
+        debugPrint('⚙️ VAT rate cached: ${vatPercent}% ($vatDecimal)');
+      }
+    } catch (e) {
+      debugPrint('⚠️ Org settings fetch failed (using cached/default VAT rate): $e');
+      // Non-fatal — fall back to cached or default 7%
+    }
   }
 
   /// Called from settings to switch branches.
@@ -484,6 +502,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await prefs.remove('cached_branches');
     await prefs.remove('cached_permission_matrix');
     await prefs.remove('cached_branch_managers');
+    await prefs.remove('org_vat_rate');
 
     state = const AuthState.unauthenticated();
   }

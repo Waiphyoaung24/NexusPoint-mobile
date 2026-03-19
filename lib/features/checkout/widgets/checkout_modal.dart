@@ -5,16 +5,20 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../../../core/models/order.dart';
 import '../../../core/models/api_models.dart';
+import '../../../core/models/user.dart';
+import '../../../core/utils/permission_gate.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../orders/repositories/order_repository.dart';
 import '../../orders/providers/order_context_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/widgets/role_based_approval.dart';
 import '../providers/checkout_provider.dart';
 import '../../printer/providers/printer_provider.dart';
 import '../../printer/services/printer_service.dart';
 import '../../printer/services/receipt_builder.dart';
 import '../../printer/services/kitchen_ticket_builder.dart';
 import '../../orders/services/order_polling_service.dart';
+import 'discount_entry_dialog.dart';
 
 Future<bool> showCheckoutModal(BuildContext context, double total) async {
   final result = await showModalBottomSheet<bool>(
@@ -262,7 +266,11 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
             createdBy: userId,
             subtotalAmount: cartState.subtotal,
             vatAmount: cartState.taxAmount,
-            vatRate: CartState.taxRate * 100,
+            vatRate: cartState.vatRate * 100,
+            discountPercent: cartState.hasDiscount ? cartState.discountPercent : null,
+            discountAmount: cartState.hasDiscount ? cartState.discountAmount : null,
+            discountApproverId: cartState.discountApproverId,
+            discountReason: cartState.discountReason,
             items: orderItems,
             totalAmount: cartState.grandTotal,
             paymentMethod: checkout.paymentMethod,
@@ -324,6 +332,11 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
 
   Widget _buildVatBreakdown(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartProvider);
+    final authState = ref.watch(authProvider);
+    final userRole = authState.whenOrNull(
+      authenticated: (user) => user.staffRole ?? user.role,
+    );
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -333,8 +346,68 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
       child: Column(
         children: [
           _vatRow(context, 'Subtotal', cart.subtotal),
+
+          // Discount line (F-008)
+          if (cart.hasDiscount) ...[
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Discount (${cart.discountPercent.toStringAsFixed(0)}%)',
+                      style: GoogleFonts.openSans(
+                        fontSize: 13,
+                        color: PosTheme.dangerRed,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: () {
+                        ref.read(cartProvider.notifier).removeDiscount();
+                      },
+                      child: Icon(
+                        Icons.close,
+                        size: 14,
+                        color: PosTheme.textSecondary.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  '-\$${cart.discountAmount.toStringAsFixed(2)}',
+                  style: GoogleFonts.openSans(
+                    fontSize: 13,
+                    color: PosTheme.dangerRed,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+
+          // Discount button (F-008) — only for owner/manager
+          if (!cart.hasDiscount)
+            PermissionGate(
+              role: userRole,
+              action: 'discount.apply',
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: OutlinedButton.icon(
+                  onPressed: () => _handleApplyDiscount(context, ref),
+                  icon: const Icon(Icons.percent, size: 16),
+                  label: const Text('Apply Discount'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: PosTheme.primaryBlue,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ),
+            ),
+
           const SizedBox(height: 4),
-          _vatRow(context, 'VAT 7%', cart.taxAmount),
+          _vatRow(context, 'VAT ${(cart.vatRate * 100).toStringAsFixed(0)}%', cart.taxAmount),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 6),
             child: Divider(height: 1),
@@ -343,6 +416,40 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleApplyDiscount(BuildContext context, WidgetRef ref) async {
+    // Role-based approval
+    final approval = await showRoleBasedApproval(
+      context,
+      ref: ref,
+      action: 'discount.apply',
+    );
+    if (approval == null || !context.mounted) return;
+
+    // Show discount entry dialog
+    final cart = ref.read(cartProvider);
+    final entry = await showDiscountEntryDialog(
+      context,
+      subtotal: cart.subtotal,
+    );
+    if (entry == null || !context.mounted) return;
+
+    // Apply discount to cart
+    ref.read(cartProvider.notifier).applyDiscount(
+          percent: entry.percent,
+          approverId: approval.approverId,
+          reason: entry.reason,
+        );
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Discount applied: ${entry.percent.toStringAsFixed(0)}%'),
+          backgroundColor: PosTheme.successGreen,
+        ),
+      );
+    }
   }
 
   Widget _vatRow(BuildContext context, String label, double amount, {bool bold = false}) {
