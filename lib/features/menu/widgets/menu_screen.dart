@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/pos_theme.dart';
+import '../../../core/utils/category_parser.dart';
+import '../providers/category_provider.dart';
 import '../providers/menu_provider.dart';
 import '../providers/modifier_provider.dart';
 import '../widgets/modifier_picker_sheet.dart';
@@ -17,31 +20,24 @@ class MenuScreen extends ConsumerWidget {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: PosTheme.backgroundLight,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // Responsive breakpoints
           final isPhone = constraints.maxWidth < 600;
           final isTablet = constraints.maxWidth >= 600 && constraints.maxWidth < 1024;
-
-          // Adaptive columns for grid
           final crossAxisCount = isPhone ? 2 : isTablet ? 3 : 4;
 
           return SafeArea(
             child: Column(
               children: [
-                // App Bar
                 _buildAppBar(context, ref, authState, cart, isPhone),
-
-                // Content
+                _SearchBar(isPhone: isPhone),
+                _CategoryTabs(isPhone: isPhone),
                 Expanded(
                   child: menuAsync.when(
-                    data: (items) => _buildMenuGrid(
-                      context,
-                      ref,
-                      items,
-                      crossAxisCount,
-                      isPhone,
+                    data: (_) => _FilteredMenuGrid(
+                      crossAxisCount: crossAxisCount,
+                      isPhone: isPhone,
                     ),
                     loading: () => _buildLoadingState(context),
                     error: (error, stack) => _buildErrorState(context, error),
@@ -65,26 +61,19 @@ class MenuScreen extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.all(isPhone ? 16 : 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PosTheme.surfaceWhite,
         border: Border(
-          bottom: BorderSide(
-            color: Colors.black.withValues(alpha: 0.08),
-            width: 1,
-          ),
+          bottom: BorderSide(color: PosTheme.borderLight, width: 1),
         ),
       ),
       child: Row(
         children: [
-          // Logo & Title
           Container(
             width: isPhone ? 48 : 56,
             height: isPhone ? 48 : 56,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
-                ],
+              gradient: const LinearGradient(
+                colors: [PosTheme.primaryBlue, PosTheme.secondaryBlue],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -104,28 +93,23 @@ class MenuScreen extends ConsumerWidget {
                   'NexusPoint POS',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: PosTheme.primaryBlue,
                       ),
                 ),
                 authState.whenOrNull(
-                  authenticated: (user) => Text(
-                    user.email,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.black.withValues(alpha: 0.5),
-                        ),
-                  ),
-                ) ??
+                      authenticated: (user) => Text(
+                        user.email,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: PosTheme.textSecondary,
+                            ),
+                      ),
+                    ) ??
                     const SizedBox.shrink(),
               ],
             ),
           ),
-
-          // Cart Badge
           _buildCartButton(context, ref, cart, isPhone),
-
           const SizedBox(width: 12),
-
-          // Logout Button
           OutlinedButton(
             onPressed: () => ref.read(authProvider.notifier).logout(),
             style: OutlinedButton.styleFrom(
@@ -161,18 +145,12 @@ class MenuScreen extends ConsumerWidget {
       onPressed: cart.isEmpty
           ? null
           : () {
-              // TODO: Navigate to cart/checkout
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     '${cart.itemCount} items • ฿${cart.total.toStringAsFixed(2)}',
                   ),
-                  action: SnackBarAction(
-                    label: 'View Cart',
-                    onPressed: () {
-                      // TODO: Navigate to cart
-                    },
-                  ),
+                  action: SnackBarAction(label: 'View Cart', onPressed: () {}),
                 ),
               );
             },
@@ -200,30 +178,316 @@ class MenuScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuGrid(
-    BuildContext context,
-    WidgetRef ref,
-    List items,
-    int crossAxisCount,
-    bool isPhone,
-  ) {
+  Widget _buildLoadingState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(color: PosTheme.primaryBlue),
+          const SizedBox(height: 16),
+          Text(
+            'Loading menu...',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: PosTheme.textSecondary,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, Object error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: PosTheme.dangerRed.withValues(alpha: 0.5)),
+            const SizedBox(height: 16),
+            Text('Error loading menu', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: PosTheme.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Search Bar ──────────────────────────────────────────────────────────────
+
+class _SearchBar extends ConsumerWidget {
+  final bool isPhone;
+  const _SearchBar({required this.isPhone});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final query = ref.watch(menuSearchQueryProvider);
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isPhone ? 16 : 24,
+        vertical: 8,
+      ),
+      color: PosTheme.surfaceWhite,
+      child: TextField(
+        onChanged: (value) {
+          ref.read(menuSearchQueryProvider.notifier).state = value;
+          // Clear category selection while searching
+          if (value.isNotEmpty) {
+            ref.read(selectedCategoryProvider.notifier).state = null;
+            ref.read(selectedSubcategoryProvider.notifier).state = null;
+          }
+        },
+        decoration: InputDecoration(
+          hintText: 'Search items...',
+          hintStyle: TextStyle(color: PosTheme.textSecondary.withValues(alpha: 0.6)),
+          prefixIcon: const Icon(Icons.search, color: PosTheme.textSecondary),
+          suffixIcon: query.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 20),
+                  onPressed: () {
+                    ref.read(menuSearchQueryProvider.notifier).state = '';
+                    FocusScope.of(context).unfocus();
+                  },
+                )
+              : null,
+          filled: true,
+          fillColor: PosTheme.backgroundLight,
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Category Tabs (Two-Level) ───────────────────────────────────────────────
+
+class _CategoryTabs extends ConsumerWidget {
+  final bool isPhone;
+  const _CategoryTabs({required this.isPhone});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final categories = ref.watch(categoriesProvider);
+    final selectedParent = ref.watch(selectedCategoryProvider);
+    final selectedSub = ref.watch(selectedSubcategoryProvider);
+    final searchQuery = ref.watch(menuSearchQueryProvider);
+
+    // Hide tabs when searching
+    if (searchQuery.isNotEmpty) return const SizedBox.shrink();
+    if (categories.isEmpty) return const SizedBox.shrink();
+
+    // Find current parent's subcategories
+    final currentParent = categories.where((c) => c.name == selectedParent).firstOrNull;
+
+    return Container(
+      color: PosTheme.surfaceWhite,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Parent category tabs
+          SizedBox(
+            height: 48,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: isPhone ? 12 : 20),
+              children: [
+                _CategoryTab(
+                  label: 'All',
+                  isSelected: selectedParent == null,
+                  onTap: () {
+                    ref.read(selectedCategoryProvider.notifier).state = null;
+                    ref.read(selectedSubcategoryProvider.notifier).state = null;
+                  },
+                ),
+                ...categories.map((cat) => _CategoryTab(
+                      label: cat.name,
+                      isSelected: selectedParent == cat.name,
+                      onTap: () {
+                        ref.read(selectedCategoryProvider.notifier).state = cat.name;
+                        ref.read(selectedSubcategoryProvider.notifier).state = null;
+                      },
+                    )),
+              ],
+            ),
+          ),
+
+          // Subcategory tabs (only when parent has subcategories)
+          if (currentParent != null && currentParent.hasSubcategories)
+            Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: PosTheme.backgroundLight,
+                border: Border(
+                  top: BorderSide(color: PosTheme.borderLight, width: 0.5),
+                ),
+              ),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: isPhone ? 12 : 20),
+                children: [
+                  _SubcategoryTab(
+                    label: 'All',
+                    isSelected: selectedSub == null,
+                    onTap: () {
+                      ref.read(selectedSubcategoryProvider.notifier).state = null;
+                    },
+                  ),
+                  ...currentParent.subcategories.map((sub) => _SubcategoryTab(
+                        label: sub,
+                        isSelected: selectedSub == sub,
+                        onTap: () {
+                          ref.read(selectedSubcategoryProvider.notifier).state = sub;
+                        },
+                      )),
+                ],
+              ),
+            ),
+
+          const Divider(height: 1, color: PosTheme.borderLight),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryTab extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CategoryTab({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: Material(
+        color: isSelected ? PosTheme.primaryBlue : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: isSelected
+                  ? null
+                  : Border.all(color: PosTheme.borderLight),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : PosTheme.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SubcategoryTab extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _SubcategoryTab({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: isSelected
+                ? PosTheme.secondaryBlue.withValues(alpha: 0.12)
+                : Colors.transparent,
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              color: isSelected ? PosTheme.primaryBlue : PosTheme.textSecondary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Filtered Menu Grid ──────────────────────────────────────────────────────
+
+class _FilteredMenuGrid extends ConsumerWidget {
+  final int crossAxisCount;
+  final bool isPhone;
+
+  const _FilteredMenuGrid({
+    required this.crossAxisCount,
+    required this.isPhone,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final items = ref.watch(filteredMenuProvider);
+    final searchQuery = ref.watch(menuSearchQueryProvider);
+
     if (items.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.restaurant_menu,
+              searchQuery.isNotEmpty ? Icons.search_off : Icons.restaurant_menu,
               size: 64,
-              color: Colors.black.withValues(alpha: 0.3),
+              color: PosTheme.textSecondary.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
             Text(
-              'No menu items available',
+              searchQuery.isNotEmpty ? 'No items match "$searchQuery"' : 'No menu items available',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.black.withValues(alpha: 0.5),
+                    color: PosTheme.textSecondary,
                   ),
             ),
+            if (searchQuery.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  ref.read(menuSearchQueryProvider.notifier).state = '';
+                  ref.read(selectedCategoryProvider.notifier).state = null;
+                },
+                child: const Text('Clear search'),
+              ),
+            ],
           ],
         ),
       );
@@ -240,150 +504,153 @@ class MenuScreen extends ConsumerWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return _buildMenuItem(context, ref, item, isPhone);
+        return _MenuItemCard(item: item, isPhone: isPhone);
       },
     );
   }
+}
 
-  Widget _buildMenuItem(
-    BuildContext context,
-    WidgetRef ref,
-    dynamic item,
-    bool isPhone,
-  ) {
+// ─── Menu Item Card (with out-of-stock overlay) ──────────────────────────────
+
+class _MenuItemCard extends ConsumerWidget {
+  final dynamic item;
+  final bool isPhone;
+
+  const _MenuItemCard({required this.item, required this.isPhone});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAvailable = item.isAvailable;
+
     return Material(
-      color: Colors.white,
+      color: PosTheme.surfaceWhite,
       borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: () async {
-          final modifiers =
-              await ref.read(menuItemModifiersProvider(item.id).future);
-          if (modifiers.isEmpty) {
-            ref.read(cartProvider.notifier).addItem(item);
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Added ${item.name} to cart'),
-                  duration: const Duration(seconds: 1),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-          } else {
-            if (context.mounted) {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                builder: (_) => ModifierPickerSheet(
-                  menuItem: item,
-                  modifierGroups: modifiers,
-                ),
-              );
-            }
-          }
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
+      child: Stack(
+        children: [
+          // Card content
+          InkWell(
+            onTap: isAvailable
+                ? () async {
+                    final modifiers =
+                        await ref.read(menuItemModifiersProvider(item.id).future);
+                    if (modifiers.isEmpty) {
+                      ref.read(cartProvider.notifier).addItem(item);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Added ${item.name} to cart'),
+                            duration: const Duration(seconds: 1),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    } else {
+                      if (context.mounted) {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (_) => ModifierPickerSheet(
+                            menuItem: item,
+                            modifierGroups: modifiers,
+                          ),
+                        );
+                      }
+                    }
+                  }
+                : null,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Colors.black.withValues(alpha: 0.08),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Image
-              Expanded(
-                flex: 3,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: PosTheme.borderLight),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Image
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: PosTheme.primaryBlue.withValues(alpha: 0.06),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                      ),
+                      child: item.imageUrl != null
+                          ? ClipRRect(
+                              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                              child: Image.network(
+                                item.imageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _buildPlaceholderIcon(context),
+                              ),
+                            )
+                          : _buildPlaceholderIcon(context),
                     ),
                   ),
-                  child: item.imageUrl != null
-                      ? ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(16),
-                          ),
-                          child: Image.network(
-                            item.imageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return _buildPlaceholderIcon(context);
-                            },
-                          ),
-                        )
-                      : _buildPlaceholderIcon(context),
-                ),
-              ),
 
-              // Details
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: EdgeInsets.all(isPhone ? 12 : 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Name
-                      Text(
-                        item.name,
-                        style: Theme.of(context).textTheme.titleMedium,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const Spacer(),
-
-                      // Price & Availability
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Details
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: EdgeInsets.all(isPhone ? 12 : 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
+                            item.name,
+                            style: Theme.of(context).textTheme.titleMedium,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Spacer(),
+                          Text(
                             '฿${item.price.toStringAsFixed(2)}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  color: PosTheme.primaryBlue,
                                   fontWeight: FontWeight.w700,
                                 ),
                           ),
-                          if (!item.isAvailable)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                'Out',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
                         ],
                       ),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Out-of-stock overlay (F-013)
+          if (!isAvailable)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'Out of Stock',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: PosTheme.textSecondary,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -392,60 +659,7 @@ class MenuScreen extends ConsumerWidget {
     return Icon(
       Icons.restaurant,
       size: 48,
-      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-    );
-  }
-
-  Widget _buildLoadingState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Loading menu...',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.black.withValues(alpha: 0.5),
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(BuildContext context, Object error) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red.shade300,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Error loading menu',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.black.withValues(alpha: 0.7),
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.black.withValues(alpha: 0.5),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+      color: PosTheme.primaryBlue.withValues(alpha: 0.25),
     );
   }
 }

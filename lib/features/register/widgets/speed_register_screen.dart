@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/pos_theme.dart';
 import '../../../core/models/menu_item.dart';
 import '../../menu/providers/menu_provider.dart';
+import '../../menu/providers/category_provider.dart';
 import '../../../core/models/cart_item.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../checkout/widgets/checkout_modal.dart';
@@ -103,72 +104,132 @@ class _MenuGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final menuAsync = ref.watch(menuProvider);
+    final categories = ref.watch(categoriesProvider);
+    final selectedParent = ref.watch(selectedCategoryProvider);
+    final items = ref.watch(filteredMenuProvider);
 
     return menuAsync.when(
-      data: (items) => items.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      data: (_) => Column(
+        children: [
+          // Compact category bar for speed register
+          if (categories.isNotEmpty)
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 children: [
-                  Icon(
-                    Icons.restaurant_menu_outlined,
-                    size: 64,
-                    color: PosTheme.textSecondary.withValues(alpha: 0.3),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No menu items',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: PosTheme.textSecondary,
-                        ),
-                  ),
-                ],
-              ),
-            )
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                return Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: constraints.maxWidth > 1200
-                          ? 5
-                          : constraints.maxWidth > 900
-                              ? 4
-                              : constraints.maxWidth > 600
-                                  ? 3
-                                  : 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return _MenuItemCard(item: items[index]);
+                  _QuickCategoryChip(
+                    label: 'All',
+                    isSelected: selectedParent == null,
+                    onTap: () {
+                      ref.read(selectedCategoryProvider.notifier).state = null;
+                      ref.read(selectedSubcategoryProvider.notifier).state = null;
                     },
                   ),
-                );
-              },
+                  ...categories.map((cat) => _QuickCategoryChip(
+                        label: cat.name,
+                        isSelected: selectedParent == cat.name,
+                        onTap: () {
+                          ref.read(selectedCategoryProvider.notifier).state = cat.name;
+                          ref.read(selectedSubcategoryProvider.notifier).state = null;
+                        },
+                      )),
+                ],
+              ),
             ),
+
+          // Grid
+          Expanded(
+            child: items.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.restaurant_menu_outlined, size: 64,
+                            color: PosTheme.textSecondary.withValues(alpha: 0.3)),
+                        const SizedBox(height: 16),
+                        Text('No menu items',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: PosTheme.textSecondary)),
+                      ],
+                    ),
+                  )
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: constraints.maxWidth > 1200
+                                ? 5
+                                : constraints.maxWidth > 900
+                                    ? 4
+                                    : constraints.maxWidth > 600
+                                        ? 3
+                                        : 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.85,
+                          ),
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            return _MenuItemCard(item: items[index]);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
       loading: () => const MenuGridSkeleton(),
       error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: PosTheme.dangerRed.withValues(alpha: 0.5),
-            ),
+            Icon(Icons.error_outline, size: 64,
+                color: PosTheme.dangerRed.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
-            Text(
-              'Failed to load menu',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: PosTheme.textSecondary,
-                  ),
-            ),
+            Text('Failed to load menu',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(color: PosTheme.textSecondary)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _QuickCategoryChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _QuickCategoryChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: FilterChip(
+        label: Text(label, style: TextStyle(
+          fontSize: 12,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          color: isSelected ? Colors.white : PosTheme.textSecondary,
+        )),
+        selected: isSelected,
+        onSelected: (_) => onTap(),
+        selectedColor: PosTheme.primaryBlue,
+        backgroundColor: PosTheme.surfaceWhite,
+        side: BorderSide(color: isSelected ? PosTheme.primaryBlue : PosTheme.borderLight),
+        showCheckmark: false,
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
       ),
     );
   }
@@ -232,7 +293,7 @@ class _MenuItemCard extends ConsumerWidget {
 
               // Item Price
               Text(
-                '\$${item.price.toStringAsFixed(2)}',
+                '฿${item.price.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: PosTheme.primaryBlue,
                       fontWeight: FontWeight.w700,
@@ -508,7 +569,7 @@ class _CartItemCard extends StatelessWidget {
                 );
 
                 final price = Text(
-                  '\$${(item.unitPrice * item.quantity).toStringAsFixed(2)}',
+                  '฿${(item.unitPrice * item.quantity).toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: PosTheme.primaryBlue,
                         fontWeight: FontWeight.w800,
@@ -597,7 +658,7 @@ class _CartSummary extends ConsumerWidget {
               ),
               const Spacer(),
               Text(
-                '\$${total.toStringAsFixed(2)}',
+                '฿${total.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -618,7 +679,7 @@ class _CartSummary extends ConsumerWidget {
               ),
               const Spacer(),
               Text(
-                '\$${total.toStringAsFixed(2)}',
+                '฿${total.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: PosTheme.primaryBlue,
                     ),
