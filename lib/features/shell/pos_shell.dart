@@ -116,7 +116,7 @@ class PosShell extends ConsumerWidget {
 
         // User Profile Avatar
         authState.whenOrNull(
-              authenticated: (user, _) => _buildUserAvatar(context, user),
+              authenticated: (user) => _buildUserAvatar(context, user),
             ) ??
             CircleAvatar(
               radius: 24,
@@ -132,7 +132,7 @@ class PosShell extends ConsumerWidget {
         // User Info (when extended)
         if (MediaQuery.of(context).size.width >= 1024)
           authState.whenOrNull(
-            authenticated: (user, _) => Column(
+            authenticated: (user) => Column(
               children: [
                 Text(
                   user.email,

@@ -14,7 +14,7 @@ void main() {
       state.when(
         unauthenticated: () => fail('Should be authenticated'),
         branchPending: (_, __) => fail('Should be authenticated'),
-        authenticated: (u, _) {
+        authenticated: (u) {
           expect(u.tenantId, isNull);
         },
       );
@@ -30,7 +30,7 @@ void main() {
       state.when(
         unauthenticated: () => fail('Should be authenticated'),
         branchPending: (_, __) => fail('Should be authenticated'),
-        authenticated: (u, _) {
+        authenticated: (u) {
           expect(u.tenantId, 'org-123');
         },
       );

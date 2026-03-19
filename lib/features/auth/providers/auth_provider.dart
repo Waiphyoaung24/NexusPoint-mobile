@@ -12,6 +12,7 @@ import '../../../core/models/api_models.dart';
 import '../../../core/api/api_service.dart';
 import '../../../core/providers/dio_provider.dart';
 import '../../../core/providers/auth_token_provider.dart';
+import '../../../core/utils/permission_gate.dart';
 
 part 'auth_provider.freezed.dart';
 
@@ -24,7 +25,6 @@ class AuthState with _$AuthState {
   }) = BranchPending;
   const factory AuthState.authenticated({
     required User user,
-    @Default(0) int failedPinAttempts,
   }) = Authenticated;
 }
 
@@ -76,6 +76,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // Read token directly from prefs — authTokenProvider may not have
     // finished its own async load yet, so we can't rely on its state here.
     final token = prefs.getString('auth_token');
+
+    // Load cached permission matrix and manager list into memory (F-009)
+    await loadCachedPermissionMatrix();
+    await loadCachedManagers();
 
     if (userJson != null && token != null) {
       var user = User.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
@@ -153,8 +157,39 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // Also persist the branch list for potential re-use on switch
     await _cacheBranches(prefs, current.branches);
 
+    // Fetch and cache permission matrix + manager list for this branch (F-009)
+    await _fetchPermissionsAndManagers(branchId);
+
     debugPrint('🏪 Branch selected: $branchId');
     state = AuthState.authenticated(user: user);
+  }
+
+  /// Fetches permission matrix and manager list from server, caches locally.
+  /// Called after branch selection and on app resume. Failures are non-fatal.
+  Future<void> _fetchPermissionsAndManagers(String branchId) async {
+    final api = ref.read(posApiServiceProvider);
+    final prefs = await SharedPreferences.getInstance();
+
+    // Fetch permission matrix
+    try {
+      final matrix = await api.getPermissionMatrix();
+      await savePermissionMatrix(matrix);
+      debugPrint('🔐 Permission matrix cached (${matrix.length} rows)');
+    } catch (e) {
+      debugPrint('⚠️ Permission matrix fetch failed (using defaults): $e');
+      // Non-fatal — fall back to hardcoded defaults
+    }
+
+    // Fetch manager list for PIN approval dropdown
+    try {
+      final managers = await api.listManagers(branchId);
+      await prefs.setString('cached_branch_managers', jsonEncode(managers));
+      await loadCachedManagers();
+      debugPrint('👥 Manager list cached (${managers.length} managers)');
+    } catch (e) {
+      debugPrint('⚠️ Manager list fetch failed: $e');
+      // Non-fatal — manager approval dialog will show empty list
+    }
   }
 
   /// Called from settings to switch branches.
@@ -347,13 +382,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Verify Manager PIN via server-side API (F-009).
+  /// Verify Manager PIN — online via server, offline via cached hash (F-009).
   /// Returns true if PIN is correct, throws on lockout or error.
   Future<bool> verifyManagerPin(
     String managerId,
     String pin,
     String branchId,
   ) async {
+    // Try server-side verification first
     try {
       final dio = ref.read(dioProvider);
       final response = await dio.post(
@@ -374,13 +410,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final errorData = e.response?.data;
 
       if (statusCode == 429) {
-        // TOO_MANY_REQUESTS — PIN locked
         final message =
             errorData?['error']?['message'] ?? 'PIN locked. Try again later.';
         throw PinLockoutException(message);
       } else if (statusCode == 401) {
-        // UNAUTHORIZED — wrong PIN
         return false;
+      }
+
+      // Network error — fall through to offline verification
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        debugPrint('📴 Offline — verifying PIN against cached hash');
+        return _verifyPinOffline(managerId, pin);
       }
 
       debugPrint('❌ Manager PIN verification error: $e');
@@ -388,12 +430,60 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Offline PIN verification using cached manager PIN hash (F-009).
+  /// SHA-256 hashes the input PIN and compares to cached managerPinHash.
+  bool _verifyPinOffline(String managerId, String pin) {
+    final prefs = _getCachedManagers();
+    if (prefs == null) return false;
+
+    for (final manager in prefs) {
+      if (manager['id'] == managerId || manager['userId'] == managerId) {
+        final storedHash = manager['managerPinHash'] as String?;
+        if (storedHash == null || storedHash.isEmpty) return false;
+        final inputHash = sha256.convert(utf8.encode(pin)).toString();
+        return inputHash == storedHash;
+      }
+    }
+    return false;
+  }
+
+  /// Get cached managers list from SharedPreferences (synchronous from memory).
+  List<Map<String, dynamic>>? _getCachedManagers() {
+    // This is called from sync context — use cached value
+    // The actual loading happens in _fetchPermissionsAndManagers
+    return _cachedManagersList;
+  }
+
+  /// In-memory cache of managers list, loaded from SharedPreferences.
+  static List<Map<String, dynamic>>? _cachedManagersList;
+
+  /// Load cached managers from SharedPreferences into memory.
+  static Future<void> loadCachedManagers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString('cached_branch_managers');
+    if (json == null) {
+      _cachedManagersList = null;
+      return;
+    }
+    try {
+      _cachedManagersList = (jsonDecode(json) as List).cast<Map<String, dynamic>>();
+    } catch (_) {
+      _cachedManagersList = null;
+    }
+  }
+
+  /// Get the cached managers list (for use in approval dialogs).
+  static List<Map<String, dynamic>> get cachedManagers =>
+      _cachedManagersList ?? [];
+
   Future<void> logout() async {
     await ref.read(authTokenProvider.notifier).clearToken();
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('current_user');
     await prefs.remove('cached_branches');
+    await prefs.remove('cached_permission_matrix');
+    await prefs.remove('cached_branch_managers');
 
     state = const AuthState.unauthenticated();
   }

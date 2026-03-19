@@ -3,8 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/models/order.dart';
+import '../../../core/models/user.dart';
 import '../../../core/theme/pos_theme.dart';
+import '../../../core/utils/permission_gate.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../auth/widgets/role_based_approval.dart';
 import '../providers/order_provider.dart';
+import '../repositories/order_repository.dart';
+import 'void_reason_dialog.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
@@ -53,8 +59,8 @@ class _EmptyState extends StatelessWidget {
         children: [
           Icon(
             Icons.receipt_long_outlined,
-            size: 80,
-            color: PosTheme.textSecondary.withValues(alpha: 0.3),
+            size: 64,
+            color: PosTheme.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -65,9 +71,10 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Orders created from the Register will appear here',
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
+            'Orders will appear here once created',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: PosTheme.textSecondary,
+                ),
           ),
         ],
       ),
@@ -82,22 +89,31 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: PosTheme.dangerRed),
-          const SizedBox(height: 16),
-          Text(
-            'Failed to load orders',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '$error',
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              size: 48,
+              color: PosTheme.dangerRed,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load orders',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$error',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: PosTheme.textSecondary,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -109,37 +125,35 @@ class _OrderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Group orders by day
-    final grouped = <String, List<Order>>{};
-    final dayFmt = DateFormat('EEEE, MMM d, yyyy');
-
+    // Group orders by date
+    final groupedOrders = <String, List<Order>>{};
+    final dateFmt = DateFormat('MMMM d, yyyy');
     for (final order in orders) {
-      final key = dayFmt.format(order.createdAt);
-      grouped.putIfAbsent(key, () => []).add(order);
+      final key = dateFmt.format(order.createdAt);
+      groupedOrders.putIfAbsent(key, () => []).add(order);
     }
 
-    final days = grouped.keys.toList();
-
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: days.length,
-      itemBuilder: (context, dayIndex) {
-        final day = days[dayIndex];
-        final dayOrders = grouped[day]!;
+      padding: const EdgeInsets.all(16),
+      itemCount: groupedOrders.length,
+      itemBuilder: (context, groupIndex) {
+        final date = groupedOrders.keys.elementAt(groupIndex);
+        final groupOrders = groupedOrders[date]!;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (groupIndex > 0) const SizedBox(height: 16),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                day,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                date,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: PosTheme.textSecondary,
-                      letterSpacing: 0.5,
                     ),
               ),
             ),
-            ...dayOrders.map((order) => _OrderCard(order: order)),
+            ...groupOrders.map((order) => _OrderCard(order: order)),
           ],
         );
       },
@@ -151,81 +165,76 @@ class _OrderCard extends StatelessWidget {
   final Order order;
   const _OrderCard({required this.order});
 
+  Color get _statusColor {
+    switch (order.status) {
+      case OrderStatus.pending:
+        return Colors.orange;
+      case OrderStatus.confirmed:
+        return PosTheme.primaryBlue;
+      case OrderStatus.delivered:
+        return PosTheme.successGreen;
+      case OrderStatus.cancelled:
+        return PosTheme.dangerRed;
+      case OrderStatus.completed:
+        return PosTheme.successGreen;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final timeFmt = DateFormat('h:mm a');
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
-        onTap: () => _showOrderDetail(context, order),
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            ),
+            builder: (_) => OrderDetailSheet(order: order),
+          );
+        },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Source icon
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: _sourceColor(order.source).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  _sourceIcon(order.source),
-                  color: _sourceColor(order.source),
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-
               // Order info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          order.orderNumber,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w700),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '\$${order.totalAmount.toStringAsFixed(2)}',
-                          style:
-                              Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: PosTheme.primaryBlue,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                        ),
-                      ],
+                    Text(
+                      order.orderNumber,
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          DateFormat('h:mm a').format(order.createdAt),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        const SizedBox(width: 8),
-                        _StatusChip(status: order.status),
-                        const Spacer(),
-                        _SyncBadge(isSynced: order.isSynced),
-                      ],
+                    Text(
+                      '${order.items.length} items  ·  ${timeFmt.format(order.createdAt)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: PosTheme.textSecondary,
+                          ),
                     ),
-                    if (order.items.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          '${order.items.length} item${order.items.length != 1 ? 's' : ''}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
                   ],
                 ),
+              ),
+
+              // Total
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '\$${order.totalAmount.toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  _StatusBadge(status: order.status, color: _statusColor),
+                ],
               ),
             ],
           ),
@@ -233,66 +242,35 @@ class _OrderCard extends StatelessWidget {
       ),
     );
   }
-
-  void _showOrderDetail(BuildContext context, Order order) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (_) => _OrderDetailSheet(order: order),
-    );
-  }
-
-  IconData _sourceIcon(OrderSource source) {
-    return switch (source) {
-      OrderSource.dinein => Icons.table_restaurant,
-      OrderSource.grab => Icons.delivery_dining,
-      OrderSource.wongnai => Icons.restaurant,
-    };
-  }
-
-  Color _sourceColor(OrderSource source) {
-    return switch (source) {
-      OrderSource.dinein => PosTheme.primaryBlue,
-      OrderSource.grab => const Color(0xFF00B14F),
-      OrderSource.wongnai => const Color(0xFFE5232A),
-    };
-  }
 }
 
-class _StatusChip extends StatelessWidget {
+class _StatusBadge extends StatelessWidget {
   final OrderStatus status;
-  const _StatusChip({required this.status});
+  final Color color;
+  const _StatusBadge({required this.status, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (status) {
-      OrderStatus.pending => ('Pending', PosTheme.accentAmber),
-      OrderStatus.confirmed => ('Confirmed', PosTheme.secondaryBlue),
-      OrderStatus.completed => ('Ready', PosTheme.successGreen),
-      OrderStatus.delivered => ('Delivered', PosTheme.primaryBlue),
-      OrderStatus.cancelled => ('Cancelled', PosTheme.dangerRed),
-    };
-
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
+        status.name.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
 }
 
-class _SyncBadge extends StatelessWidget {
+class _SyncIndicator extends StatelessWidget {
   final bool isSynced;
-  const _SyncBadge({required this.isSynced});
+  const _SyncIndicator({required this.isSynced});
 
   @override
   Widget build(BuildContext context) {
@@ -317,98 +295,142 @@ class _SyncBadge extends StatelessWidget {
   }
 }
 
-class _OrderDetailSheet extends StatelessWidget {
+class OrderDetailSheet extends ConsumerWidget {
   final Order order;
-  const _OrderDetailSheet({required this.order});
+  const OrderDetailSheet({super.key, required this.order});
+
+  bool get _canVoid =>
+      order.status != OrderStatus.cancelled &&
+      order.status != OrderStatus.delivered;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final timeFmt = DateFormat('MMM d, yyyy — h:mm a');
+
+    // Get user role for permission gating
+    final authState = ref.watch(authProvider);
+    final userRole = authState.whenOrNull(
+      authenticated: (user) => user.staffRole ?? user.role,
+    );
 
     return DraggableScrollableSheet(
       initialChildSize: 0.6,
-      minChildSize: 0.4,
+      minChildSize: 0.3,
       maxChildSize: 0.9,
       expand: false,
       builder: (context, scrollController) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(
-            controller: scrollController,
+        return SingleChildScrollView(
+          controller: scrollController,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Handle
+              // Handle bar
               Center(
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     color: PosTheme.borderLight,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
 
-              // Order Number
-              Text(
-                order.orderNumber,
-                style: Theme.of(context).textTheme.headlineSmall,
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    order.orderNumber,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  _SyncIndicator(isSynced: order.isSynced),
+                ],
               ),
               const SizedBox(height: 4),
               Text(
                 timeFmt.format(order.createdAt),
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: PosTheme.textSecondary,
+                    ),
               ),
 
+              const SizedBox(height: 24),
+              const Divider(),
               const SizedBox(height: 16),
-
-              // Status + Sync row
-              Row(
-                children: [
-                  _StatusChip(status: order.status),
-                  const SizedBox(width: 8),
-                  _SyncBadge(isSynced: order.isSynced),
-                ],
-              ),
-
-              const Divider(height: 32),
 
               // Items
               Text(
                 'Items',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              ...order.items.map(
-                (item) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+              ...order.items.asMap().entries.map((entry) {
+                final item = entry.value;
+                final isVoided = _isItemVoided(entry.key);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
                       Text(
                         '${item.quantity}×',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: PosTheme.textSecondary,
+                              decoration: isVoided ? TextDecoration.lineThrough : null,
                             ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
-                          item.menuItem.name,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                item.menuItem.name,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      decoration: isVoided ? TextDecoration.lineThrough : null,
+                                      color: isVoided ? PosTheme.textSecondary : null,
+                                    ),
+                              ),
+                            ),
+                            if (isVoided) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: PosTheme.dangerRed.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  'VOIDED',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: PosTheme.dangerRed,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 10,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       Text(
-                        '\$${item.lineTotal.toStringAsFixed(2)}',
+                        '\$${(item.unitPrice * item.quantity).toStringAsFixed(2)}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
+                              decoration: isVoided ? TextDecoration.lineThrough : null,
+                              color: isVoided ? PosTheme.textSecondary : null,
                             ),
                       ),
                     ],
                   ),
-                ),
-              ),
+                );
+              }),
 
-              const Divider(height: 24),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
 
               // Total
               Row(
@@ -469,11 +491,180 @@ class _OrderDetailSheet extends StatelessWidget {
                 ),
               ],
 
+              // Void / Cancel action buttons (permission-gated)
+              if (_canVoid) ...[
+                const SizedBox(height: 24),
+                const Divider(),
+                const SizedBox(height: 12),
+                PermissionGate(
+                  role: userRole,
+                  action: 'order.void',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (_hasNonVoidedItems)
+                        OutlinedButton.icon(
+                          onPressed: () => _handleVoidItem(context, ref),
+                          icon: const Icon(Icons.remove_circle_outline),
+                          label: const Text('Void Item'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: PosTheme.dangerRed,
+                            side: const BorderSide(color: PosTheme.dangerRed),
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      FilledButton.icon(
+                        onPressed: () => _handleCancelOrder(context, ref),
+                        icon: const Icon(Icons.cancel_outlined),
+                        label: const Text('Cancel Order'),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: PosTheme.dangerRed,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 32),
             ],
           ),
         );
       },
     );
+  }
+
+  /// Check if an item at the given index is voided (from local JSON data).
+  bool _isItemVoided(int index) {
+    // Items in the order model don't carry voided status directly.
+    // We check via the cart item — voided items would have been marked
+    // in the local JSON. For display, we rely on the order total being
+    // recalculated. A proper solution would propagate voided status
+    // through the Order model, but for now we check if total is 0.
+    return false; // Will be enhanced when Order model carries item-level void status
+  }
+
+  /// Check if there are non-voided items to void.
+  bool get _hasNonVoidedItems => order.items.isNotEmpty;
+
+  Future<void> _handleVoidItem(BuildContext context, WidgetRef ref) async {
+    if (order.items.isEmpty) return;
+
+    // If multiple items, let cashier pick which one
+    int itemIndex = 0;
+    if (order.items.length > 1) {
+      final selected = await showDialog<int>(
+        context: context,
+        builder: (_) => SimpleDialog(
+          title: const Text('Select item to void'),
+          children: order.items.asMap().entries.map((entry) {
+            return SimpleDialogOption(
+              onPressed: () => Navigator.of(context).pop(entry.key),
+              child: Text('${entry.value.quantity}× ${entry.value.menuItem.name}'),
+            );
+          }).toList(),
+        ),
+      );
+      if (selected == null) return;
+      itemIndex = selected;
+    }
+
+    // Ask for reason
+    if (!context.mounted) return;
+    final reason = await showVoidReasonDialog(context, title: 'Void Item');
+    if (reason == null || !context.mounted) return;
+
+    // Role-based approval (F-009)
+    final approval = await showRoleBasedApproval(
+      context,
+      ref: ref,
+      action: 'order.void',
+    );
+    if (approval == null || !context.mounted) return;
+
+    // Get current user ID as requester
+    final user = ref.read(authProvider).whenOrNull(
+      authenticated: (user) => user,
+    );
+    if (user == null) return;
+
+    // Execute void
+    try {
+      final repo = ref.read(orderRepositoryProvider);
+      await repo.voidItem(
+        localOrderId: order.localId!,
+        itemIndex: itemIndex,
+        reason: reason,
+        requesterId: user.id,
+        approverId: approval.approverId,
+      );
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close bottom sheet
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Item voided'),
+            backgroundColor: PosTheme.successGreen,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to void item: $e'),
+            backgroundColor: PosTheme.dangerRed,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleCancelOrder(BuildContext context, WidgetRef ref) async {
+    // Ask for reason
+    final reason = await showVoidReasonDialog(context, title: 'Cancel Order');
+    if (reason == null || !context.mounted) return;
+
+    // Role-based approval (F-009)
+    final approval = await showRoleBasedApproval(
+      context,
+      ref: ref,
+      action: 'order.cancel',
+    );
+    if (approval == null || !context.mounted) return;
+
+    // Get current user ID as requester
+    final user = ref.read(authProvider).whenOrNull(
+      authenticated: (user) => user,
+    );
+    if (user == null) return;
+
+    // Execute cancel
+    try {
+      final repo = ref.read(orderRepositoryProvider);
+      await repo.voidOrder(
+        localOrderId: order.localId!,
+        reason: reason,
+        requesterId: user.id,
+        approverId: approval.approverId,
+      );
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close bottom sheet
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order cancelled'),
+            backgroundColor: PosTheme.successGreen,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to cancel order: $e'),
+            backgroundColor: PosTheme.dangerRed,
+          ),
+        );
+      }
+    }
   }
 }

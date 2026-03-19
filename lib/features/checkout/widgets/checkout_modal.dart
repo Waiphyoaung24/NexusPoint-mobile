@@ -236,7 +236,7 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
       final orderCtx = ref.read(orderContextProvider);
       final authState = ref.read(authProvider);
       final userId = authState.maybeWhen(
-        authenticated: (user, _) => user.id,
+        authenticated: (user) => user.id,
         orElse: () => null,
       );
 

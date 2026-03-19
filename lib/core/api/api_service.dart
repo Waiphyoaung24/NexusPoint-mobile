@@ -459,6 +459,52 @@ class PosApiService {
       }
     }
 
+    /// Voids a single order item on the server.
+    Future<void> voidItem({
+      required String orderId,
+      required String orderItemId,
+      required String requesterId,
+      String? approverId,
+      String? reason,
+    }) async {
+      try {
+        debugPrint('🗑️ Voiding item via tRPC: order.voidItem');
+        await _trpcMutation('order.voidItem', input: {
+          'orderId': orderId,
+          'orderItemId': orderItemId,
+          'requesterId': requesterId,
+          if (approverId != null) 'approverId': approverId,
+          if (reason != null) 'reason': reason,
+        });
+        debugPrint('✅ Item $orderItemId voided');
+      } catch (e) {
+        debugPrint('❌ order.voidItem failed: $e');
+        rethrow;
+      }
+    }
+
+    /// Cancels an entire order on the server.
+    Future<void> voidOrder({
+      required String orderId,
+      required String requesterId,
+      String? approverId,
+      String? reason,
+    }) async {
+      try {
+        debugPrint('🗑️ Voiding order via tRPC: order.voidOrder');
+        await _trpcMutation('order.voidOrder', input: {
+          'orderId': orderId,
+          'requesterId': requesterId,
+          if (approverId != null) 'approverId': approverId,
+          if (reason != null) 'reason': reason,
+        });
+        debugPrint('✅ Order $orderId voided');
+      } catch (e) {
+        debugPrint('❌ order.voidOrder failed: $e');
+        rethrow;
+      }
+    }
+
     Future<List<OrderResponse>> getOrders({
 
       required String tenantId,
@@ -854,6 +900,44 @@ class PosApiService {
         return [];
       } catch (e) {
         debugPrint('❌ branch.list failed: $e');
+        rethrow;
+      }
+    }
+
+    // Permissions (F-009)
+
+    /// Fetch the full permission matrix for the current organization.
+    /// Returns list of { role, action, allowed, requiresPin } objects.
+    Future<List<Map<String, dynamic>>> getPermissionMatrix() async {
+      try {
+        debugPrint('🔐 Fetching permission matrix via tRPC: permission.getMatrix');
+        final data = await _trpcQuery('permission.getMatrix');
+        if (data is List) {
+          return data.cast<Map<String, dynamic>>();
+        }
+        return [];
+      } catch (e) {
+        debugPrint('❌ permission.getMatrix failed: $e');
+        rethrow;
+      }
+    }
+
+    // Staff (F-009)
+
+    /// Fetch owner/manager list for a branch (for PIN approval dropdown).
+    /// Returns list of { id, userId, staffRole, user: { name, email } }.
+    Future<List<Map<String, dynamic>>> listManagers(String branchId) async {
+      try {
+        debugPrint('👥 Fetching managers via tRPC: staff.listManagers');
+        final data = await _trpcQuery('staff.listManagers', input: {
+          'branchId': branchId,
+        });
+        if (data is List) {
+          return data.cast<Map<String, dynamic>>();
+        }
+        return [];
+      } catch (e) {
+        debugPrint('❌ staff.listManagers failed: $e');
         rethrow;
       }
     }

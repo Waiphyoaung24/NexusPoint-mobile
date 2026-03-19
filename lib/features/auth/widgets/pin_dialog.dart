@@ -52,7 +52,7 @@ class _PinDialogState extends ConsumerState<_PinDialog> {
     try {
       final authState = ref.read(authProvider);
       final user = authState.whenOrNull(
-        authenticated: (user, _) => user,
+        authenticated: (user) => user,
         branchPending: (user, _) => user,
       );
       if (user == null) {

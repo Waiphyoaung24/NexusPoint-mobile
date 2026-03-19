@@ -91,7 +91,7 @@ class AuthGate extends ConsumerWidget {
         user: user,
         branches: branches,
       ),
-      authenticated: (user, _) => const PosShell(),
+      authenticated: (user) => const PosShell(),
     );
   }
 }

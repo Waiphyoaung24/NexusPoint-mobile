@@ -325,6 +325,28 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
       ) as _i4.Future<List<_i5.BranchDto>>);
 
   @override
+  _i4.Future<List<Map<String, dynamic>>> getPermissionMatrix() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPermissionMatrix,
+          [],
+        ),
+        returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+      ) as _i4.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i4.Future<List<Map<String, dynamic>>> listManagers(String? branchId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #listManagers,
+          [branchId],
+        ),
+        returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+      ) as _i4.Future<List<Map<String, dynamic>>>);
+
+  @override
   _i4.Future<List<_i6.TableDto>> getFloorPlanTables(
     String? orgId,
     String? branchId,

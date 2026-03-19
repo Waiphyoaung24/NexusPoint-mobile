@@ -10,7 +10,7 @@ final currentBranchNameProvider = FutureProvider.autoDispose<String?>((ref) asyn
   final authState = ref.watch(authProvider);
 
   return authState.maybeWhen(
-    authenticated: (user, _) async {
+    authenticated: (user) async {
       if (user.branchId == null) return null;
 
       final prefs = await SharedPreferences.getInstance();

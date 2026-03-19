@@ -13,7 +13,7 @@ final floorPlanProvider =
   final authState = ref.watch(authProvider);
 
   return authState.maybeWhen(
-    authenticated: (user, _) async {
+    authenticated: (user) async {
       final orgId = user.tenantId ?? '';
       if (orgId.isEmpty) throw Exception('Organization ID missing');
       final branchId = user.branchId;
@@ -40,12 +40,12 @@ final floorPlanPollingProvider = Provider.autoDispose<void>((ref) {
   final authState = ref.read(authProvider);
 
   final orgId = authState.maybeWhen(
-    authenticated: (user, _) => user.tenantId ?? '',
+    authenticated: (user) => user.tenantId ?? '',
     orElse: () => '',
   );
 
   final branchId = authState.maybeWhen(
-    authenticated: (user, _) => user.branchId ?? '',
+    authenticated: (user) => user.branchId ?? '',
     orElse: () => '',
   );
 

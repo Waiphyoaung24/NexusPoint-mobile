@@ -108,7 +108,7 @@ class MenuScreen extends ConsumerWidget {
                       ),
                 ),
                 authState.whenOrNull(
-                  authenticated: (user, _) => Text(
+                  authenticated: (user) => Text(
                     user.email,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.black.withValues(alpha: 0.5),

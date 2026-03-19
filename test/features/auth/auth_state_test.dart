@@ -19,7 +19,7 @@ void main() {
           expect(user.id, 'u1');
           expect(b.length, 2);
         },
-        authenticated: (_, __) => fail('wrong state'),
+        authenticated: (_) => fail('wrong state'),
       );
     });
 
@@ -29,9 +29,8 @@ void main() {
       state.when(
         unauthenticated: () => fail('wrong state'),
         branchPending: (_, __) => fail('wrong state'),
-        authenticated: (user, attempts) {
+        authenticated: (user) {
           expect(user.branchId, 'b1');
-          expect(attempts, 0);
         },
       );
     });

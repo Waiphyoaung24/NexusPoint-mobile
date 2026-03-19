@@ -21,21 +21,21 @@ mixin _$AuthState {
     required TResult Function() unauthenticated,
     required TResult Function(User user, List<BranchDto> branches)
         branchPending,
-    required TResult Function(User user, int failedPinAttempts) authenticated,
+    required TResult Function(User user) authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? unauthenticated,
     TResult? Function(User user, List<BranchDto> branches)? branchPending,
-    TResult? Function(User user, int failedPinAttempts)? authenticated,
+    TResult? Function(User user)? authenticated,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? unauthenticated,
     TResult Function(User user, List<BranchDto> branches)? branchPending,
-    TResult Function(User user, int failedPinAttempts)? authenticated,
+    TResult Function(User user)? authenticated,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -129,7 +129,7 @@ class _$UnauthenticatedImpl
     required TResult Function() unauthenticated,
     required TResult Function(User user, List<BranchDto> branches)
         branchPending,
-    required TResult Function(User user, int failedPinAttempts) authenticated,
+    required TResult Function(User user) authenticated,
   }) {
     return unauthenticated();
   }
@@ -139,7 +139,7 @@ class _$UnauthenticatedImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? unauthenticated,
     TResult? Function(User user, List<BranchDto> branches)? branchPending,
-    TResult? Function(User user, int failedPinAttempts)? authenticated,
+    TResult? Function(User user)? authenticated,
   }) {
     return unauthenticated?.call();
   }
@@ -149,7 +149,7 @@ class _$UnauthenticatedImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? unauthenticated,
     TResult Function(User user, List<BranchDto> branches)? branchPending,
-    TResult Function(User user, int failedPinAttempts)? authenticated,
+    TResult Function(User user)? authenticated,
     required TResult orElse(),
   }) {
     if (unauthenticated != null) {
@@ -301,7 +301,7 @@ class _$BranchPendingImpl
     required TResult Function() unauthenticated,
     required TResult Function(User user, List<BranchDto> branches)
         branchPending,
-    required TResult Function(User user, int failedPinAttempts) authenticated,
+    required TResult Function(User user) authenticated,
   }) {
     return branchPending(user, branches);
   }
@@ -311,7 +311,7 @@ class _$BranchPendingImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? unauthenticated,
     TResult? Function(User user, List<BranchDto> branches)? branchPending,
-    TResult? Function(User user, int failedPinAttempts)? authenticated,
+    TResult? Function(User user)? authenticated,
   }) {
     return branchPending?.call(user, branches);
   }
@@ -321,7 +321,7 @@ class _$BranchPendingImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? unauthenticated,
     TResult Function(User user, List<BranchDto> branches)? branchPending,
-    TResult Function(User user, int failedPinAttempts)? authenticated,
+    TResult Function(User user)? authenticated,
     required TResult orElse(),
   }) {
     if (branchPending != null) {
@@ -383,7 +383,7 @@ abstract class _$$AuthenticatedImplCopyWith<$Res> {
           _$AuthenticatedImpl value, $Res Function(_$AuthenticatedImpl) then) =
       __$$AuthenticatedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({User user, int failedPinAttempts});
+  $Res call({User user});
 
   $UserCopyWith<$Res> get user;
 }
@@ -400,17 +400,12 @@ class __$$AuthenticatedImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? user = null,
-    Object? failedPinAttempts = null,
   }) {
     return _then(_$AuthenticatedImpl(
       user: null == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as User,
-      failedPinAttempts: null == failedPinAttempts
-          ? _value.failedPinAttempts
-          : failedPinAttempts // ignore: cast_nullable_to_non_nullable
-              as int,
     ));
   }
 
@@ -428,17 +423,14 @@ class __$$AuthenticatedImplCopyWithImpl<$Res>
 class _$AuthenticatedImpl
     with DiagnosticableTreeMixin
     implements Authenticated {
-  const _$AuthenticatedImpl({required this.user, this.failedPinAttempts = 0});
+  const _$AuthenticatedImpl({required this.user});
 
   @override
   final User user;
-  @override
-  @JsonKey()
-  final int failedPinAttempts;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'AuthState.authenticated(user: $user, failedPinAttempts: $failedPinAttempts)';
+    return 'AuthState.authenticated(user: $user)';
   }
 
   @override
@@ -446,8 +438,7 @@ class _$AuthenticatedImpl
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'AuthState.authenticated'))
-      ..add(DiagnosticsProperty('user', user))
-      ..add(DiagnosticsProperty('failedPinAttempts', failedPinAttempts));
+      ..add(DiagnosticsProperty('user', user));
   }
 
   @override
@@ -455,13 +446,11 @@ class _$AuthenticatedImpl
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AuthenticatedImpl &&
-            (identical(other.user, user) || other.user == user) &&
-            (identical(other.failedPinAttempts, failedPinAttempts) ||
-                other.failedPinAttempts == failedPinAttempts));
+            (identical(other.user, user) || other.user == user));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, user, failedPinAttempts);
+  int get hashCode => Object.hash(runtimeType, user);
 
   @JsonKey(ignore: true)
   @override
@@ -475,9 +464,9 @@ class _$AuthenticatedImpl
     required TResult Function() unauthenticated,
     required TResult Function(User user, List<BranchDto> branches)
         branchPending,
-    required TResult Function(User user, int failedPinAttempts) authenticated,
+    required TResult Function(User user) authenticated,
   }) {
-    return authenticated(user, failedPinAttempts);
+    return authenticated(user);
   }
 
   @override
@@ -485,9 +474,9 @@ class _$AuthenticatedImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? unauthenticated,
     TResult? Function(User user, List<BranchDto> branches)? branchPending,
-    TResult? Function(User user, int failedPinAttempts)? authenticated,
+    TResult? Function(User user)? authenticated,
   }) {
-    return authenticated?.call(user, failedPinAttempts);
+    return authenticated?.call(user);
   }
 
   @override
@@ -495,11 +484,11 @@ class _$AuthenticatedImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? unauthenticated,
     TResult Function(User user, List<BranchDto> branches)? branchPending,
-    TResult Function(User user, int failedPinAttempts)? authenticated,
+    TResult Function(User user)? authenticated,
     required TResult orElse(),
   }) {
     if (authenticated != null) {
-      return authenticated(user, failedPinAttempts);
+      return authenticated(user);
     }
     return orElse();
   }
@@ -540,12 +529,9 @@ class _$AuthenticatedImpl
 }
 
 abstract class Authenticated implements AuthState {
-  const factory Authenticated(
-      {required final User user,
-      final int failedPinAttempts}) = _$AuthenticatedImpl;
+  const factory Authenticated({required final User user}) = _$AuthenticatedImpl;
 
   User get user;
-  int get failedPinAttempts;
   @JsonKey(ignore: true)
   _$$AuthenticatedImplCopyWith<_$AuthenticatedImpl> get copyWith =>
       throw _privateConstructorUsedError;

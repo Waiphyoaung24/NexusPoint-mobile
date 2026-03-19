@@ -9,7 +9,7 @@ final menuProvider = FutureProvider.autoDispose<List<MenuItem>>((ref) async {
   final authState = ref.watch(authProvider);
 
   return authState.maybeWhen(
-    authenticated: (user, _) async {
+    authenticated: (user) async {
       // Validate that user has organization/tenant ID
       if (user.tenantId == null || user.tenantId!.isEmpty) {
         print('ERROR: User tenantId is null or empty!');

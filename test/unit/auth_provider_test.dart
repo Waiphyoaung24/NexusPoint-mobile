@@ -92,7 +92,7 @@ void main() {
       final authState = container.read(authProvider);
       expect(authState, isA<Authenticated>());
       authState.whenOrNull(
-        authenticated: (u, _) {
+        authenticated: (u) {
           expect(u.id, 'user-1');
           expect(u.email, email);
           expect(u.role, UserRole.cashier);
@@ -345,7 +345,7 @@ void main() {
       final authState = container.read(authProvider);
       expect(authState, isA<Authenticated>());
       authState.whenOrNull(
-        authenticated: (user, _) {
+        authenticated: (user) {
           expect(user.id, 'user-42');
           expect(user.email, 'returning@example.com');
         },

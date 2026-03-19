@@ -1,37 +1,19 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/auth_provider.dart';
 
 /// Shows a manager approval dialog with manager dropdown + 4-digit PIN.
-/// Returns true if approved, false if cancelled.
-/// Blocks action when offline (F-009).
-Future<bool> showManagerApprovalDialog(
+/// Returns the approved manager's ID if verified, null if cancelled.
+/// Supports both online (server) and offline (cached hash) verification.
+Future<String?> showManagerApprovalDialog(
   BuildContext context, {
   required String branchId,
   required List<ManagerInfo> managers,
 }) async {
-  // Offline guard
-  final connectivity = await Connectivity().checkConnectivity();
-  final isOffline = connectivity is List
-      ? (connectivity as List).contains(ConnectivityResult.none)
-      : connectivity == ConnectivityResult.none;
-  if (isOffline) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Internet required for manager approval'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-    }
-    return false;
-  }
+  if (!context.mounted) return null;
 
-  if (!context.mounted) return false;
-
-  final result = await showDialog<bool>(
+  final result = await showDialog<String?>(
     context: context,
     barrierDismissible: false,
     builder: (context) => _ManagerApprovalDialog(
@@ -40,7 +22,7 @@ Future<bool> showManagerApprovalDialog(
     ),
   );
 
-  return result ?? false;
+  return result;
 }
 
 class ManagerInfo {
@@ -121,7 +103,7 @@ class _ManagerApprovalDialogState
           );
 
       if (verified && mounted) {
-        Navigator.of(context).pop(true);
+        Navigator.of(context).pop(_selectedManagerId);
       } else if (mounted) {
         setState(() {
           _pin = '';
@@ -227,7 +209,7 @@ class _ManagerApprovalDialogState
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
+          onPressed: () => Navigator.of(context).pop(null),
           child: const Text('Cancel'),
         ),
       ],

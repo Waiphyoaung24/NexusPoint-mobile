@@ -245,6 +245,105 @@ class OrderRepository {
     return getAllOrders();
   }
 
+  /// Voids a single item: updates local DB, queues API sync with audit data.
+  Future<void> voidItem({
+    required int localOrderId,
+    required int itemIndex,
+    required String reason,
+    required String requesterId,
+    String? approverId,
+  }) async {
+    final authState = _ref.read(authProvider);
+    if (authState is! Authenticated) throw Exception('Not authenticated');
+
+    final user = authState.user;
+    final local = await _localDb.getOrderById(localOrderId);
+    if (local == null) throw Exception('Order not found');
+
+    // Update local items JSON — mark item as voided
+    final items = (jsonDecode(local.itemsJson) as List).cast<Map<String, dynamic>>();
+    if (itemIndex < 0 || itemIndex >= items.length) throw Exception('Invalid item index');
+    items[itemIndex]['voided'] = true;
+
+    // Recalculate total
+    double newTotal = 0;
+    for (final item in items) {
+      if (item['voided'] != true) {
+        final qty = (item['quantity'] as num?)?.toInt() ?? 1;
+        final price = (item['unitPrice'] as num?)?.toDouble() ?? 0.0;
+        newTotal += qty * price;
+      }
+    }
+
+    await _localDb.updateOrder(
+      localOrderId,
+      OrdersCompanion(
+        itemsJson: drift.Value(jsonEncode(items)),
+        totalAmount: drift.Value(newTotal),
+      ),
+    );
+
+    // Queue void for cloud sync — includes audit data (F-005)
+    final serverId = local.orderId;
+    if (local.isSynced && serverId != null && serverId.isNotEmpty) {
+      await _syncQueue.enqueue(
+        entityType: 'order',
+        entityId: localOrderId,
+        action: 'void_item',
+        payloadJson: jsonEncode({
+          'orderId': serverId,
+          'orderItemId': items[itemIndex]['skuId'] ?? '',
+          'requesterId': requesterId,
+          if (approverId != null) 'approverId': approverId,
+          'reason': reason,
+          'branchId': user.branchId ?? user.tenantId ?? '',
+        }),
+        priority: 1,
+      );
+    }
+  }
+
+  /// Cancels an entire order: updates local DB, queues API sync with audit data.
+  Future<void> voidOrder({
+    required int localOrderId,
+    required String reason,
+    required String requesterId,
+    String? approverId,
+  }) async {
+    final authState = _ref.read(authProvider);
+    if (authState is! Authenticated) throw Exception('Not authenticated');
+
+    final user = authState.user;
+    final local = await _localDb.getOrderById(localOrderId);
+    if (local == null) throw Exception('Order not found');
+
+    await _localDb.updateOrder(
+      localOrderId,
+      OrdersCompanion(
+        status: drift.Value(OrderStatus.cancelled.name),
+        totalAmount: const drift.Value(0),
+      ),
+    );
+
+    // Queue void for cloud sync — includes audit data (F-005)
+    final serverId = local.orderId;
+    if (local.isSynced && serverId != null && serverId.isNotEmpty) {
+      await _syncQueue.enqueue(
+        entityType: 'order',
+        entityId: localOrderId,
+        action: 'void_order',
+        payloadJson: jsonEncode({
+          'orderId': serverId,
+          'requesterId': requesterId,
+          if (approverId != null) 'approverId': approverId,
+          'reason': reason,
+          'branchId': user.branchId ?? user.tenantId ?? '',
+        }),
+        priority: 1,
+      );
+    }
+  }
+
   Stream<List<Order>> watchAllOrders() {
     return _localDb.watchAllOrders().map((localOrders) {
       return localOrders.map((local) {
