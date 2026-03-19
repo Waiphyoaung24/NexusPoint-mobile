@@ -129,7 +129,7 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
                     _PaymentMethodButton(
                       icon: Icons.money,
                       label: 'Cash',
-                      isSelected: checkout.paymentMethod == PaymentMethod.cash,
+                      isSelected: checkout.paymentMethod == PaymentMethod.cash && !checkout.isSplit,
                       onTap: () => ref
                           .read(checkoutProvider.notifier)
                           .selectPaymentMethod(PaymentMethod.cash),
@@ -138,13 +138,67 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
                     _PaymentMethodButton(
                       icon: Icons.qr_code,
                       label: 'PromptPay',
-                      isSelected: checkout.paymentMethod == PaymentMethod.promptpay,
+                      isSelected: checkout.paymentMethod == PaymentMethod.promptpay && !checkout.isSplit,
                       onTap: () => ref
                           .read(checkoutProvider.notifier)
                           .selectPaymentMethod(PaymentMethod.promptpay),
                     ),
+                    const SizedBox(width: 12),
+                    _PaymentMethodButton(
+                      icon: Icons.call_split,
+                      label: 'Split',
+                      isSelected: checkout.isSplit,
+                      onTap: () => _showSplitPaymentDialog(context, ref),
+                    ),
                   ],
                 ),
+                // Split payment indicator
+                if (checkout.isSplit) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: PosTheme.primaryBlue.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: PosTheme.primaryBlue.withValues(alpha: 0.2)),
+                    ),
+                    child: Column(
+                      children: [
+                        ...checkout.payments.map((p) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(p.method.name.toUpperCase(),
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                              Text('฿${p.amount.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 13, color: PosTheme.primaryBlue)),
+                            ],
+                          ),
+                        )),
+                        const Divider(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Cash remainder',
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                            Text('฿${checkout.remainingBalance.toStringAsFixed(2)}',
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
+                                    color: PosTheme.primaryBlue)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => ref.read(checkoutProvider.notifier).cancelSplit(),
+                            child: const Text('Cancel Split', style: TextStyle(fontSize: 12)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -276,9 +330,7 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
             paymentMethod: checkout.paymentMethod,
             tenderedAmount: checkout.tenderedAmount,
             changeAmount: checkout.changeAmount > 0 ? checkout.changeAmount : null,
-            payments: [
-              {'method': checkout.paymentMethod.name, 'amount': cartState.grandTotal.toStringAsFixed(2)},
-            ],
+            payments: checkout.allPayments.map((p) => p.toJson()).toList(),
             modifiersPerItem: modifiersPerItem,
           );
 
@@ -455,6 +507,89 @@ class _CheckoutModalState extends ConsumerState<CheckoutModal> {
         ),
       );
     }
+  }
+
+  /// F-006: Show split payment dialog — user picks first method + amount.
+  void _showSplitPaymentDialog(BuildContext context, WidgetRef ref) {
+    final cart = ref.read(cartProvider);
+    final total = cart.grandTotal;
+    final amountController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        PaymentMethod selectedMethod = PaymentMethod.promptpay;
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              title: const Text('Split Payment'),
+              content: SizedBox(
+                width: 320,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Total: ฿${total.toStringAsFixed(2)}',
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 16),
+                    const Text('First payment method:'),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        ChoiceChip(
+                          label: const Text('PromptPay'),
+                          selected: selectedMethod == PaymentMethod.promptpay,
+                          onSelected: (_) =>
+                              setDialogState(() => selectedMethod = PaymentMethod.promptpay),
+                        ),
+                        const SizedBox(width: 8),
+                        ChoiceChip(
+                          label: const Text('Card'),
+                          selected: selectedMethod == PaymentMethod.card,
+                          onSelected: (_) =>
+                              setDialogState(() => selectedMethod = PaymentMethod.card),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: amountController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: 'Amount (฿)',
+                        hintText: 'Remaining paid in cash',
+                        border: const OutlineInputBorder(),
+                        helperText: 'Max: ฿${total.toStringAsFixed(2)}',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final amount = double.tryParse(amountController.text) ?? 0;
+                    if (amount <= 0 || amount >= total) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Enter an amount less than total')),
+                      );
+                      return;
+                    }
+                    ref.read(checkoutProvider.notifier).enableSplit(selectedMethod, amount);
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text('Split'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _vatRow(BuildContext context, String label, double amount, {bool bold = false}) {

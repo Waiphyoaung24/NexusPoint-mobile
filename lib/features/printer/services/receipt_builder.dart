@@ -17,6 +17,7 @@ class ReceiptBuilder {
     required Order order,
     double? tenderedAmount,
     double? changeAmount,
+    List<Map<String, String>>? payments,
   }) async {
     final profile = await CapabilityProfile.load();
     final generator = Generator(paperSize, profile);
@@ -87,9 +88,27 @@ class ReceiptBuilder {
 
     // --- Payment ---
     bytes += generator.emptyLines(1);
-    bytes += generator.text(
-      'Payment: ${order.paymentMethod.name.toUpperCase()}',
-    );
+
+    // F-006: Show split payment breakdown if multiple methods
+    if (payments != null && payments.length > 1) {
+      bytes += generator.text('Payment (Split):');
+      for (final p in payments) {
+        final method = (p['method'] ?? '').toUpperCase();
+        final amount = double.tryParse(p['amount'] ?? '0') ?? 0;
+        bytes += generator.row([
+          PosColumn(text: '  $method:', width: 8),
+          PosColumn(
+            text: _formatCurrency(amount),
+            width: 4,
+            styles: const PosStyles(align: PosAlign.right),
+          ),
+        ]);
+      }
+    } else {
+      bytes += generator.text(
+        'Payment: ${order.paymentMethod.name.toUpperCase()}',
+      );
+    }
 
     // Cash change info
     if (tenderedAmount != null && changeAmount != null) {
