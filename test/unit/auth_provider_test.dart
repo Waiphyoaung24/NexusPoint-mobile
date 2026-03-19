@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -176,17 +178,23 @@ void main() {
     });
   });
 
-  group('AuthProvider - Manager PIN', () {
+  group('AuthProvider - Manager PIN (server-side)', () {
     late MockPosApiService mockApi;
     late ProviderContainer container;
+    late Dio mockDio;
 
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
       mockApi = MockPosApiService();
 
+      // Create a Dio instance with a mock interceptor for PIN verification
+      mockDio = Dio(BaseOptions(baseUrl: 'http://localhost:5173'));
+
       container = ProviderContainer(
         overrides: [
           posApiServiceProvider.overrideWithValue(mockApi),
+          cookieJarProvider.overrideWithValue(CookieJar()),
+          dioProvider.overrideWithValue(mockDio),
         ],
       );
 
@@ -196,7 +204,6 @@ void main() {
         tenantId: 'tenant-1',
         email: 'manager@example.com',
         role: UserRole.manager,
-        // SHA-256 hash of "1234"
         managerPinHash:
             '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4',
       );
@@ -213,96 +220,66 @@ void main() {
     });
 
     test('verifyManagerPin with correct PIN returns true', () async {
-      // Act
-      final success =
-          await container.read(authProvider.notifier).verifyManagerPin('1234');
-
-      // Assert
-      expect(success, isTrue);
-
-      final authState = container.read(authProvider);
-      authState.whenOrNull(
-        authenticated: (user, failedAttempts) {
-          expect(failedAttempts, 0);
+      // Mock successful response
+      mockDio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.resolve(Response(
+            requestOptions: options,
+            statusCode: 200,
+            data: {'result': {'data': {'json': {'verified': true}}}},
+          ));
         },
-      );
+      ));
+
+      final success = await container
+          .read(authProvider.notifier)
+          .verifyManagerPin('user-1', '1234', '');
+
+      expect(success, isTrue);
     });
 
-    test('verifyManagerPin with incorrect PIN returns false', () async {
-      // Act
-      final success =
-          await container.read(authProvider.notifier).verifyManagerPin('0000');
+    test('verifyManagerPin with incorrect PIN returns false (401)', () async {
+      mockDio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.reject(DioException(
+            requestOptions: options,
+            response: Response(
+              requestOptions: options,
+              statusCode: 401,
+              data: {'error': {'message': 'Invalid PIN'}},
+            ),
+            type: DioExceptionType.badResponse,
+          ));
+        },
+      ));
 
-      // Assert
+      final success = await container
+          .read(authProvider.notifier)
+          .verifyManagerPin('user-1', '0000', '');
+
       expect(success, isFalse);
-
-      final authState = container.read(authProvider);
-      authState.whenOrNull(
-        authenticated: (user, failedAttempts) {
-          expect(failedAttempts, 1);
-        },
-      );
     });
 
-    test('verifyManagerPin locks out after 3 failed attempts', () async {
-      // Act - 3 failed attempts
-      await container.read(authProvider.notifier).verifyManagerPin('0000');
-      await container.read(authProvider.notifier).verifyManagerPin('0000');
+    test('verifyManagerPin throws PinLockoutException on 429', () async {
+      mockDio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.reject(DioException(
+            requestOptions: options,
+            response: Response(
+              requestOptions: options,
+              statusCode: 429,
+              data: {'error': {'message': 'PIN locked. Try again in 5 minutes.'}},
+            ),
+            type: DioExceptionType.badResponse,
+          ));
+        },
+      ));
 
-      // Assert - 3rd attempt throws exception
       expect(
-        () =>
-            container.read(authProvider.notifier).verifyManagerPin('0000'),
+        () => container
+            .read(authProvider.notifier)
+            .verifyManagerPin('user-1', '0000', ''),
         throwsA(isA<PinLockoutException>()),
-      );
-    });
-
-    test('resetPinAttempts resets failed attempts counter', () async {
-      // Arrange - Fail once
-      await container.read(authProvider.notifier).verifyManagerPin('0000');
-
-      var authState = container.read(authProvider);
-      authState.whenOrNull(
-        authenticated: (user, failedAttempts) {
-          expect(failedAttempts, 1);
-        },
-      );
-
-      // Act - Reset
-      container.read(authProvider.notifier).resetPinAttempts();
-
-      // Assert
-      authState = container.read(authProvider);
-      authState.whenOrNull(
-        authenticated: (user, failedAttempts) {
-          expect(failedAttempts, 0);
-        },
-      );
-    });
-
-    test('successful PIN verification resets failed attempts', () async {
-      // Arrange - Fail once
-      await container.read(authProvider.notifier).verifyManagerPin('0000');
-
-      var authState = container.read(authProvider);
-      authState.whenOrNull(
-        authenticated: (user, failedAttempts) {
-          expect(failedAttempts, 1);
-        },
-      );
-
-      // Act - Succeed
-      final success =
-          await container.read(authProvider.notifier).verifyManagerPin('1234');
-
-      // Assert
-      expect(success, isTrue);
-
-      authState = container.read(authProvider);
-      authState.whenOrNull(
-        authenticated: (user, failedAttempts) {
-          expect(failedAttempts, 0);
-        },
       );
     });
   });

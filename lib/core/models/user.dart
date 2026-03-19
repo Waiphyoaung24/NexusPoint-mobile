@@ -10,6 +10,10 @@ enum UserRole {
   manager,
   @JsonValue('cashier')
   cashier,
+  @JsonValue('waiter')
+  waiter,
+  @JsonValue('kitchen')
+  kitchen,
 }
 
 @freezed
@@ -20,6 +24,7 @@ class User with _$User {
     String? tenantId,
     @JsonKey(name: 'organizationId') String? organizationId,
     UserRole? role,
+    @JsonKey(name: 'staffRole') UserRole? staffRole,
     String? name,
     String? image,
     bool? emailVerified,

@@ -143,6 +143,52 @@ class MockPosApiService extends _i1.Mock implements _i3.PosApiService {
       ) as _i4.Future<void>);
 
   @override
+  _i4.Future<void> voidItem({
+    required String? orderId,
+    required String? orderItemId,
+    required String? requesterId,
+    String? approverId,
+    String? reason,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #voidItem,
+          [],
+          {
+            #orderId: orderId,
+            #orderItemId: orderItemId,
+            #requesterId: requesterId,
+            #approverId: approverId,
+            #reason: reason,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> voidOrder({
+    required String? orderId,
+    required String? requesterId,
+    String? approverId,
+    String? reason,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #voidOrder,
+          [],
+          {
+            #orderId: orderId,
+            #requesterId: requesterId,
+            #approverId: approverId,
+            #reason: reason,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
   _i4.Future<List<_i2.OrderResponse>> getOrders({
     required String? tenantId,
     required String? branchId,

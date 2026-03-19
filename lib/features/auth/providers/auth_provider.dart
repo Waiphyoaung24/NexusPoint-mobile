@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -346,42 +347,45 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> verifyManagerPin(String pin) async {
-    return state.maybeWhen(
-      authenticated: (user, failedAttempts) async {
-        final hashedPin = _hashPin(pin);
+  /// Verify Manager PIN via server-side API (F-009).
+  /// Returns true if PIN is correct, throws on lockout or error.
+  Future<bool> verifyManagerPin(
+    String managerId,
+    String pin,
+    String branchId,
+  ) async {
+    try {
+      final dio = ref.read(dioProvider);
+      final response = await dio.post(
+        '/api/trpc/staff.verifyManagerPin',
+        data: {
+          'json': {
+            'managerId': managerId,
+            'pin': pin,
+            'branchId': branchId,
+          },
+        },
+      );
 
-        if (user.managerPinHash == hashedPin) {
-          // Success - reset attempts
-          state = AuthState.authenticated(user: user, failedPinAttempts: 0);
-          return true;
-        } else {
-          // Failure - increment attempts
-          final newAttempts = failedAttempts + 1;
-          state = AuthState.authenticated(user: user, failedPinAttempts: newAttempts);
+      final result = response.data?['result']?['data']?['json'];
+      return result?['verified'] == true;
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      final errorData = e.response?.data;
 
-          // Lock after 3 attempts
-          if (newAttempts >= 3) {
-            throw PinLockoutException('Too many failed attempts');
-          }
+      if (statusCode == 429) {
+        // TOO_MANY_REQUESTS — PIN locked
+        final message =
+            errorData?['error']?['message'] ?? 'PIN locked. Try again later.';
+        throw PinLockoutException(message);
+      } else if (statusCode == 401) {
+        // UNAUTHORIZED — wrong PIN
+        return false;
+      }
 
-          return false;
-        }
-      },
-      orElse: () async => false,
-    );
-  }
-
-  String _hashPin(String pin) {
-    return sha256.convert(utf8.encode(pin)).toString();
-  }
-
-  void resetPinAttempts() {
-    state.whenOrNull(
-      authenticated: (user, _) {
-        state = AuthState.authenticated(user: user, failedPinAttempts: 0);
-      },
-    );
+      debugPrint('❌ Manager PIN verification error: $e');
+      rethrow;
+    }
   }
 
   Future<void> logout() async {

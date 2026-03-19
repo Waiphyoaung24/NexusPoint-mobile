@@ -1,3 +1,5 @@
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,13 +58,31 @@ void main() {
         role: UserRole.manager,
         managerPinHash: _pin1234Hash,
       );
-      const response = AuthResponse(token: 'token-abc', user: user);
+      const response = AuthResponse(token: 'token-abc', user: user, activeOrganizationId: 'org-1');
       when(mockApi.verifyOtp(any, any)).thenAnswer((_) async => response);
+
+      // Mock Dio that returns 401 for wrong PIN (PIN dialog only tests UI interaction)
+      final mockDio = Dio(BaseOptions(baseUrl: 'http://localhost:5173'));
+      mockDio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.reject(DioException(
+            requestOptions: options,
+            response: Response(
+              requestOptions: options,
+              statusCode: 401,
+              data: {'error': {'message': 'Invalid PIN'}},
+            ),
+            type: DioExceptionType.badResponse,
+          ));
+        },
+      ));
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             posApiServiceProvider.overrideWithValue(mockApi),
+            cookieJarProvider.overrideWithValue(CookieJar()),
+            dioProvider.overrideWithValue(mockDio),
           ],
           child: MaterialApp(
             home: Scaffold(

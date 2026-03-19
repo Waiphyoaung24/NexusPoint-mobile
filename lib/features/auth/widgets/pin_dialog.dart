@@ -50,8 +50,25 @@ class _PinDialogState extends ConsumerState<_PinDialog> {
     setState(() => _isVerifying = true);
     final pin = _digits.join();
     try {
+      final authState = ref.read(authProvider);
+      final user = authState.whenOrNull(
+        authenticated: (user, _) => user,
+        branchPending: (user, _) => user,
+      );
+      if (user == null) {
+        setState(() {
+          _digits.clear();
+          _errorMessage = 'Not authenticated.';
+          _isVerifying = false;
+        });
+        return;
+      }
       final success =
-          await ref.read(authProvider.notifier).verifyManagerPin(pin);
+          await ref.read(authProvider.notifier).verifyManagerPin(
+                user.id,
+                pin,
+                user.branchId ?? '',
+              );
       if (!mounted) return;
       if (success) {
         HapticFeedback.lightImpact();

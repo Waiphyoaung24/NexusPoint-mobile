@@ -26,6 +26,8 @@ mixin _$User {
   @JsonKey(name: 'organizationId')
   String? get organizationId => throw _privateConstructorUsedError;
   UserRole? get role => throw _privateConstructorUsedError;
+  @JsonKey(name: 'staffRole')
+  UserRole? get staffRole => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
   bool? get emailVerified => throw _privateConstructorUsedError;
@@ -49,6 +51,7 @@ abstract class $UserCopyWith<$Res> {
       String? tenantId,
       @JsonKey(name: 'organizationId') String? organizationId,
       UserRole? role,
+      @JsonKey(name: 'staffRole') UserRole? staffRole,
       String? name,
       String? image,
       bool? emailVerified,
@@ -75,6 +78,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? tenantId = freezed,
     Object? organizationId = freezed,
     Object? role = freezed,
+    Object? staffRole = freezed,
     Object? name = freezed,
     Object? image = freezed,
     Object? emailVerified = freezed,
@@ -102,6 +106,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
       role: freezed == role
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
+              as UserRole?,
+      staffRole: freezed == staffRole
+          ? _value.staffRole
+          : staffRole // ignore: cast_nullable_to_non_nullable
               as UserRole?,
       name: freezed == name
           ? _value.name
@@ -144,6 +152,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       String? tenantId,
       @JsonKey(name: 'organizationId') String? organizationId,
       UserRole? role,
+      @JsonKey(name: 'staffRole') UserRole? staffRole,
       String? name,
       String? image,
       bool? emailVerified,
@@ -167,6 +176,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? tenantId = freezed,
     Object? organizationId = freezed,
     Object? role = freezed,
+    Object? staffRole = freezed,
     Object? name = freezed,
     Object? image = freezed,
     Object? emailVerified = freezed,
@@ -194,6 +204,10 @@ class __$$UserImplCopyWithImpl<$Res>
       role: freezed == role
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
+              as UserRole?,
+      staffRole: freezed == staffRole
+          ? _value.staffRole
+          : staffRole // ignore: cast_nullable_to_non_nullable
               as UserRole?,
       name: freezed == name
           ? _value.name
@@ -232,6 +246,7 @@ class _$UserImpl implements _User {
       this.tenantId,
       @JsonKey(name: 'organizationId') this.organizationId,
       this.role,
+      @JsonKey(name: 'staffRole') this.staffRole,
       this.name,
       this.image,
       this.emailVerified,
@@ -254,6 +269,9 @@ class _$UserImpl implements _User {
   @override
   final UserRole? role;
   @override
+  @JsonKey(name: 'staffRole')
+  final UserRole? staffRole;
+  @override
   final String? name;
   @override
   final String? image;
@@ -269,7 +287,7 @@ class _$UserImpl implements _User {
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, tenantId: $tenantId, organizationId: $organizationId, role: $role, name: $name, image: $image, emailVerified: $emailVerified, branchId: $branchId, managerPinHash: $managerPinHash, isActive: $isActive)';
+    return 'User(id: $id, email: $email, tenantId: $tenantId, organizationId: $organizationId, role: $role, staffRole: $staffRole, name: $name, image: $image, emailVerified: $emailVerified, branchId: $branchId, managerPinHash: $managerPinHash, isActive: $isActive)';
   }
 
   @override
@@ -284,6 +302,8 @@ class _$UserImpl implements _User {
             (identical(other.organizationId, organizationId) ||
                 other.organizationId == organizationId) &&
             (identical(other.role, role) || other.role == role) &&
+            (identical(other.staffRole, staffRole) ||
+                other.staffRole == staffRole) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.image, image) || other.image == image) &&
             (identical(other.emailVerified, emailVerified) ||
@@ -305,6 +325,7 @@ class _$UserImpl implements _User {
       tenantId,
       organizationId,
       role,
+      staffRole,
       name,
       image,
       emailVerified,
@@ -333,6 +354,7 @@ abstract class _User implements User {
       final String? tenantId,
       @JsonKey(name: 'organizationId') final String? organizationId,
       final UserRole? role,
+      @JsonKey(name: 'staffRole') final UserRole? staffRole,
       final String? name,
       final String? image,
       final bool? emailVerified,
@@ -353,6 +375,9 @@ abstract class _User implements User {
   String? get organizationId;
   @override
   UserRole? get role;
+  @override
+  @JsonKey(name: 'staffRole')
+  UserRole? get staffRole;
   @override
   String? get name;
   @override
